@@ -3,33 +3,99 @@
 <head>
   <meta charset="UTF-8">
   <title>بازار ارزوئیه</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
   <style>
-    body { font-family: Tahoma; direction: rtl; text-align: center; }
-    table { margin: auto; border-collapse: collapse; width: 90%; }
-    th, td { border: 1px solid #ccc; padding: 10px; }
-    th { background: #f0f0f0; }
-    img { width: 70px; }
+    body { font-family: sans-serif; direction: rtl; padding: 20px; background: #f5f5f5; }
+    form, .product-list { max-width: 500px; margin: auto; background: white; padding: 20px; border-radius: 10px; }
+    input, button { width: 100%; margin: 8px 0; padding: 10px; font-size: 16px; }
+    .product { border: 1px solid #ccc; margin-top: 10px; padding: 10px; border-radius: 8px; background: #fff; }
+    .product img { max-width: 100%; height: auto; border-radius: 6px; }
+    .hidden { display: none; }
   </style>
 </head>
 <body>
-  <h2>🌿 بازار ارزوئیه 🌿</h2>
-  <table>
-    <tr>
-      <th>تصویر</th>
-      <th>محصول</th>
-      <th>قیمت</th>
-      <th>تماس</th>
-      <th>تاریخ</th>
-      <th>وضعیت</th>
-    </tr>
-    <tr>
-      <td><img src="https://via.placeholder.com/70" alt="محصول"></td>
-      <td>کلاه</td>
-      <td>۶۰۰,۰۰۰ ریال</td>
-      <td>۰۹۹۹۸۷۶۷۸</td>
-      <td>۱۴۰۴/۰۳/۱۲</td>
-      <td style="color:green;">موجود</td>
-    </tr>
-  </table>
+
+  <h2 style="text-align: center;">🛒 بازار ارزوئیه</h2>
+
+  <form id="productForm">
+    <input type="text" name="name" placeholder="نام محصول" required>
+    <input type="number" name="price" placeholder="قیمت (ریال)" required>
+    <input type="number" name="stock" placeholder="موجودی" required>
+    <input type="text" name="image" placeholder="لینک تصویر" required>
+    <input type="tel" name="phone" placeholder="شماره فروشنده (واتساپ)" required>
+    <button type="submit">ثبت محصول</button>
+    <div id="status"></div>
+  </form>
+
+  <div class="product-list" id="productList"></div>
+
+  <script>
+    const form = document.getElementById('productForm');
+    const productList = document.getElementById('productList');
+    const status = document.getElementById('status');
+
+    function saveOffline(data) {
+      const queue = JSON.parse(localStorage.getItem('offlineQueue') || '[]');
+      queue.push(data);
+      localStorage.setItem('offlineQueue', JSON.stringify(queue));
+    }
+
+    function displayProduct(data) {
+      const div = document.createElement('div');
+      div.className = 'product';
+      div.innerHTML = `
+        <img src="${data.image}" alt="${data.name}">
+        <h3>${data.name}</h3>
+        <p>💰 قیمت: ${data.price} ریال</p>
+        <p>📦 موجودی: ${data.stock}</p>
+        <a href="https://wa.me/${data.phone.replace(/^0/, '98')}" target="_blank">
+          <button>تماس با فروشنده در واتساپ</button>
+        </a>
+      `;
+      productList.prepend(div);
+    }
+
+    async function sendData(data) {
+      try {
+        const res = await fetch('https://your-server.com/api/submit', {
+          method: 'POST',
+          headers: {'Content-Type': 'application/json'},
+          body: JSON.stringify(data)
+        });
+        if (res.ok) {
+          status.innerText = '✅ ثبت شد';
+          displayProduct(data);
+        } else {
+          saveOffline(data);
+          status.innerText = '❌ ذخیره موقت (آفلاین)';
+          displayProduct(data);
+        }
+      } catch {
+        saveOffline(data);
+        status.innerText = '❌ ذخیره موقت (آفلاین)';
+        displayProduct(data);
+      }
+    }
+
+    form.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const data = Object.fromEntries(new FormData(form).entries());
+      sendData(data);
+      form.reset();
+    });
+
+    window.addEventListener('online', () => {
+      const queue = JSON.parse(localStorage.getItem('offlineQueue') || '[]');
+      queue.forEach(data => sendData(data));
+      localStorage.removeItem('offlineQueue');
+    });
+
+    // در بارگذاری مجدد نمایش داده شود
+    window.addEventListener('load', () => {
+      const oldQueue = JSON.parse(localStorage.getItem('offlineQueue') || '[]');
+      oldQueue.forEach(displayProduct);
+    });
+  </script>
+
 </body>
 </html>
