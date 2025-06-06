@@ -18,6 +18,16 @@
       padding: 0.5rem;
       border-radius: 12px;
     }
+    #searchBox, #categorySelect {
+      margin: 1rem auto;
+      max-width: 400px;
+      display: block;
+      padding: 0.5rem;
+      font-size: 1rem;
+      width: 100%;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+    }
     .product {
       background: white;
       padding: 1rem;
@@ -39,35 +49,71 @@
 </head>
 <body>
   <h1>سفارش محصول از بازار ارزوئیه</h1>
+  <input type="text" id="searchBox" placeholder="جستجوی محصول یا فروشنده...">
+  <select id="categorySelect">
+    <option value="all">همه دسته‌ها</option>
+  </select>
   <div id="productList"></div>  <script>
     const SHEET_URL = 'https://script.google.com/macros/s/AKfycbyHUiGDSpKq6_vsC5jgc7Q0H9yX98KHDKZhT2O_gHze8-yniK_oLqOg3vwE7tQVeoMlHg/exec';
+    let allProducts = [];
 
     fetch(SHEET_URL)
       .then(res => res.json())
       .then(data => {
-        const productList = document.getElementById('productList');
-        productList.innerHTML = '';
-        data.forEach(item => {
-          const card = document.createElement('div');
-          card.className = 'product';
-          card.innerHTML = `
-            <h2>نام محصول: <span>${item.product}</span></h2>
-            <p>قیمت: <span>${item.price}</span> تومان</p>
-            <p>موجودی: <span class="quantity">${item.quantity}</span> عدد</p>
-            <p>فروشنده: <span>${item.name}</span></p>
-            <p>شماره تماس: <span class="phone">${item.phone}</span></p>
-            <button onclick="orderProduct('${item.product}', '${item.price}', '${item.phone}', this)">سفارش از طریق واتساپ</button>
-          `;
-          productList.appendChild(card);
-        });
+        allProducts = data;
+        populateCategories(data);
+        renderProducts(data);
       });
+
+    function populateCategories(data) {
+      const select = document.getElementById('categorySelect');
+      const categories = [...new Set(data.map(item => item.category || 'بدون دسته'))];
+      categories.forEach(cat => {
+        const option = document.createElement('option');
+        option.value = cat;
+        option.textContent = cat;
+        select.appendChild(option);
+      });
+    }
+
+    function renderProducts(data) {
+      const productList = document.getElementById('productList');
+      productList.innerHTML = '';
+      data.forEach(item => {
+        const card = document.createElement('div');
+        card.className = 'product';
+        card.innerHTML = `
+          <h2>نام محصول: <span>${item.product}</span></h2>
+          <p>قیمت: <span>${item.price}</span> تومان</p>
+          <p>موجودی: <span class="quantity">${item.quantity}</span> عدد</p>
+          <p>دسته‌بندی: <span>${item.category || 'بدون دسته'}</span></p>
+          <p>فروشنده: <span>${item.name}</span></p>
+          <p>شماره تماس: <span class="phone">${item.phone}</span></p>
+          <button onclick="orderProduct('${item.product}', '${item.price}', '${item.phone}', this)">سفارش از طریق واتساپ</button>
+        `;
+        productList.appendChild(card);
+      });
+    }
+
+    function filterProducts() {
+      const searchVal = document.getElementById('searchBox').value.trim().toLowerCase();
+      const categoryVal = document.getElementById('categorySelect').value;
+      const filtered = allProducts.filter(item => {
+        const matchesText = item.product.toLowerCase().includes(searchVal) || item.name.toLowerCase().includes(searchVal);
+        const matchesCategory = categoryVal === 'all' || (item.category || 'بدون دسته') === categoryVal;
+        return matchesText && matchesCategory;
+      });
+      renderProducts(filtered);
+    }
+
+    document.getElementById('searchBox').addEventListener('input', filterProducts);
+    document.getElementById('categorySelect').addEventListener('change', filterProducts);
 
     function orderProduct(name, price, phone, btn) {
       const message = `سلام. من مایلم محصول \"${name}\" به قیمت ${price} تومان را از شما خریداری کنم.`;
       const url = `https://wa.me/${phone.replace(/^0/, '98')}?text=${encodeURIComponent(message)}`;
       window.open(url, '_blank');
 
-      // کاهش ظاهری موجودی در کارت مربوطه
       const quantityElem = btn.parentElement.querySelector('.quantity');
       let quantity = parseInt(quantityElem.innerText);
       if (quantity > 0) {
