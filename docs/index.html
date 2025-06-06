@@ -1,181 +1,186 @@
 <!DOCTYPE html>
 <html lang="fa" dir="rtl">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>بازار ارزوییه</title>
   <style>
     body {
-      font-family: "Vazir", sans-serif;
+      font-family: sans-serif;
       margin: 0;
       padding: 0;
-      background-color: #f7f7f7;
+      background: #f2f2f2;
     }
-    header {
+    .header {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      padding: 10px 20px;
-      background: linear-gradient(to left, #ff6ec4, #7873f5);
-      color: white;
+      background: #fff;
+      padding: 1rem;
       position: relative;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
     }
-    header h1 {
-      margin: 0;
-      font-size: 24px;
-      animation: rainbow 4s infinite alternate;
-    }
-    #clock {
-      font-size: 14px;
-    }
-    @keyframes rainbow {
-      0% { color: red; }
-      20% { color: orange; }
-      40% { color: yellow; }
-      60% { color: green; }
-      80% { color: blue; }
-      100% { color: violet; }
-    }
-    nav {
-      width: 100%;
-      background-color: #eee;
-      padding: 10px;
-      display: flex;
-      justify-content: space-around;
-      position: sticky;
-      top: 0;
-      z-index: 10;
-    }
-    nav a {
-      color: #333;
-      text-decoration: none;
+    .rainbow-text {
+      font-size: 1.8rem;
       font-weight: bold;
+      background: linear-gradient(to right, red, orange, yellow, green, blue, indigo, violet);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      animation: rainbowMove 5s linear infinite;
     }
-    .container {
-      max-width: 600px;
-      margin: 20px auto;
-      padding: 20px;
-      background-color: white;
-      border-radius: 10px;
-      box-shadow: 0 0 10px rgba(0,0,0,0.1);
-      text-align: right;
+    @keyframes rainbowMove {
+      0% { background-position: 0%; }
+      100% { background-position: 100%; }
     }
-    .form-group {
-      margin-bottom: 15px;
+    .clock {
+      font-size: 1rem;
+      color: #333;
     }
-    .form-group label {
-      display: block;
-      margin-bottom: 5px;
-    }
-    .form-group input, .form-group textarea {
+    .nav-drawer {
+      position: fixed;
+      top: 0;
+      right: -100%;
       width: 100%;
-      padding: 8px;
-      border: 1px solid #ccc;
-      border-radius: 5px;
+      height: 100%;
+      background: white;
+      transition: right 0.3s ease;
+      z-index: 999;
+      padding: 2rem;
+      box-sizing: border-box;
     }
-    .button-row {
+    .nav-drawer.open {
+      right: 0;
+    }
+    .nav-item {
+      font-size: 1.2rem;
+      margin-bottom: 1rem;
+    }
+    .main {
+      padding: 1rem;
+    }
+    .image-preview {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      margin: 1rem 0;
+    }
+    .image-preview img {
+      max-width: 100%;
+      height: auto;
+      border-radius: 8px;
+    }
+    .form-section {
+      margin: 1rem 0;
+      background: #fff;
+      padding: 1rem;
+      border-radius: 8px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+    .form-section input,
+    .form-section textarea,
+    .form-section button {
+      width: 100%;
+      margin-bottom: 1rem;
+      padding: 0.5rem;
+      font-size: 1rem;
+    }
+    .form-actions {
       display: flex;
       justify-content: space-between;
-      gap: 10px;
-      margin-top: 20px;
-    }
-    .button-row button {
-      flex: 1;
-      padding: 10px;
-      background-color: #4CAF50;
-      color: white;
-      border: none;
-      border-radius: 5px;
-      cursor: pointer;
-    }
-    .product-image {
-      width: 100%;
-      height: auto;
-      margin-top: 10px;
-      border-radius: 10px;
+      gap: 1rem;
     }
   </style>
 </head>
 <body>
-  <header>
-    <h1>بازار ارزوییه</h1>
-    <div id="clock"></div>
-  </header>
-  <nav>
-    <a href="#share">اشتراک‌گذاری</a>
-    <a href="#about">درباره ما</a>
-    <a href="#contact">تماس با ما</a>
-  </nav>
-  <div class="container">
-    <div class="form-group">
-      <label for="name">نام محصول</label>
+  <div class="header" ontouchstart="openNav()">
+    <div class="rainbow-text">بازار ارزوییه</div>
+    <div class="clock" id="clock">در حال بارگذاری...</div>
+  </div>
+
+  <div class="nav-drawer" id="drawer">
+    <div class="nav-item">اشتراک‌گذاری</div>
+    <div class="nav-item">درباره ما</div>
+    <div class="nav-item">تماس با ما</div>
+  </div>
+
+  <div class="main" ontouchstart="closeNav()">
+    <div class="image-preview">
+      <img id="product-image" src="" alt="پیش‌نمایش تصویر محصول">
+    </div>
+
+    <div class="form-section">
+      <label>نام محصول</label>
       <input type="text" id="name">
-    </div>
-    <div class="form-group">
-      <label for="price">قیمت</label>
-      <input type="number" id="price">
-    </div>
-    <div class="form-group">
-      <label for="seller">نام فروشنده</label>
+
+      <label>قیمت</label>
+      <input type="text" id="price">
+
+      <label>فروشنده</label>
       <input type="text" id="seller">
-    </div>
-    <div class="form-group">
-      <label for="contact">تماس با فروشنده</label>
+
+      <label>تماس با فروشنده</label>
       <input type="text" id="contact">
-    </div>
-    <div class="form-group">
-      <label for="address">آدرس</label>
+
+      <label>آدرس</label>
       <textarea id="address"></textarea>
-    </div>
-    <div class="form-group">
-      <label for="image">بارگذاری تصویر</label>
-      <input type="file" id="image" accept="image/*">
-      <img id="preview" class="product-image" style="display:none;">
-    </div>
-    <div class="button-row">
-      <button onclick="shareWhatsApp()">اشتراک‌گذاری</button>
-      <button onclick="saveData()">ذخیره</button>
-      <button onclick="reserveProduct()">رزرو</button>
+
+      <label>تصویر محصول</label>
+      <input type="file" accept="image/*" id="image" onchange="previewImage(event)">
+
+      <div class="form-actions">
+        <button onclick="shareWhatsapp()">اشتراک‌گذاری</button>
+        <button onclick="saveProduct()">ذخیره</button>
+        <button onclick="reserveProduct()">رزرو</button>
+      </div>
     </div>
   </div>
+
   <script>
+    function openNav() {
+      document.getElementById('drawer').classList.add('open');
+    }
+    function closeNav() {
+      document.getElementById('drawer').classList.remove('open');
+    }
+
+    function previewImage(event) {
+      const reader = new FileReader();
+      reader.onload = () => {
+        document.getElementById('product-image').src = reader.result;
+      }
+      reader.readAsDataURL(event.target.files[0]);
+    }
+
     function updateClock() {
       const now = new Date();
-      const options = { year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit' };
-      document.getElementById('clock').innerText = new Intl.DateTimeFormat('fa-IR', options).format(now);
+      const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+      const time = now.toLocaleTimeString('fa-IR');
+      const date = now.toLocaleDateString('fa-IR', options);
+      document.getElementById('clock').innerText = date + ' - ' + time;
     }
     setInterval(updateClock, 1000);
     updateClock();
 
-    document.getElementById("image").addEventListener("change", function(e) {
-      const reader = new FileReader();
-      reader.onload = function(event) {
-        const img = document.getElementById("preview");
-        img.src = event.target.result;
-        img.style.display = 'block';
-      };
-      reader.readAsDataURL(e.target.files[0]);
-    });
+    function shareWhatsapp() {
+      const name = document.getElementById('name').value;
+      const price = document.getElementById('price').value;
+      const seller = document.getElementById('seller').value;
+      const contact = document.getElementById('contact').value;
+      const address = document.getElementById('address').value;
+      const imgSrc = document.getElementById('product-image').src;
 
-    function shareWhatsApp() {
-      const name = document.getElementById("name").value;
-      const price = document.getElementById("price").value;
-      const seller = document.getElementById("seller").value;
-      const contact = document.getElementById("contact").value;
-      const address = document.getElementById("address").value;
-      const imgSrc = document.getElementById("preview").src;
-      const message = `📷\n${imgSrc}\n\nنام محصول ${name}\nقیمت ${price} تومان\nفروشنده ${seller}\nتماس با فروشنده ${contact}\nآدرس ${address}`;
-      const phoneNumber = '09136666552';
-      const url = `https://wa.me/${phoneNumber}?text=${encodeURIComponent(message)}`;
-      window.open(url, '_blank');
+      let message = `${imgSrc}\n`;
+      message += `نام ${name}\n قیمت ${price}\n فروشنده ${seller}\n تماس ${contact}\n آدرس ${address}`;
+
+      window.open(`https://wa.me/989136666552?text=${encodeURIComponent(message)}`);
     }
 
-    function saveData() {
-      alert("در حال توسعه");
+    function saveProduct() {
+      alert('قابلیت ذخیره‌سازی هنوز پیاده‌سازی نشده است.');
     }
 
     function reserveProduct() {
-      alert("فرم رزرو در حال توسعه است");
+      alert('فرم رزرو هنوز پیاده‌سازی نشده است.');
     }
   </script>
 </body>
