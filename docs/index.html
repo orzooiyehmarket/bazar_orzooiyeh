@@ -1,191 +1,199 @@
 <!DOCTYPE html>
-<html lang="fa">
+<html lang="fa" dir="rtl">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>بازار ارزوئیه</title>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Vazirmatn&display=swap">
   <style>
     body {
-      font-family: sans-serif;
-      background: #f9f9f9;
+      font-family: 'Vazirmatn', sans-serif;
       margin: 0;
-      padding: 20px;
+      padding: 0;
+      background: #f9f9f9;
       direction: rtl;
-      text-align: right;
     }
-    h1 {
-      text-align: center;
-      font-size: 28px;
-      color: #ff6600;
-      animation: pulse 2s infinite;
-    }
-    @keyframes pulse {
-      0% { opacity: 0.7; }
-      50% { opacity: 1; }
-      100% { opacity: 0.7; }
-    }
-    label {
-      display: block;
-      margin-top: 10px;
-      font-weight: bold;
-    }
-    input, textarea, select {
-      width: 100%;
-      padding: 8px;
-      margin-top: 5px;
-      border-radius: 5px;
-      border: 1px solid #ccc;
-      box-shadow: 1px 1px 3px #eee;
-    }
-    .highlight {
-      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
-    }
-    .button-row {
+    header {
+      background: linear-gradient(90deg, #ff7e5f, #feb47b);
+      color: white;
+      padding: 15px;
       display: flex;
       justify-content: space-between;
-      margin-top: 20px;
+      align-items: center;
     }
-    button {
-      padding: 10px 15px;
-      border: none;
-      border-radius: 8px;
-      background-color: #28a745;
-      color: white;
+    .title {
+      font-size: 24px;
+      font-weight: bold;
+      animation: rainbow 4s infinite;
+    }
+    .clock {
       font-size: 16px;
-      cursor: pointer;
+      background: rgba(255,255,255,0.2);
+      padding: 5px 10px;
+      border-radius: 8px;
+    }
+    @keyframes rainbow {
+      0% {color: red;}
+      20% {color: orange;}
+      40% {color: yellow;}
+      60% {color: green;}
+      80% {color: blue;}
+      100% {color: violet;}
+    }
+    .nav-menu {
+      position: fixed;
+      top: 0;
+      right: -100%;
+      height: 100vh;
+      width: 70%;
+      background: #ffffff;
+      box-shadow: -2px 0 5px rgba(0,0,0,0.2);
+      z-index: 1000;
+      padding: 20px;
       transition: 0.3s;
     }
-    button:hover {
-      background-color: #218838;
+    .nav-menu.active {
+      right: 0;
     }
-    .image-preview {
+    .nav-toggle {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      z-index: 1100;
+      cursor: pointer;
+    }
+    .nav-item {
+      margin-bottom: 20px;
+      font-size: 18px;
+      color: #444;
+    }
+    .container {
+      padding: 20px;
+    }
+    .field {
+      margin-bottom: 15px;
+    }
+    .field label {
+      display: block;
+      margin-bottom: 5px;
+      font-weight: bold;
+    }
+    .field input, .field textarea {
+      width: 100%;
+      padding: 8px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+    }
+    .buttons {
       display: flex;
+      justify-content: space-between;
+      flex-wrap: wrap;
       gap: 10px;
-      margin-top: 10px;
+      margin-top: 20px;
+    }
+    .button {
+      flex: 1;
+      padding: 10px;
+      background: #4caf50;
+      color: white;
+      text-align: center;
+      border-radius: 8px;
+      cursor: pointer;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.2);
     }
     .image-preview img {
-      max-width: 100px;
-      border-radius: 6px;
-      cursor: pointer;
-      transition: transform 0.3s;
+      max-width: 100%;
+      margin-top: 10px;
     }
-    .image-preview img:hover {
-      transform: scale(1.1);
-    }
-    .upload-label {
-      display: inline-block;
+    .shadow-box {
       padding: 10px;
-      background: #007bff;
-      color: white;
-      border-radius: 50%;
-      cursor: pointer;
+      margin: 10px 0;
+      background: #fff;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      border-radius: 6px;
     }
   </style>
 </head>
 <body>
-  <h1>بازار ارزوئیه</h1>
-
-  <label for="productName">نام محصول</label>
-  <input type="text" id="productName" />
-
-  <label for="price">قیمت</label>
-  <input type="text" id="price" class="highlight" />
-
-  <label for="sellerName">نام فروشنده</label>
-  <input type="text" id="sellerName" />
-
-  <label for="contact">تماس با فروشنده</label>
-  <input type="text" id="contact" />
-
-  <label for="address">آدرس</label>
-  <textarea id="address"></textarea>
-
-  <label>تصاویر محصول (حداکثر ۵ عدد)</label>
-  <label for="images" class="upload-label">⬆</label>
-  <input type="file" id="images" multiple accept="image/*" style="display:none" />
-  <div class="image-preview" id="imagePreview"></div>
-
-  <div class="button-row">
-    <button onclick="submitForm()">ذخیره</button>
-    <button onclick="shareWhatsApp()">اشتراک‌گذاری در واتساپ</button>
-    <button onclick="reserveProduct()">رزرو</button>
+  <div class="nav-toggle" onclick="toggleNav()">☰</div>
+  <div class="nav-menu" id="navMenu">
+    <div class="nav-item">اشتراک‌گذاری</div>
+    <div class="nav-item">درباره ما</div>
+    <div class="nav-item">تماس با ما</div>
   </div>
 
-  <div id="reserveForm" style="margin-top: 20px; display:none">
-    <h3>فرم رزرو</h3>
-    <label for="buyerName">نام خریدار</label>
-    <input type="text" id="buyerName" />
+  <header>
+    <div class="title">بازار ارزوئیه</div>
+    <div class="clock" id="clock">00:00</div>
+  </header>
 
-    <label for="buyerContact">شماره تماس</label>
-    <input type="text" id="buyerContact" />
+  <div class="container">
+    <div class="shadow-box">
+      <div class="field">
+        <label>نام محصول</label>
+        <input type="text" id="productName" />
+      </div>
+      <div class="field">
+        <label>قیمت (تومان)</label>
+        <input type="number" id="productPrice" />
+      </div>
+      <div class="field">
+        <label>نام فروشنده</label>
+        <input type="text" id="sellerName" />
+      </div>
+      <div class="field">
+        <label>شماره تماس</label>
+        <input type="tel" id="sellerContact" />
+      </div>
+      <div class="field">
+        <label>آدرس فروشنده</label>
+        <textarea id="sellerAddress"></textarea>
+      </div>
+      <div class="field">
+        <label>بارگذاری تصویر (حداکثر ۵ عدد)</label>
+        <input type="file" id="productImage" accept="image/*" multiple style="display:none;" />
+        <button onclick="document.getElementById('productImage').click()">📤 آپلود تصویر</button>
+        <div class="image-preview" id="imagePreview"></div>
+      </div>
+    </div>
 
-    <label for="buyerAddress">آدرس</label>
-    <textarea id="buyerAddress"></textarea>
+    <div class="buttons">
+      <div class="button" onclick="saveProduct()">💾 ذخیره</div>
+      <div class="button" onclick="shareOnWhatsApp()">📲 اشتراک‌گذاری</div>
+      <div class="button" onclick="openReserveForm()">📋 رزرو</div>
+    </div>
   </div>
 
   <script>
-    let selectedImages = [];
-
-    document.getElementById('images').addEventListener('change', function(event) {
-      const files = event.target.files;
-      selectedImages = [];
-      const preview = document.getElementById('imagePreview');
-      preview.innerHTML = '';
-      for (let i = 0; i < Math.min(files.length, 5); i++) {
-        const reader = new FileReader();
-        reader.onload = function(e) {
-          selectedImages.push(e.target.result);
-          const img = document.createElement('img');
-          img.src = e.target.result;
-          preview.appendChild(img);
-        }
-        reader.readAsDataURL(files[i]);
-      }
-    });
-
-    function getPersianDate() {
-      const date = new Date();
-      return new Intl.DateTimeFormat('fa-IR').format(date);
+    function toggleNav() {
+      document.getElementById("navMenu").classList.toggle("active");
     }
 
-    function generateId() {
+    function updateClock() {
       const now = new Date();
-      return `${now.getFullYear()}${now.getMonth()+1}${now.getDate()}-${Math.floor(Math.random()*10000)}`;
+      const formatter = new Intl.DateTimeFormat('fa-IR', { timeStyle: 'short', dateStyle: 'short' });
+      document.getElementById("clock").textContent = formatter.format(now);
+    }
+    setInterval(updateClock, 1000);
+    updateClock();
+
+    function saveProduct() {
+      alert("محصول ذخیره شد (شبیه‌سازی)");
     }
 
-    function getProductData() {
-      return {
-        شناسه: generateId(),
-        نام: document.getElementById('productName').value,
-        قیمت: document.getElementById('price').value,
-        فروشنده: document.getElementById('sellerName').value,
-        تماس: document.getElementById('contact').value,
-        آدرس: document.getElementById('address').value,
-        تاریخ: getPersianDate(),
-        تصاویر: selectedImages
-      };
+    function shareOnWhatsApp() {
+      const name = document.getElementById("productName").value;
+      const price = document.getElementById("productPrice").value;
+      const seller = document.getElementById("sellerName").value;
+      const contact = document.getElementById("sellerContact").value;
+      const address = document.getElementById("sellerAddress").value;
+      const message = `محصول جدید\nنام ${name}\nقیمت ${price} تومان\nفروشنده ${seller}\nتماس ${contact}\nآدرس ${address}`;
+      const encoded = encodeURIComponent(message);
+      window.open(`https://wa.me/989136666552?text=${encoded}`, "_blank");
     }
 
-    function formatJson(data) {
-      return Object.entries(data).map(([k, v]) => `${k} ${v}`).join('\n');
-    }
-
-    function submitForm() {
-      const data = getProductData();
-      console.log("ذخیره اطلاعات:", data);
-      alert("اطلاعات با موفقیت ذخیره شد (شبیه‌سازی)");
-    }
-
-    function shareWhatsApp() {
-      const data = getProductData();
-      const img = data.تصاویر[0] || '';
-      const msg = `${img}\n${formatJson(data)}`;
-      const url = `https://wa.me/989136666552?text=${encodeURIComponent(msg)}`;
-      window.open(url, '_blank');
-    }
-
-    function reserveProduct() {
-      document.getElementById('reserveForm').style.display = 'block';
+    function openReserveForm() {
+      alert("فرم رزرو نمایش داده می‌شود (شبیه‌سازی)");
     }
   </script>
 </body>
