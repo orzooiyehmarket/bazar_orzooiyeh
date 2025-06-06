@@ -8,19 +8,18 @@
     body {
       font-family: sans-serif;
       background: linear-gradient(to bottom left, #fdf6e3, #e0f7fa);
-      margin: 0;
       padding: 20px;
     }
 
     h1 {
       text-align: center;
-      font-size: 32px;
+      font-size: 30px;
       color: #e91e63;
       animation: fadeIn 3s ease-in-out infinite alternate;
     }
 
     @keyframes fadeIn {
-      0% { opacity: 0.2; }
+      0% { opacity: 0.3; }
       100% { opacity: 1; }
     }
 
@@ -29,16 +28,15 @@
     }
 
     label {
-      display: block;
       font-weight: bold;
-      margin-bottom: 5px;
     }
 
-    input[type="text"], input[type="number"], input[type="file"] {
+    input, textarea {
       width: 100%;
       padding: 8px;
+      margin-top: 4px;
       border: 1px solid #ccc;
-      border-radius: 10px;
+      border-radius: 8px;
     }
 
     #productImage {
@@ -49,111 +47,179 @@
 
     .buttons {
       display: flex;
-      justify-content: space-between;
-      margin-top: 20px;
+      flex-direction: row;
       gap: 10px;
+      margin-top: 20px;
     }
 
     button {
       flex: 1;
-      padding: 12px;
+      padding: 10px;
+      font-size: 16px;
       background-color: #009688;
       color: white;
       border: none;
-      border-radius: 10px;
+      border-radius: 8px;
       cursor: pointer;
-      font-size: 16px;
     }
 
     button:hover {
       background-color: #00796b;
     }
+
+    .reserve-form {
+      margin-top: 20px;
+      border-top: 2px dashed #aaa;
+      padding-top: 20px;
+    }
+
   </style>
 </head>
 <body>
   <h1>بازار ارزوئیه</h1>
 
+  <!-- فرم ثبت محصول -->
   <div class="form-group">
     <label for="name">نام محصول:</label>
-    <input type="text" id="name" />
+    <input type="text" id="name">
   </div>
 
   <div class="form-group">
     <label for="price">قیمت:</label>
-    <input type="number" id="price" />
+    <input type="number" id="price">
   </div>
 
   <div class="form-group">
     <label for="quantity">تعداد:</label>
-    <input type="number" id="quantity" />
+    <input type="number" id="quantity">
   </div>
 
   <div class="form-group">
     <label for="contact">تماس با فروشنده:</label>
-    <input type="text" id="contact" />
+    <input type="text" id="contact">
   </div>
 
   <div class="form-group">
     <label for="imageUpload">تصویر محصول:</label>
-    <input type="file" id="imageUpload" accept="image/*" />
-    <img id="productImage" src="" alt="پیش‌نمایش تصویر" />
+    <input type="file" id="imageUpload" accept="image/*">
+    <img id="productImage" src="" />
   </div>
 
+  <!-- دکمه‌ها -->
   <div class="buttons">
-    <button onclick="saveData()">ذخیره محصول</button>
-    <button onclick="shareOnWhatsApp()">اشتراک‌گذاری در واتساپ</button>
-    <button onclick="reserveProduct()">رزرو</button>
+    <button onclick="saveProduct()">ذخیره</button>
+    <button onclick="shareOnWhatsApp()">اشتراک‌گذاری</button>
+    <button onclick="toggleReserve()">رزرو</button>
+  </div>
+
+  <!-- فرم رزرو -->
+  <div id="reserveSection" class="reserve-form" style="display:none;">
+    <h3>فرم رزرو محصول</h3>
+
+    <div class="form-group">
+      <label for="buyerName">نام خریدار:</label>
+      <input type="text" id="buyerName">
+    </div>
+
+    <div class="form-group">
+      <label for="buyerPhone">شماره تماس:</label>
+      <input type="text" id="buyerPhone">
+    </div>
+
+    <div class="form-group">
+      <label for="buyerAddress">آدرس:</label>
+      <textarea id="buyerAddress"></textarea>
+    </div>
+
+    <button onclick="reserveData()">ارسال رزرو</button>
   </div>
 
   <script>
     let imageDataUrl = '';
 
-    document.getElementById('imageUpload').addEventListener('change', function(event) {
-      const file = event.target.files[0];
+    // بارگذاری تصویر
+    document.getElementById("imageUpload").addEventListener("change", function(e) {
+      const file = e.target.files[0];
       const reader = new FileReader();
       reader.onload = function(e) {
         imageDataUrl = e.target.result;
-        document.getElementById('productImage').src = imageDataUrl;
+        document.getElementById("productImage").src = imageDataUrl;
       };
-      if (file) {
-        reader.readAsDataURL(file);
-      }
+      if (file) reader.readAsDataURL(file);
     });
 
-    function toPersianDate(date) {
-      const options = { year: 'numeric', month: '2-digit', day: '2-digit' };
-      return new Intl.DateTimeFormat('fa-IR', options).format(date);
+    function toShamsi(date) {
+      return new Intl.DateTimeFormat('fa-IR').format(date);
     }
 
+    // دکمه اشتراک‌گذاری در واتساپ
     function shareOnWhatsApp() {
-      const name = document.getElementById("name").value;
-      const price = document.getElementById("price").value;
-      const quantity = document.getElementById("quantity").value;
-      const contact = document.getElementById("contact").value;
-      const date = toPersianDate(new Date());
+      const product = getProductData();
+      const json = JSON.stringify(product, null, 2);
+      const msg = `${imageDataUrl}\n\n${json}`;
+      window.open(`https://wa.me/989136666552?text=${encodeURIComponent(msg)}`, '_blank');
+    }
 
-      const productData = {
-        "نام": name,
-        "قیمت": price + " تومان",
-        "تعداد": quantity,
-        "تماس با فروشنده": contact,
-        "تاریخ": date
+    // دکمه ذخیره محصول (ارسال به Google Sheet)
+    function saveProduct() {
+      const product = getProductData();
+      fetch("YOUR_SCRIPT_URL", {
+        method: "POST",
+        body: JSON.stringify({ type: "product", ...product }),
+        headers: { "Content-Type": "application/json" },
+      })
+      .then(res => res.ok ? alert("✅ محصول ذخیره شد") : alert("❌ خطا در ذخیره"))
+      .catch(() => alert("❌ ارتباط برقرار نشد"));
+    }
+
+    // نمایش فرم رزرو
+    function toggleReserve() {
+      const sec = document.getElementById("reserveSection");
+      sec.style.display = sec.style.display === "none" ? "block" : "none";
+    }
+
+    // دکمه ارسال رزرو
+    function reserveData() {
+      const productCode = generateProductCode();
+      const data = {
+        type: "reserve",
+        code: productCode,
+        name: document.getElementById("buyerName").value,
+        phone: document.getElementById("buyerPhone").value,
+        address: document.getElementById("buyerAddress").value
       };
-
-      const jsonText = JSON.stringify(productData, null, 2);
-      const message = `${imageDataUrl}\n\n${jsonText}`;
-      const phoneNumber = "09136666552";
-      const whatsappUrl = `https://wa.me/98${phoneNumber}?text=${encodeURIComponent(message)}`;
-      window.open(whatsappUrl, '_blank');
+      fetch("YOUR_SCRIPT_URL", {
+        method: "POST",
+        body: JSON.stringify(data),
+        headers: { "Content-Type": "application/json" }
+      })
+      .then(res => res.ok ? alert("✅ رزرو ثبت شد") : alert("❌ خطا در ثبت رزرو"))
+      .catch(() => alert("❌ ارتباط برقرار نشد"));
     }
 
-    function saveData() {
-      alert("🔒 ذخیره‌سازی به‌زودی متصل می‌شود...");
+    // داده‌های محصول
+    function getProductData() {
+      return {
+        نام: document.getElementById("name").value,
+        قیمت: document.getElementById("price").value,
+        تعداد: document.getElementById("quantity").value,
+        تماس: document.getElementById("contact").value,
+        تصویر: imageDataUrl,
+        تاریخ: toShamsi(new Date()),
+        کد: generateProductCode()
+      };
     }
 
-    function reserveProduct() {
-      alert("📝 فرم رزرو به‌زودی افزوده خواهد شد...");
+    // تولید کد محصول: yyyymmdd + 4 رقم تصادفی
+    function generateProductCode() {
+      const now = new Date();
+      const dateStr = now.getFullYear().toString() +
+                      (now.getMonth() + 1).toString().padStart(2, '0') +
+                      now.getDate().toString().padStart(2, '0');
+      const rand = Math.floor(Math.random() * 9000 + 1000);
+      return `${dateStr}-${rand}`;
     }
+
   </script>
 </body>
 </html>
