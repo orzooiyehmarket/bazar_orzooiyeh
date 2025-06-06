@@ -1,169 +1,119 @@
-<!-- doc/index.html --><!DOCTYPE html><html lang="fa" dir="rtl">
+<!DOCTYPE html><html lang="fa">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>بازار ارزوئیه</title>
   <style>
-    body { font-family: sans-serif; padding: 1rem; background: #f9f9f9; }
+    body {
+      font-family: sans-serif;
+      direction: rtl;
+      padding: 1rem;
+      background: #fefefe;
+    }
     h1 {
-      font-size: 2rem; text-align: center; margin-bottom: 1rem;
-      background: linear-gradient(45deg, red, green, blue);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      animation: rainbow 3s infinite;
+      text-align: center;
+      font-size: 2rem;
+      color: #fff;
+      background: linear-gradient(90deg, #ff6a00, #ee0979);
+      padding: 0.5rem;
+      border-radius: 12px;
+      animation: fadein 2s ease-in-out infinite alternate;
     }
-    @keyframes rainbow {
-      0% { filter: hue-rotate(0deg); }
-      100% { filter: hue-rotate(360deg); }
+    @keyframes fadein {
+      from { opacity: 0.6; }
+      to { opacity: 1; }
     }
-    form { max-width: 500px; margin: auto; background: white; padding: 1rem; border-radius: 1rem; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
-    input, textarea, select, button {
-      width: 100%; padding: 0.75rem; margin: 0.5rem 0; border-radius: 0.5rem; border: 1px solid #ccc;
+    form {
+      max-width: 500px;
+      margin: 2rem auto;
+      background: #fff;
+      padding: 1rem;
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+    label {
+      display: block;
+      margin-top: 1rem;
+    }
+    input, button {
+      width: 100%;
+      padding: 0.5rem;
+      margin-top: 0.25rem;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+    }
+    button {
+      background-color: #28a745;
+      color: white;
+      margin-top: 1.5rem;
+      cursor: pointer;
     }
   </style>
 </head>
 <body>
   <h1>بازار ارزوئیه</h1>
   <form id="productForm">
-    <input type="text" name="name" placeholder="نام محصول" required>
-    <input type="number" name="price" placeholder="قیمت (تومان)" required>
-    <input type="number" name="stock" placeholder="موجودی" required>
-    <input type="text" name="contact" placeholder="شماره تماس فروشنده" required>
-    <textarea name="description" placeholder="توضیحات محصول"></textarea>
+    <label>نام فروشنده:
+      <input type="text" id="name" required>
+    </label>
+    <label>نام محصول:
+      <input type="text" id="product" required>
+    </label>
+    <label>قیمت (تومان):
+      <input type="number" id="price" required>
+    </label>
+    <label>تعداد موجود:
+      <input type="number" id="quantity" required>
+    </label>
+    <label>شماره تماس:
+      <input type="tel" id="phone" required>
+    </label>
     <button type="submit">ثبت محصول</button>
-  </form>
-  <button onclick="shareJSON()">📤 اشتراک‌گذاری اطلاعات در واتساپ</button>
-  <script>
+  </form>  <script>
     const form = document.getElementById('productForm');
-    form.addEventListener('submit', async (e) => {
-      e.preventDefault();
-      const data = Object.fromEntries(new FormData(form).entries());
-      localStorage.setItem('pendingProduct', JSON.stringify(data));
-      try {
-        const res = await fetch('https://script.google.com/macros/s/AKfycbyHUiGDSpKq6_vsC5jgc7Q0H9yX98KHDKZhT2O_gHze8-yniK_oLqOg3vwE7tQVeoMlHg/exec', {
-          method: 'POST',
-          body: new URLSearchParams(data)
-        });
-        if (res.ok) {
-          alert('✅ ثبت شد');
-          localStorage.removeItem('pendingProduct');
-          form.reset();
+
+    function sendToGoogleSheet(data) {
+      fetch('https://script.google.com/macros/s/AKfycbyHUiGDSpKq6_vsC5jgc7Q0H9yX98KHDKZhT2O_gHze8-yniK_oLqOg3vwE7tQVeoMlHg/exec', {
+        method: 'POST',
+        body: JSON.stringify(data),
+        headers: {
+          'Content-Type': 'application/json'
         }
-      } catch {
-        alert('❌ آفلاین هستی! بعداً دوباره تلاش میشه.');
+      }).then(res => {
+        alert('محصول با موفقیت ثبت شد.');
+      }).catch(err => {
+        alert('خطا در ارسال اطلاعات.');
+      });
+    }
+
+    form.addEventListener('submit', function (e) {
+      e.preventDefault();
+
+      const formData = {
+        name: document.getElementById('name').value,
+        product: document.getElementById('product').value,
+        price: document.getElementById('price').value,
+        quantity: document.getElementById('quantity').value,
+        phone: document.getElementById('phone').value,
+        date: new Date().toISOString()
+      };
+
+      if (!navigator.onLine) {
+        let pending = JSON.parse(localStorage.getItem('pendingForms')) || [];
+        pending.push(formData);
+        localStorage.setItem('pendingForms', JSON.stringify(pending));
+        alert('آفلاین هستید. اطلاعات ذخیره شد و بعداً ارسال می‌شود.');
+        form.reset();
+      } else {
+        sendToGoogleSheet(formData);
+        form.reset();
       }
-    });// ارسال خودکار بعد از اتصال به اینترنت
-window.addEventListener('online', () => {
-  const data = localStorage.getItem('pendingProduct');
-  if (data) {
-    fetch('https://script.google.com/macros/s/AKfycbyHUiGDSpKq6_vsC5jgc7Q0H9yX98KHDKZhT2O_gHze8-yniK_oLqOg3vwE7tQVeoMlHg/exec', {
-      method: 'POST',
-      body: new URLSearchParams(JSON.parse(data))
-    }).then(() => {
-      localStorage.removeItem('pendingProduct');
-      alert('✅ محصول آفلاین ذخیره‌شده ارسال شد');
     });
-  }
-});
 
-function shareJSON() {
-  const data = localStorage.getItem('pendingProduct');
-  if (data) {
-    const msg = `📦 اطلاعات محصول:
-
-${data}; window.open(https://wa.me/?text=${encodeURIComponent(msg)}`); } else { alert('محصولی برای اشتراک‌گذاری ذخیره نشده است.'); } } </script>
-
-</body>
-</html><!-- doc/buyer.html --><!DOCTYPE html><html lang="fa" dir="rtl">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>خرید از بازار ارزوئیه</title>
-  <style>
-    body {
-      font-family: sans-serif;
-      background: #fefefe;
-      padding: 1rem;
-    }
-    h1 {
-      font-size: 1.8rem;
-      text-align: center;
-      color: #fff;
-      background: linear-gradient(90deg, #28a745, #20c997);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      animation: pulse 2s infinite;
-    }
-    @keyframes pulse {
-      0% {opacity: 1;}
-      50% {opacity: 0.8;}
-      100% {opacity: 1;}
-    }
-    .product {
-      background: white;
-      padding: 1rem;
-      border-radius: 1rem;
-      box-shadow: 0 0 5px rgba(0,0,0,0.1);
-      margin: 1rem auto;
-      max-width: 400px;
-    }
-    img {
-      max-width: 100%;
-      border-radius: 1rem;
-    }
-    .actions {
-      margin-top: 1rem;
-      display: flex;
-      gap: 0.5rem;
-      flex-direction: column;
-    }
-    button {
-      padding: 0.75rem;
-      font-size: 1rem;
-    }
-  </style>
-</head>
-<body><h1>بازار ارزوئیه</h1><div class="product">
-  <img src="https://via.placeholder.com/300" id="productImage" alt="تصویر محصول">
-  <h2 id="productName">نام محصول</h2>
-  <p><strong>قیمت:</strong> <span id="productPrice">0</span> تومان</p>
-  <p><strong>موجودی:</strong> <span id="productStock">--</span></p>
-  <p><strong>تعداد رزرو:</strong> <span id="productReserved">--</span></p>
-  <div class="actions">
-    <button onclick="orderProduct()">سفارش محصول</button>
-    <button onclick="reserveProduct()">رزرو محصول</button>
-  </div>
-</div><script>
-const product = {
-  name: "خرما کبکاب",
-  price: 78000,
-  image: "https://via.placeholder.com/300?text=خرما",
-  stock: 12,
-  reserved: 3,
-  phone: "09131234567"
-};
-
-document.getElementById("productName").innerText = product.name;
-document.getElementById("productPrice").innerText = product.price.toLocaleString();
-document.getElementById("productStock").innerText = product.stock;
-document.getElementById("productReserved").innerText = product.reserved;
-document.getElementById("productImage").src = product.image;
-
-function orderProduct() {
-  if (product.stock <= 0) {
-    alert("موجودی کافی نیست!");
-    return;
-  }
-  product.stock--;
-  document.getElementById("productStock").innerText = product.stock;
-  const message = `🛒 سفارش محصول از بازار ارزوئیه:\n📦 ${product.name}\n💰 ${product.price} تومان\nلطفا برای هماهنگی تماس بگیرید.\n📞 ${product.phone}`;
-  window.open(`https://wa.me/${product.phone.replace(/^0/, "98")}?text=${encodeURIComponent(message)}`, "_blank");
-}
-
-function reserveProduct() {
-  product.reserved++;
-  document.getElementById("productReserved").innerText = product.reserved;
-  alert("رزرو انجام شد!");
-}
-</script></body>
+    window.addEventListener('online', () => {
+      let pending = JSON.parse(localStorage.getItem('pendingForms')) || [];
+      pending.forEach(data => sendToGoogleSheet(data));
+      localStorage.removeItem('pendingForms');
+    });
+  </script></body>
 </html>
