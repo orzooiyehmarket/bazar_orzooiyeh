@@ -1,163 +1,191 @@
 <!DOCTYPE html>
-<html lang="fa" dir="rtl">
+<html lang="fa">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>بازار ارزوئیه</title>
   <style>
     body {
       font-family: sans-serif;
-      background: #f2f2f2;
+      background: #f9f9f9;
       margin: 0;
       padding: 20px;
+      direction: rtl;
+      text-align: right;
     }
     h1 {
-      color: #ff5722;
       text-align: center;
-      animation: rainbow 4s infinite;
+      font-size: 28px;
+      color: #ff6600;
+      animation: pulse 2s infinite;
     }
-    @keyframes rainbow {
-      0% {color: red;} 20% {color: orange;} 40% {color: yellow;}
-      60% {color: green;} 80% {color: blue;} 100% {color: violet;}
+    @keyframes pulse {
+      0% { opacity: 0.7; }
+      50% { opacity: 1; }
+      100% { opacity: 0.7; }
     }
-    label {display: block; margin-top: 10px; font-weight: bold;}
-    input, textarea {width: 100%; padding: 8px; margin-top: 4px;}
-    .buttons {display: flex; justify-content: space-around; margin-top: 20px;}
-    button {padding: 10px 20px; border: none; background: #2196f3; color: white; cursor: pointer; border-radius: 5px;}
-    .gallery { display: flex; gap: 10px; margin-top: 10px; }
-    .gallery img { width: 100px; height: 100px; object-fit: cover; cursor: pointer; border-radius: 5px; }
-    .preview-large { width: 100%; max-width: 400px; margin-top: 10px; }
+    label {
+      display: block;
+      margin-top: 10px;
+      font-weight: bold;
+    }
+    input, textarea, select {
+      width: 100%;
+      padding: 8px;
+      margin-top: 5px;
+      border-radius: 5px;
+      border: 1px solid #ccc;
+      box-shadow: 1px 1px 3px #eee;
+    }
+    .highlight {
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+    }
+    .button-row {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 20px;
+    }
+    button {
+      padding: 10px 15px;
+      border: none;
+      border-radius: 8px;
+      background-color: #28a745;
+      color: white;
+      font-size: 16px;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+    button:hover {
+      background-color: #218838;
+    }
+    .image-preview {
+      display: flex;
+      gap: 10px;
+      margin-top: 10px;
+    }
+    .image-preview img {
+      max-width: 100px;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: transform 0.3s;
+    }
+    .image-preview img:hover {
+      transform: scale(1.1);
+    }
+    .upload-label {
+      display: inline-block;
+      padding: 10px;
+      background: #007bff;
+      color: white;
+      border-radius: 50%;
+      cursor: pointer;
+    }
   </style>
 </head>
 <body>
   <h1>بازار ارزوئیه</h1>
 
-  <label for="title">نام محصول:</label>
-  <input type="text" id="title">
+  <label for="productName">نام محصول</label>
+  <input type="text" id="productName" />
 
-  <label for="price">قیمت:</label>
-  <input type="text" id="price">
+  <label for="price">قیمت</label>
+  <input type="text" id="price" class="highlight" />
 
-  <label for="seller">فروشنده:</label>
-  <input type="text" id="seller">
+  <label for="sellerName">نام فروشنده</label>
+  <input type="text" id="sellerName" />
 
-  <label for="phone">تماس با فروشنده:</label>
-  <input type="text" id="phone">
+  <label for="contact">تماس با فروشنده</label>
+  <input type="text" id="contact" />
 
-  <label for="address">آدرس:</label>
+  <label for="address">آدرس</label>
   <textarea id="address"></textarea>
 
-  <label for="images">آپلود تصاویر (حداکثر ۵ عدد):</label>
-  <input type="file" id="images" accept="image/*" multiple>
-  <div class="gallery" id="imageGallery"></div>
-  <img id="previewLarge" class="preview-large" style="display:none;">
+  <label>تصاویر محصول (حداکثر ۵ عدد)</label>
+  <label for="images" class="upload-label">⬆</label>
+  <input type="file" id="images" multiple accept="image/*" style="display:none" />
+  <div class="image-preview" id="imagePreview"></div>
 
-  <label for="date">تاریخ (شمسی):</label>
-  <input type="text" id="date" readonly>
-
-  <div class="buttons">
-    <button onclick="submitData()">ذخیره</button>
+  <div class="button-row">
+    <button onclick="submitForm()">ذخیره</button>
     <button onclick="shareWhatsApp()">اشتراک‌گذاری در واتساپ</button>
-    <button onclick="openReserve()">رزرو</button>
+    <button onclick="reserveProduct()">رزرو</button>
   </div>
 
-  <div id="reserveForm" style="display:none; margin-top:20px;">
-    <h3>رزرو محصول</h3>
-    <label for="reserverName">نام خریدار:</label>
-    <input type="text" id="reserverName">
-    <label for="reserverPhone">شماره تماس:</label>
-    <input type="text" id="reserverPhone">
-    <label for="reserverAddress">آدرس:</label>
-    <textarea id="reserverAddress"></textarea>
-    <button onclick="saveReserve()">ذخیره رزرو</button>
+  <div id="reserveForm" style="margin-top: 20px; display:none">
+    <h3>فرم رزرو</h3>
+    <label for="buyerName">نام خریدار</label>
+    <input type="text" id="buyerName" />
+
+    <label for="buyerContact">شماره تماس</label>
+    <input type="text" id="buyerContact" />
+
+    <label for="buyerAddress">آدرس</label>
+    <textarea id="buyerAddress"></textarea>
   </div>
 
   <script>
-    const imgurClientId = 'd4f989174bc6952';
-    let uploadedImageUrls = [];
+    let selectedImages = [];
 
-    function generateID() {
-      const d = new Date();
-      return `${d.getFullYear()}${String(d.getMonth()+1).padStart(2,'0')}${String(d.getDate()).padStart(2,'0')}${Math.floor(Math.random()*1000)}`;
-    }
-
-    function showDate() {
-      const d = new Date().toLocaleDateString('fa-IR');
-      document.getElementById("date").value = d;
-    }
-    showDate();
-
-    document.getElementById("images").addEventListener("change", async function() {
-      const files = Array.from(this.files).slice(0, 5);
-      uploadedImageUrls = [];
-      const gallery = document.getElementById("imageGallery");
-      const preview = document.getElementById("previewLarge");
-      gallery.innerHTML = "";
-      preview.style.display = "none";
-
-      for (let i = 0; i < files.length; i++) {
-        const formData = new FormData();
-        formData.append("image", files[i]);
-
-        const res = await fetch("https://api.imgur.com/3/image", {
-          method: "POST",
-          headers: { Authorization: `Client-ID ${imgurClientId}` },
-          body: formData
-        });
-        const json = await res.json();
-        const url = json.data.link;
-        uploadedImageUrls.push(url);
-
-        const img = document.createElement("img");
-        img.src = url;
-        img.onclick = () => {
-          preview.src = url;
-          preview.style.display = "block";
-        };
-        gallery.appendChild(img);
-
-        await new Promise(r => setTimeout(r, 4000));
+    document.getElementById('images').addEventListener('change', function(event) {
+      const files = event.target.files;
+      selectedImages = [];
+      const preview = document.getElementById('imagePreview');
+      preview.innerHTML = '';
+      for (let i = 0; i < Math.min(files.length, 5); i++) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+          selectedImages.push(e.target.result);
+          const img = document.createElement('img');
+          img.src = e.target.result;
+          preview.appendChild(img);
+        }
+        reader.readAsDataURL(files[i]);
       }
     });
 
-    function submitData() {
-      const data = collectData();
-      console.log("Saved:", data);
-      alert("ذخیره شد (شبیه‌سازی)");
+    function getPersianDate() {
+      const date = new Date();
+      return new Intl.DateTimeFormat('fa-IR').format(date);
+    }
+
+    function generateId() {
+      const now = new Date();
+      return `${now.getFullYear()}${now.getMonth()+1}${now.getDate()}-${Math.floor(Math.random()*10000)}`;
+    }
+
+    function getProductData() {
+      return {
+        شناسه: generateId(),
+        نام: document.getElementById('productName').value,
+        قیمت: document.getElementById('price').value,
+        فروشنده: document.getElementById('sellerName').value,
+        تماس: document.getElementById('contact').value,
+        آدرس: document.getElementById('address').value,
+        تاریخ: getPersianDate(),
+        تصاویر: selectedImages
+      };
+    }
+
+    function formatJson(data) {
+      return Object.entries(data).map(([k, v]) => `${k} ${v}`).join('\n');
+    }
+
+    function submitForm() {
+      const data = getProductData();
+      console.log("ذخیره اطلاعات:", data);
+      alert("اطلاعات با موفقیت ذخیره شد (شبیه‌سازی)");
     }
 
     function shareWhatsApp() {
-      const data = collectData();
-      const message = `${uploadedImageUrls[0]}\n\n${JSON.stringify(data, null, 2)}`;
-      const phone = "09136666552";
-      window.open(`https://wa.me/${phone}?text=${encodeURIComponent(message)}`);
+      const data = getProductData();
+      const img = data.تصاویر[0] || '';
+      const msg = `${img}\n${formatJson(data)}`;
+      const url = `https://wa.me/989136666552?text=${encodeURIComponent(msg)}`;
+      window.open(url, '_blank');
     }
 
-    function collectData() {
-      return {
-        شناسه: generateID(),
-        نام: document.getElementById("title").value,
-        قیمت: document.getElementById("price").value,
-        فروشنده: document.getElementById("seller").value,
-        تماس: document.getElementById("phone").value,
-        آدرس: document.getElementById("address").value,
-        تصاویر: uploadedImageUrls,
-        تاریخ: document.getElementById("date").value
-      };
-    }
-
-    function openReserve() {
-      document.getElementById("reserveForm").style.display = "block";
-    }
-
-    function saveReserve() {
-      const info = {
-        نام: document.getElementById("reserverName").value,
-        تماس: document.getElementById("reserverPhone").value,
-        آدرس: document.getElementById("reserverAddress").value
-      };
-      console.log("رزرو شد:", info);
-      alert("اطلاعات رزرو ثبت شد (شبیه‌سازی)");
+    function reserveProduct() {
+      document.getElementById('reserveForm').style.display = 'block';
     }
   </script>
 </body>
