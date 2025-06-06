@@ -2,197 +2,120 @@
 <html lang="fa">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>بازار ارزوئیه</title>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
   <style>
-    body {
-      font-family: 'Tahoma', sans-serif;
-      background: linear-gradient(to right, #fefcea, #f1da36);
-      margin: 0;
-      padding: 0;
-    }
-    header {
-      background: linear-gradient(to right, #ff9800, #f44336);
-      color: white;
-      text-align: center;
-      padding: 1em;
-      font-size: 1.8em;
-      font-weight: bold;
-      animation: pulse 3s infinite;
-    }
-    @keyframes pulse {
-      0% { color: #fff; }
-      50% { color: #00e676; }
-      100% { color: #fff; }
-    }
-    form, .products-list, .reservation-list {
-      max-width: 700px;
-      margin: 2em auto;
-      background: white;
-      padding: 1.5em;
-      border-radius: 12px;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-    }
-    input, textarea, button {
-      width: 100%;
-      padding: 0.8em;
-      margin: 0.5em 0;
-      border-radius: 8px;
-      border: 1px solid #bbb;
-      font-size: 1em;
-    }
-    button {
-      background-color: #4caf50;
-      color: white;
-      font-weight: bold;
-      cursor: pointer;
-    }
-    .share-button {
-      background-color: #25D366;
-    }
-    .product-card {
-      background: #fafafa;
-      padding: 1em;
-      margin: 0.5em 0;
-      border-radius: 8px;
-    }
-    img.preview {
-      max-width: 100%;
-      height: auto;
-      margin-top: 1em;
-      border-radius: 8px;
-    }
-    .reservation-list {
-      position: fixed;
-      right: 10px;
-      top: 100px;
-      width: 250px;
-      background: #fff;
-      border: 1px solid #ccc;
-      border-radius: 10px;
-      padding: 1em;
-      box-shadow: 0 0 10px rgba(0,0,0,0.2);
+    body { direction: rtl; background: #fefce8; font-family: sans-serif; }
+    h1 { animation: rainbow 5s linear infinite; font-weight: bold; }
+    @keyframes rainbow {
+      0% { color: red; }
+      25% { color: orange; }
+      50% { color: green; }
+      75% { color: blue; }
+      100% { color: violet; }
     }
   </style>
 </head>
-<body>
-  <header>بازار ارزوئیه</header>
+<body class="p-4">
 
-  <form id="productForm">
-    <input type="text" id="name" placeholder="نام محصول" required>
-    <input type="text" id="seller" placeholder="نام فروشنده" required>
-    <input type="tel" id="phone" placeholder="شماره تماس" required>
-    <input type="text" id="address" placeholder="آدرس">
-    <input type="number" id="price" placeholder="قیمت" required>
-    <input type="number" id="quantity" placeholder="تعداد موجود" required>
-    <textarea id="desc" placeholder="توضیحات"></textarea>
-    <input type="file" id="image" accept="image/*">
-    <img id="preview" class="preview" style="display:none">
-    <button type="submit">ذخیره محصول</button>
-    <button type="button" id="shareButton" class="share-button">اشتراک در واتساپ</button>
+  <h1 class="text-3xl text-center mb-6">بازار ارزوئیه</h1>
+
+  <form id="productForm" class="bg-white p-4 rounded-xl shadow-lg space-y-4">
+    <input type="hidden" id="productId">
+
+    <div>
+      <label class="block text-sm">نام محصول</label>
+      <input id="productName" class="w-full border p-2 rounded" required>
+    </div>
+
+    <div>
+      <label class="block text-sm">قیمت</label>
+      <input id="productPrice" type="number" class="w-full border p-2 rounded" required>
+    </div>
+
+    <div>
+      <label class="block text-sm">تعداد</label>
+      <input id="productQty" type="number" class="w-full border p-2 rounded" required>
+    </div>
+
+    <div>
+      <label class="block text-sm">شماره تماس فروشنده</label>
+      <input id="productContact" type="tel" class="w-full border p-2 rounded" required>
+    </div>
+
+    <div>
+      <label class="block text-sm">بارگذاری تصویر</label>
+      <input id="productImage" type="file" accept="image/*" class="w-full border p-2 rounded">
+      <img id="productImagePreview" src="" alt="پیش‌نمایش" class="mt-2 w-40 h-40 object-cover rounded hidden">
+    </div>
+
+    <div class="flex gap-4">
+      <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded">ذخیره محصول</button>
+      <a id="whatsapp-share" class="bg-green-500 text-white px-4 py-2 rounded" target="_blank">اشتراک‌گذاری در واتساپ</a>
+    </div>
   </form>
 
-  <section class="products-list" id="productsContainer">
-    <h3>محصولات ثبت‌شده:</h3>
-    <div id="products"></div>
-  </section>
-
-  <div class="reservation-list" id="reservationBox" style="display:none;">
-    <h4>رزروها:</h4>
-    <ul id="reservations"></ul>
-  </div>
-
   <script>
-    const form = document.getElementById("productForm");
-    const imageInput = document.getElementById("image");
-    const preview = document.getElementById("preview");
-    const productsEl = document.getElementById("products");
-    const reservationBox = document.getElementById("reservationBox");
-    const reservationsList = document.getElementById("reservations");
-    let imageBase64 = "";
+    // تولید شناسه خودکار
+    function generateProductId() {
+      const date = new Date();
+      const year = date.getFullYear();
+      const month = ("0" + (date.getMonth() + 1)).slice(-2);
+      const day = ("0" + date.getDate()).slice(-2);
+      const rand = Math.floor(Math.random() * 9000 + 1000); // 4 رقم تصادفی
+      return `${year}${month}${day}-${rand}`;
+    }
 
-    imageInput.addEventListener("change", function(event) {
-      const file = event.target.files[0];
+    document.getElementById("productId").value = generateProductId();
+
+    // پیش‌نمایش تصویر
+    document.getElementById("productImage").addEventListener("change", function () {
+      const file = this.files[0];
       const reader = new FileReader();
-      reader.onload = function(e) {
-        imageBase64 = e.target.result;
-        preview.src = imageBase64;
-        preview.style.display = "block";
-      }
+      reader.onload = function (e) {
+        const img = document.getElementById("productImagePreview");
+        img.src = e.target.result;
+        img.classList.remove("hidden");
+      };
       if (file) reader.readAsDataURL(file);
     });
 
-    form.addEventListener("submit", async function(e) {
+    // ارسال فرم به Google Sheets (اختیاری اگر وصل شده باشید)
+    document.getElementById("productForm").addEventListener("submit", function (e) {
       e.preventDefault();
-      const now = new Date();
-      const id = `${now.getFullYear()}${(now.getMonth()+1).toString().padStart(2, '0')}${now.getDate().toString().padStart(2, '0')}-${Math.floor(Math.random()*10000)}`;
-      const product = {
-        id,
-        name: name.value,
-        seller: seller.value,
-        phone: phone.value,
-        address: address.value,
-        price: price.value,
-        quantity: quantity.value,
-        desc: desc.value,
-        image: imageBase64
-      };
-
-      try {
-        await fetch("https://script.google.com/macros/s/AKfycbyHUiGDSpKq6_vsC5jgc7Q0H9yX98KHDKZhT2O_gHze8-yniK_oLqOg3vwE7tQVeoMlHg/exec", {
-          method: "POST",
-          body: JSON.stringify(product),
-          headers: { "Content-Type": "application/json" }
-        });
-        alert("محصول ذخیره شد!");
-        form.reset();
-        preview.style.display = "none";
-        loadProducts();
-      } catch(err) {
-        alert("خطا در ذخیره: " + err);
-      }
+      alert("اطلاعات ثبت شد (نمونه). اتصال به شیت باید اینجا فعال شود.");
     });
 
-    document.getElementById("shareButton").addEventListener("click", function() {
-      const msg = {
-        name: name.value,
-        price: price.value,
-        phone: phone.value,
-        address: address.value,
-        desc: desc.value,
-        image: imageBase64
-      };
-      const text = encodeURIComponent("📢 محصول جدید:\n" + JSON.stringify(msg, null, 2));
-      window.open("https://wa.me/989136666552?text=" + text);
-    });
-
-    async function loadProducts() {
-      try {
-        const res = await fetch("https://script.google.com/macros/s/AKfycbyHUiGDSpKq6_vsC5jgc7Q0H9yX98KHDKZhT2O_gHze8-yniK_oLqOg3vwE7tQVeoMlHg/exec");
-        const data = await res.json();
-        productsEl.innerHTML = "";
-        data.forEach(p => {
-          productsEl.innerHTML += `<div class='product-card'>
-            <h4>${p.name}</h4>
-            <p>فروشنده: ${p.seller}</p>
-            <p>قیمت: ${p.price}</p>
-            <p>موجودی: ${p.quantity}</p>
-            <img src='${p.image}' class='preview'>
-          </div>`;
-        });
-        // load reservation list
-        if (data.length > 0 && data[0].reservations) {
-          reservationBox.style.display = "block";
-          reservationsList.innerHTML = "";
-          data[0].reservations.forEach(r => {
-            reservationsList.innerHTML += `<li>${r.name} - ${r.phone} - ${r.address}</li>`;
-          });
-        }
-      } catch(err) {
-        productsEl.innerHTML = "عدم بارگذاری محصولات.";
-      }
+    // ساخت لینک واتساپ
+    function generateWhatsAppLink(productData) {
+      const phoneNumber = "09136666552"; // فقط همین شماره
+      const text = `🛒 محصول جدید از بازار ارزوئیه:
+📦 نام محصول: ${productData.name}
+💰 قیمت: ${productData.price}
+📞 تماس فروشنده: ${productData.contact}
+📸 تصویر: ${productData.image ? productData.image : "ندارد"}
+📅 تاریخ: ${productData.date}
+📌 شناسه: ${productData.id}`;
+      const encodedText = encodeURIComponent(text);
+      return `https://wa.me/98${phoneNumber}?text=${encodedText}`;
     }
-    loadProducts();
+
+    document.getElementById("whatsapp-share").addEventListener("click", function (e) {
+      e.preventDefault();
+
+      const productData = {
+        name: document.getElementById("productName").value,
+        price: document.getElementById("productPrice").value,
+        contact: document.getElementById("productContact").value,
+        image: document.getElementById("productImagePreview").src || "",
+        date: new Date().toLocaleDateString("fa-IR"),
+        id: document.getElementById("productId").value
+      };
+
+      const link = generateWhatsAppLink(productData);
+      window.open(link, "_blank");
+    });
   </script>
 </body>
 </html>
