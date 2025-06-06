@@ -2,161 +2,154 @@
 <html lang="fa" dir="rtl">
 <head>
   <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>بازار ارزوئیه</title>
-  <script src="https://cdn.jsdelivr.net/npm/jalaali-js@1.1.0/dist/jalaali.min.js"></script>
   <style>
     body {
       font-family: sans-serif;
-      padding: 20px;
-      background: #f2f2f2;
+      background: #fef9f3;
+      color: #333;
+      padding: 1rem;
       direction: rtl;
     }
     h1 {
       text-align: center;
-      color: #e91e63;
-      font-size: 2em;
-      animation: pulse 2s infinite;
+      font-size: 2rem;
+      animation: rainbow 5s linear infinite;
     }
-    @keyframes pulse {
-      0% {opacity: 0.5;}
-      50% {opacity: 1;}
-      100% {opacity: 0.5;}
+    @keyframes rainbow {
+      0% { color: red; }
+      20% { color: orange; }
+      40% { color: green; }
+      60% { color: blue; }
+      80% { color: indigo; }
+      100% { color: violet; }
     }
-    label {
+    label, input, textarea, select {
       display: block;
-      margin-top: 10px;
-    }
-    input, textarea {
       width: 100%;
-      padding: 8px;
-      margin-top: 5px;
-      border: 1px solid #ccc;
-      border-radius: 5px;
-    }
-    #btns {
-      display: flex;
-      justify-content: space-around;
-      margin-top: 20px;
+      margin: 0.5rem 0;
     }
     button {
-      padding: 10px 20px;
-      border: none;
-      background: #4caf50;
-      color: white;
-      border-radius: 5px;
+      margin: 0.5rem;
+      padding: 0.5rem 1rem;
+      font-size: 1rem;
       cursor: pointer;
     }
-    button:hover {
-      background: #388e3c;
+    .actions {
+      display: flex;
+      justify-content: space-between;
+      flex-wrap: wrap;
+    }
+    .reservation-list {
+      position: fixed;
+      right: 0;
+      top: 0;
+      background: #fff;
+      width: 250px;
+      height: 100%;
+      overflow-y: auto;
+      border-left: 2px solid #ccc;
+      padding: 1rem;
     }
   </style>
 </head>
 <body>
-
   <h1>بازار ارزوئیه</h1>
 
-  <label>نام محصول:</label>
-  <input type="text" id="name" required />
+  <form id="productForm">
+    <label>نام محصول:</label>
+    <input type="text" id="name" required />
 
-  <label>قیمت:</label>
-  <input type="number" id="price" required />
+    <label>قیمت:</label>
+    <input type="number" id="price" required />
 
-  <label>توضیحات:</label>
-  <textarea id="description"></textarea>
+    <label>توضیحات:</label>
+    <textarea id="desc"></textarea>
 
-  <label>تصویر محصول:</label>
-  <input type="file" id="imageInput" accept="image/*" />
+    <label>تصویر محصول:</label>
+    <input type="file" id="image" accept="image/*" required />
 
-  <div id="btns">
-    <button onclick="submitForm()">ذخیره</button>
-    <button onclick="shareOnWhatsApp()">اشتراک‌گذاری</button>
-    <button onclick="reserveProduct()">رزرو</button>
+    <label>شماره تماس فروشنده:</label>
+    <input type="tel" id="sellerPhone" required />
+
+    <label>آدرس فروشنده:</label>
+    <textarea id="address" required></textarea>
+
+    <div class="actions">
+      <button type="button" onclick="saveProduct()">ذخیره محصول</button>
+      <button type="button" onclick="shareOnWhatsApp()">اشتراک‌گذاری در واتساپ</button>
+      <button type="button" onclick="reserveProduct()">رزرو محصول</button>
+    </div>
+  </form>
+
+  <div class="reservation-list" id="reservationList" hidden>
+    <h3>رزروکنندگان:</h3>
+    <ul id="buyersList"></ul>
   </div>
 
   <script>
-    const clientId = "d4f989174bc6952";
-
-    function getTodayShamsi() {
-      const g = new Date();
-      const j = window.jalaali.toJalaali(g.getFullYear(), g.getMonth()+1, g.getDate());
-      return `${j.jy}/${j.jm}/${j.jd}`;
-    }
-
     let uploadedImageUrl = "";
+    const imgurClientId = "d4f989174bc6952";
 
-    async function uploadImage() {
-      const file = document.getElementById("imageInput").files[0];
-      if (!file) return "";
-
+    async function uploadImageToImgur(file) {
       const formData = new FormData();
       formData.append("image", file);
-
       const res = await fetch("https://api.imgur.com/3/image", {
         method: "POST",
-        headers: {
-          Authorization: `Client-ID ${clientId}`
-        },
-        body: formData
+        headers: { Authorization: `Client-ID ${imgurClientId}` },
+        body: formData,
       });
-
-      const json = await res.json();
-      return json.data.link;
+      const data = await res.json();
+      return data.data.link;
     }
 
-    async function shareOnWhatsApp() {
+    function toJalali(date = new Date()) {
+      const d = new Intl.DateTimeFormat('fa-IR').format(date);
+      return d;
+    }
+
+    async function saveProduct() {
+      const file = document.getElementById("image").files[0];
+      if (!file) return alert("لطفاً تصویر را انتخاب کنید.");
+      uploadedImageUrl = await uploadImageToImgur(file);
+      alert("محصول ذخیره شد (شبیه‌سازی شده)");
+    }
+
+    function shareOnWhatsApp() {
       const name = document.getElementById("name").value;
       const price = document.getElementById("price").value;
-      const description = document.getElementById("description").value;
-      const date = getTodayShamsi();
+      const desc = document.getElementById("desc").value;
+      const sellerPhone = document.getElementById("sellerPhone").value;
+      const address = document.getElementById("address").value;
 
-      if (!name || !price) {
-        alert("نام و قیمت را وارد کنید.");
-        return;
-      }
-
-      let imgUrl = uploadedImageUrl;
-      if (!imgUrl) {
-        imgUrl = await uploadImage();
-        uploadedImageUrl = imgUrl;
-      }
-
-      const productInfo = {
+      const jsonData = {
+        شناسه: `PR-${new Date().toISOString().slice(0, 10).replace(/-/g, '')}-${Math.floor(Math.random()*1000)}`,
         نام: name,
-        قیمت: price + " تومان",
-        توضیحات: description,
-        تاریخ: date
+        قیمت: price,
+        توضیحات: desc,
+        تماس_با_فروشنده: sellerPhone,
+        آدرس: address,
+        تاریخ: toJalali(),
+        تصویر: uploadedImageUrl,
       };
 
-      const jsonText = JSON.stringify(productInfo, null, 2);
-      const fullMessage = `${imgUrl}\n\n${jsonText}`;
-
-      const waURL = `https://wa.me/989136666552?text=${encodeURIComponent(fullMessage)}`;
-      window.open(waURL, "_blank");
-    }
-
-    async function submitForm() {
-      alert("در نسخه بعدی، ذخیره‌سازی به شیت انجام می‌شود."); // به‌زودی به Google Sheets وصل می‌کنیم
+      const msg = `${uploadedImageUrl}\n${JSON.stringify(jsonData, null, 2)}`;
+      const whatsappUrl = `https://wa.me/989136666552?text=${encodeURIComponent(msg)}`;
+      window.open(whatsappUrl, "_blank");
     }
 
     function reserveProduct() {
-      const name = document.getElementById("name").value;
-      const buyer = prompt("نام شما چیست؟");
+      const buyerName = prompt("نام شما:");
       const phone = prompt("شماره تماس:");
       const addr = prompt("آدرس شما:");
+      if (!buyerName || !phone) return;
 
-      if (buyer && phone) {
-        const reserveData = {
-          محصول: name,
-          خریدار: buyer,
-          تماس: phone,
-          آدرس: addr
-        };
-
-        alert("رزرو انجام شد:\n" + JSON.stringify(reserveData, null, 2));
-        // در نسخه بعدی: ذخیره رزرو در Google Sheets و نمایش فقط برای فروشنده مربوطه
-      }
+      const li = document.createElement("li");
+      li.textContent = `${buyerName} | ${phone} | ${addr}`;
+      document.getElementById("buyersList").appendChild(li);
+      document.getElementById("reservationList").hidden = false;
     }
   </script>
-
 </body>
 </html>
