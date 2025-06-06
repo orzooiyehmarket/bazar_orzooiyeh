@@ -2,178 +2,273 @@
 <html lang="fa" dir="rtl">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>بازار ارزوئیه</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <style>
+    * { box-sizing: border-box; }
     body {
+      font-family: Tahoma, sans-serif;
       margin: 0;
-      font-family: 'Vazir', sans-serif;
-      background-color: #fefefe;
-      direction: rtl;
+      background: #f9f9f9;
     }
+
     header {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      background: linear-gradient(to left, #ffd700, #ffa500);
-      padding: 10px 20px;
-      color: #fff;
-      font-size: 22px;
+      padding: 1rem;
+      background: linear-gradient(90deg, #ff7e5f, #feb47b);
+      color: white;
+    }
+
+    .title {
+      font-size: 1.5rem;
       font-weight: bold;
-      position: relative;
+      animation: colorChange 5s infinite alternate;
     }
-    #clockBox {
-      background-color: #fff;
-      color: #000;
-      padding: 5px 10px;
-      border-radius: 12px;
-      font-size: 14px;
-      box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+
+    @keyframes colorChange {
+      0% { color: #fff; }
+      100% { color: #000; }
     }
-    .nav-drawer {
-      position: fixed;
-      top: 0;
-      right: -100%;
+
+    .clock {
+      font-size: 1rem;
+    }
+
+    .form-box {
+      max-width: 600px;
+      margin: 2rem auto;
+      background: white;
+      padding: 1.5rem;
+      border-radius: 15px;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    }
+
+    label {
+      display: block;
+      margin-top: 1rem;
+      font-weight: bold;
+    }
+
+    input, textarea {
       width: 100%;
-      height: 100%;
-      background-color: #fff;
-      z-index: 999;
-      transition: right 0.3s ease;
-      padding: 50px 20px;
+      padding: 0.5rem;
+      margin-top: 0.3rem;
+      border: 1px solid #ccc;
+      border-radius: 10px;
     }
-    .nav-drawer ul {
-      list-style: none;
-      padding: 0;
-    }
-    .nav-drawer li {
-      font-size: 20px;
-      margin-bottom: 20px;
-      border-bottom: 1px solid #ccc;
-      padding-bottom: 10px;
-    }
-    .show-drawer {
-      right: 0;
-    }
+
     .image-preview {
       display: flex;
       gap: 10px;
-      margin-top: 10px;
+      overflow-x: auto;
+      margin-top: 1rem;
     }
+
     .image-preview img {
-      width: 100px;
-      height: 100px;
-      object-fit: cover;
-      border-radius: 8px;
-      box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+      max-height: 100px;
+      border-radius: 10px;
     }
-    .form-section {
-      padding: 20px;
-    }
-    .form-section label {
-      display: block;
-      margin-bottom: 5px;
-      font-weight: bold;
-    }
-    .form-section input, .form-section textarea {
-      width: 100%;
-      padding: 10px;
-      margin-bottom: 15px;
-      border: 1px solid #ccc;
-      border-radius: 8px;
-    }
-    .form-actions {
+
+    .actions {
       display: flex;
-      justify-content: space-around;
-      padding: 10px;
+      justify-content: space-between;
+      margin-top: 1.5rem;
     }
-    .form-actions button {
-      padding: 10px 20px;
+
+    button {
+      padding: 0.7rem 1.2rem;
       border: none;
-      background-color: #28a745;
-      color: #fff;
-      border-radius: 8px;
-      font-size: 16px;
+      border-radius: 10px;
+      background: #4CAF50;
+      color: white;
+      font-weight: bold;
       cursor: pointer;
+      flex: 1;
+      margin: 0 0.3rem;
     }
-    .form-actions button:hover {
-      opacity: 0.8;
+
+    button:hover {
+      background: #388e3c;
     }
-    .field-box {
-      background-color: #fff;
-      border: 1px solid #ccc;
-      padding: 10px;
-      margin: 10px 0;
-      box-shadow: 0 3px 6px rgba(0,0,0,0.1);
-      border-radius: 8px;
+
+    .upload-icon {
+      font-size: 1.2rem;
+      background: #ddd;
+      padding: 0.5rem;
+      border-radius: 50%;
+      cursor: pointer;
+      display: inline-block;
+    }
+
+    .reservation-box {
+      margin-top: 2rem;
+      background: #f1f1f1;
+      padding: 1rem;
+      border-radius: 10px;
+    }
+
+    /* ⏩ نویگیشن کشویی */
+    .nav-panel {
+      position: fixed;
+      top: 0;
+      right: -100%;
+      width: 70%;
+      height: 100%;
+      background: #333;
+      color: white;
+      transition: 0.4s;
+      z-index: 1000;
+      padding: 2rem;
+    }
+
+    .nav-panel.active {
+      right: 0;
+    }
+
+    .nav-panel a {
+      display: block;
+      margin: 1rem 0;
+      color: white;
+      text-decoration: none;
+      font-size: 1.2rem;
+    }
+
+    /* کشف لمس */
+    .touch-area {
+      position: fixed;
+      right: 0;
+      top: 0;
+      width: 30px;
+      height: 100vh;
+      z-index: 999;
+    }
+
+    @media (max-width: 600px) {
+      .form-box { margin: 1rem; }
     }
   </style>
 </head>
 <body>
-  <header>
-    <div>بازار ارزوئیه</div>
-    <div id="clockBox"></div>
-  </header>
 
-  <div class="form-section" id="form">
-    <label for="productName">نام محصول</label>
-    <input type="text" id="productName" placeholder="مثلاً: عسل کوهی">
+<div class="touch-area"></div>
+<nav class="nav-panel" id="navPanel">
+  <a href="#">اشتراک‌گذاری</a>
+  <a href="#">درباره ما</a>
+  <a href="#">تماس با ما</a>
+</nav>
 
-    <label for="price">قیمت (تومان)</label>
-    <input type="number" id="price" placeholder="مثلاً: ۱۲۰۰۰۰">
+<header>
+  <div class="title">🌈 بازار ارزوئیه</div>
+  <div class="clock" id="clockBox">--:--</div>
+</header>
 
-    <label for="seller">نام فروشنده</label>
-    <input type="text" id="seller" placeholder="مثلاً: احمد رضایی">
+<section class="form-box">
+  <label>نام محصول:</label>
+  <input type="text" id="name">
 
-    <label for="phone">تماس با فروشنده</label>
-    <input type="tel" id="phone" placeholder="مثلاً: ۰۹۱۳xxxxxxx">
+  <label>قیمت:</label>
+  <input type="text" id="price">
 
-    <label for="address">آدرس</label>
-    <textarea id="address" placeholder="مثلاً: ارزوئیه، محله بالا"></textarea>
+  <label>نام فروشنده:</label>
+  <input type="text" id="seller">
 
-    <label>تصاویر محصول (حداکثر ۵ عدد)</label>
-    <input type="file" id="imageUpload" multiple accept="image/*">
-    <div class="image-preview" id="imagePreview"></div>
+  <label>تماس با فروشنده:</label>
+  <input type="text" id="contact">
+
+  <label>آدرس:</label>
+  <textarea id="address"></textarea>
+
+  <label>بارگذاری تصویر (حداکثر ۵ عدد):</label>
+  <input type="file" id="images" accept="image/*" multiple style="display:none" onchange="previewImages(this)">
+  <span class="upload-icon" onclick="document.getElementById('images').click()">📤</span>
+  <div class="image-preview" id="preview"></div>
+
+  <div class="actions">
+    <button onclick="shareWhatsApp()">اشتراک‌گذاری</button>
+    <button onclick="saveProduct()">ذخیره</button>
+    <button onclick="reserveProduct()">رزرو</button>
   </div>
 
-  <div class="form-actions">
-    <button onclick="shareProduct()">اشتراک‌گذاری در واتساپ</button>
-    <button onclick="saveProduct()">ذخیره محصول</button>
-    <button onclick="openReserveForm()">رزرو</button>
+  <div class="reservation-box">
+    <label>فرم رزرو:</label>
+    <input type="text" id="buyerName" placeholder="نام خریدار">
+    <input type="text" id="buyerPhone" placeholder="شماره تماس">
+    <textarea id="buyerAddress" placeholder="آدرس خریدار"></textarea>
   </div>
+</section>
 
-  <div class="nav-drawer" id="navDrawer">
-    <ul>
-      <li>اشتراک‌گذاری</li>
-      <li>درباره ما</li>
-      <li>تماس با ما</li>
-    </ul>
-  </div>
+<script>
+  let imagesArray = [];
 
-  <script>
-    // ساعت دیجیتال
-    function updateClock() {
-      const now = new Date();
-      const time = now.toLocaleTimeString('fa-IR');
-      const date = now.toLocaleDateString('fa-IR');
-      document.getElementById('clockBox').textContent = date + ' - ' + time;
+  function previewImages(input) {
+    const preview = document.getElementById('preview');
+    preview.innerHTML = '';
+    imagesArray = Array.from(input.files).slice(0, 5);
+    imagesArray.forEach(file => {
+      const reader = new FileReader();
+      reader.onload = e => {
+        const img = document.createElement('img');
+        img.src = e.target.result;
+        preview.appendChild(img);
+      };
+      reader.readAsDataURL(file);
+    });
+  }
+
+  function shareWhatsApp() {
+    const name = document.getElementById('name').value;
+    const price = document.getElementById('price').value;
+    const seller = document.getElementById('seller').value;
+    const contact = document.getElementById('contact').value;
+    const address = document.getElementById('address').value;
+    const now = new Date().toLocaleString('fa-IR');
+
+    let message = `🛍️ ${name}\n💵 ${price} تومان\n👤 ${seller}\n📞 ${contact}\n📍 ${address}\n📅 ${now}`;
+    const number = "09136666552";
+
+    const whatsappURL = `https://wa.me/${number}?text=${encodeURIComponent(message)}`;
+    window.open(whatsappURL, '_blank');
+  }
+
+  function saveProduct() {
+    alert("📥 اطلاعات ذخیره شد (شبیه‌سازی)");
+  }
+
+  function reserveProduct() {
+    const name = document.getElementById('buyerName').value;
+    const phone = document.getElementById('buyerPhone').value;
+    const address = document.getElementById('buyerAddress').value;
+    alert(`✅ رزرو ثبت شد برای ${name}`);
+  }
+
+  // ساعت دیجیتال
+  setInterval(() => {
+    const now = new Date();
+    document.getElementById('clockBox').innerText = now.toLocaleTimeString('fa-IR');
+  }, 1000);
+
+  // نویگیشن لمسی
+  const nav = document.getElementById('navPanel');
+  const touchArea = document.querySelector('.touch-area');
+  let touchStartX = 0;
+
+  touchArea.addEventListener('touchstart', e => {
+    touchStartX = e.touches[0].clientX;
+  });
+
+  touchArea.addEventListener('touchmove', e => {
+    const touchMoveX = e.touches[0].clientX;
+    if (touchStartX - touchMoveX < -50) {
+      nav.classList.add('active');
     }
-    setInterval(updateClock, 1000);
-    updateClock();
+  });
 
-    // نویگیشن با کشیدن از راست به چپ
-    let startX = 0;
-    document.body.addEventListener('touchstart', e => {
-      startX = e.touches[0].clientX;
-    });
-    document.body.addEventListener('touchend', e => {
-      const endX = e.changedTouches[0].clientX;
-      if (startX - endX > 100) {
-        document.getElementById('navDrawer').classList.add('show-drawer');
-      }
-    });
-    document.getElementById('navDrawer').addEventListener('click', () => {
-      document.getElementById('navDrawer').classList.remove('show-drawer');
-    });
-  </script>
+  document.body.addEventListener('click', () => {
+    nav.classList.remove('active');
+  });
+</script>
+
 </body>
 </html>
