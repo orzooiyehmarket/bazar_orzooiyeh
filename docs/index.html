@@ -1,194 +1,290 @@
 <!DOCTYPE html>
-<html lang="fa">
+<html lang="fa" dir="rtl">
+
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>بازار ارزوئیه</title>
-  <link href="https://fonts.googleapis.com/css2?family=Vazirmatn&display=swap" rel="stylesheet">
   <style>
     body {
-      font-family: 'Vazirmatn', sans-serif;
-      background-color: #f0f0f5;
+      font-family: "Tahoma", sans-serif;
       margin: 0;
       padding: 0;
-      direction: rtl;
+      background: #f7f7f7;
     }
+
     header {
-      background: linear-gradient(90deg, #ff5f6d, #ffc371);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: linear-gradient(45deg, #ff0099, #493240);
       color: white;
-      padding: 15px;
-      text-align: center;
-      font-size: 24px;
+      padding: 10px 20px;
       position: relative;
     }
-    .datetime-box {
-      position: absolute;
-      left: 15px;
-      top: 15px;
-      background-color: white;
-      color: black;
+
+    .rainbow-title {
+      font-size: 1.5rem;
+      animation: rainbow 5s linear infinite;
+    }
+
+    @keyframes rainbow {
+      0% { color: red; }
+      16% { color: orange; }
+      32% { color: yellow; }
+      48% { color: green; }
+      64% { color: blue; }
+      80% { color: indigo; }
+      100% { color: violet; }
+    }
+
+    .datetime {
+      background: #fff;
       padding: 5px 10px;
-      border-radius: 8px;
-      box-shadow: 0 0 5px rgba(0,0,0,0.2);
-      font-size: 14px;
+      border-radius: 10px;
+      font-size: 0.9rem;
+      box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
     }
-    .container {
+
+    #menuToggle {
+      position: fixed;
+      top: 0;
+      right: 0;
+      z-index: 2;
+      width: 100vw;
+      height: 100vh;
+      background: rgba(0, 0, 0, 0.6);
+      transform: translateX(100%);
+      transition: transform 0.3s ease;
+    }
+
+    #menuToggle.open {
+      transform: translateX(0);
+    }
+
+    #menuToggle nav {
+      background: white;
+      width: 250px;
+      height: 100%;
       padding: 20px;
+      box-shadow: -2px 0 5px rgba(0, 0, 0, 0.3);
+      float: right;
     }
-    input, textarea, button, select {
+
+    #menuToggle nav a {
       display: block;
-      width: 100%;
-      margin: 10px 0;
-      padding: 10px;
-      border-radius: 8px;
-      border: 1px solid #ccc;
-      font-family: inherit;
+      padding: 10px 0;
+      text-decoration: none;
+      color: #333;
+      border-bottom: 1px solid #eee;
     }
-    .row {
+
+    .image-preview {
+      margin: 10px auto;
       display: flex;
       gap: 10px;
+      overflow-x: auto;
     }
-    .row > * {
-      flex: 1;
-    }
-    .shadow {
-      box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-    }
-    .upload-icon {
-      border: 2px dashed #aaa;
-      text-align: center;
-      padding: 20px;
-      cursor: pointer;
-      background-color: white;
-    }
-    #preview img {
-      max-width: 100%;
-      margin: 10px auto;
-      display: block;
+
+    .image-preview img {
+      max-height: 100px;
       border-radius: 8px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.2);
     }
-    .nav {
-      position: fixed;
-      right: -100%;
-      top: 0;
-      width: 80%;
-      height: 100%;
-      background: white;
-      box-shadow: -2px 0 10px rgba(0,0,0,0.2);
-      transition: 0.3s;
-      padding: 20px;
-      z-index: 1000;
+
+    .buttons {
+      display: flex;
+      justify-content: space-around;
+      margin: 10px;
     }
-    .nav.open {
-      right: 0;
-    }
-    .nav a {
-      display: block;
-      margin: 15px 0;
-      color: #333;
-      font-size: 18px;
-      text-decoration: none;
+
+    .buttons button {
+      padding: 10px;
+      border: none;
+      border-radius: 10px;
+      background: #4caf50;
+      color: white;
+      cursor: pointer;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.2);
     }
   </style>
 </head>
+
 <body>
   <header>
-    <div class="datetime-box" id="datetime">در حال بارگذاری...</div>
-    بازار ارزوئیه
+    <div class="rainbow-title">بازار ارزوئیه</div>
+    <div id="datetime" class="datetime"></div>
   </header>
-  <div class="container" ontouchstart="openNav()">
-    <input type="text" id="title" placeholder="نام محصول">
-    <input type="text" id="price" placeholder="قیمت">
-    <input type="text" id="seller" placeholder="نام فروشنده">
-    <input type="text" id="contact" placeholder="تماس با فروشنده">
-    <input type="text" id="address" placeholder="آدرس">
 
-    <div class="upload-icon" onclick="document.getElementById('images').click()">
-      آپلود تصاویر
-    </div>
-    <input type="file" id="images" accept="image/*" multiple style="display:none">
-    <div id="preview"></div>
+  <div class="image-preview" id="imagePreview"></div>
 
-    <textarea id="description" placeholder="توضیحات محصول"></textarea>
-
-    <div class="row">
-      <button onclick="shareWhatsApp()">اشتراک‌گذاری در واتساپ</button>
-      <button onclick="saveToSheet()">ذخیره</button>
-      <button onclick="reserveProduct()">رزرو</button>
-    </div>
-
-    <div>
-      <label>فرم رزرو:</label>
-      <input type="text" id="buyerName" placeholder="نام خریدار">
-      <input type="text" id="buyerPhone" placeholder="شماره تماس">
-      <input type="text" id="buyerAddress" placeholder="آدرس">
-    </div>
+  <div style="padding: 10px;">
+    <label>نام محصول:</label>
+    <input type="text" id="productName" />
+    <br />
+    <label>قیمت:</label>
+    <input type="number" id="price" />
+    <br />
+    <label>نام فروشنده:</label>
+    <input type="text" id="sellerName" />
+    <br />
+    <label>تماس با فروشنده:</label>
+    <input type="tel" id="contact" />
+    <br />
+    <label>آدرس:</label>
+    <input type="text" id="address" />
+    <br />
+    <label>تعداد موجودی:</label>
+    <input type="number" id="stock" />
+    <br />
+    <label>تصاویر محصول:</label>
+    <input type="file" id="images" multiple accept="image/*" />
   </div>
 
-  <div class="nav" id="nav">
-    <a href="#">اشتراک‌گذاری</a>
-    <a href="#">درباره ما</a>
-    <a href="#">تماس با ما</a>
+  <div class="buttons">
+    <button onclick="shareWhatsApp()">اشتراک‌گذاری</button>
+    <button onclick="saveData()">ذخیره</button>
+    <button onclick="reserveProduct()">رزرو</button>
+  </div>
+
+  <div id="menuToggle">
+    <nav>
+      <a href="#">اشتراک‌گذاری</a>
+      <a href="#">درباره ما</a>
+      <a href="#">تماس با ما</a>
+    </nav>
   </div>
 
   <script>
-    function openNav() {
-      document.getElementById('nav').classList.add('open');
-    }
-
-    document.body.addEventListener('touchstart', function(e) {
-      if (e.touches[0].clientX < 50) {
-        openNav();
+    let touchStartX = 0;
+    document.body.addEventListener('touchstart', (e) => {
+      touchStartX = e.touches[0].clientX;
+    });
+    document.body.addEventListener('touchend', (e) => {
+      let touchEndX = e.changedTouches[0].clientX;
+      if (touchStartX - touchEndX < -100) {
+        document.getElementById('menuToggle').classList.add('open');
+      } else {
+        document.getElementById('menuToggle').classList.remove('open');
       }
     });
 
     function updateDateTime() {
       const now = new Date();
       const options = { year: 'numeric', month: 'long', day: 'numeric', weekday: 'long' };
+      const date = new Intl.DateTimeFormat('fa-IR', options).format(now);
       const time = now.toLocaleTimeString('fa-IR');
-      const date = now.toLocaleDateString('fa-IR', options);
-      document.getElementById('datetime').textContent = `${date} - ${time}`;
+      document.getElementById('datetime').innerText = `${date} - ${time}`;
     }
+
     setInterval(updateDateTime, 1000);
     updateDateTime();
 
-    document.getElementById('images').addEventListener('change', function(event) {
-      const files = event.target.files;
-      const preview = document.getElementById('preview');
+    document.getElementById('images').addEventListener('change', function (event) {
+      const preview = document.getElementById('imagePreview');
       preview.innerHTML = '';
-      for (let i = 0; i < Math.min(files.length, 5); i++) {
+      [...event.target.files].slice(0, 5).forEach(file => {
         const reader = new FileReader();
-        reader.onload = function(e) {
+        reader.onload = e => {
           const img = document.createElement('img');
           img.src = e.target.result;
           preview.appendChild(img);
         };
-        reader.readAsDataURL(files[i]);
-      }
+        reader.readAsDataURL(file);
+      });
     });
 
     function shareWhatsApp() {
-      const title = document.getElementById('title').value;
+      const name = document.getElementById('productName').value;
       const price = document.getElementById('price').value;
-      const seller = document.getElementById('seller').value;
+      const seller = document.getElementById('sellerName').value;
       const contact = document.getElementById('contact').value;
       const address = document.getElementById('address').value;
-      const description = document.getElementById('description').value;
-      const jsonText = `نام ${title}\nقیمت ${price}\nفروشنده ${seller}\nتماس ${contact}\nآدرس ${address}\nتوضیحات ${description}`;
-      const url = `https://wa.me/989136666552?text=${encodeURIComponent(jsonText)}`;
-      window.open(url, '_blank');
+      const stock = document.getElementById('stock').value;
+      const now = new Date();
+      const date = new Intl.DateTimeFormat('fa-IR').format(now);
+      const productId = `${now.getFullYear()}${now.getMonth() + 1}${now.getDate()}-${Math.floor(Math.random() * 10000)}`;
+
+      const message = `تصویر محصول
+نام محصول ${name}
+قیمت ${price} تومان
+فروشنده ${seller}
+شماره تماس ${contact}
+آدرس ${address}
+موجودی ${stock}
+تاریخ ${date}
+کد محصول ${productId}`;
+
+      const whatsappUrl = `https://wa.me/989136666552?text=${encodeURIComponent(message)}`;
+      window.open(whatsappUrl);
     }
 
-    function saveToSheet() {
-      alert("ذخیره‌سازی اطلاعات در Google Sheets در نسخه بعدی افزوده خواهد شد.");
+    function saveData() {
+      alert('ذخیره اطلاعات فعلاً شبیه‌سازی شده است.');
     }
 
     function reserveProduct() {
-      const name = document.getElementById('buyerName').value;
-      const phone = document.getElementById('buyerPhone').value;
-      const address = document.getElementById('buyerAddress').value;
-      alert(`رزرو ثبت شد برای ${name}`);
+      alert('فرم رزرو هنوز کامل نشده است.');
     }
+
+// آپلود تصویر در Imgur
+async function uploadToImgur(imageFile) {
+  const formData = new FormData();
+  formData.append("image", imageFile);
+
+  const response = await fetch("https://api.imgur.com/3/image", {
+    method: "POST",
+    headers: {
+      Authorization: "Client-ID d4f989174bc6952"
+    },
+    body: formData
+  });
+
+  const data = await response.json();
+  if (data.success) {
+    return data.data.link;
+  } else {
+    throw new Error("آپلود تصویر ناموفق بود");
+  }
+}
+
+// ارسال اطلاعات محصول به Google Sheets
+async function saveProduct(dataObj) {
+  const response = await fetch("https://script.google.com/macros/s/AKfycbyHUiGDSpKq6_vsC5jgc7Q0H9yX98KHDKZhT2O_gHze8-yniK_oLqOg3vwE7tQVeoMlHg/exec", {
+    method: "POST",
+    body: JSON.stringify(dataObj),
+    headers: {
+      "Content-Type": "application/json"
+    }
+  });
+
+  const result = await response.text();
+  console.log("پاسخ ذخیره‌سازی:", result);
+}
+
+// اشتراک‌گذاری در واتساپ با تصویر و اطلاعات جیسون
+async function shareOnWhatsApp(dataObj, imageFile) {
+  try {
+    const imgLink = await uploadToImgur(imageFile);
+
+    const textMessage =
+      `${imgLink}\n\n` +
+      `نام ${dataObj.name}\n` +
+      `قیمت ${dataObj.price}\n` +
+      `فروشنده ${dataObj.seller}\n` +
+      `تماس ${dataObj.phone}\n` +
+      `آدرس ${dataObj.address}\n` +
+      `تاریخ ${dataObj.date}\n` +
+      `کد ${dataObj.code}`;
+
+    const whatsappURL = `https://wa.me/989136666552?text=${encodeURIComponent(textMessage)}`;
+    window.open(whatsappURL, "_blank");
+  } catch (error) {
+    alert("خطا در ارسال واتساپ یا آپلود تصویر");
+    console.error(error);
+  }
+}
   </script>
 </body>
+
 </html>
