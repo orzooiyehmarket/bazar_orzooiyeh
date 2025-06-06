@@ -1,112 +1,110 @@
 <!DOCTYPE html><html lang="fa">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>ثبت محصول - بازار ارزوئیه</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>بازار ارزوئیه</title>
   <style>
     body {
       font-family: sans-serif;
-      background: #fff8f0;
-      padding: 1rem;
       direction: rtl;
+      padding: 20px;
+      background: #fefae0;
     }
     h1 {
       text-align: center;
-      font-size: 2rem;
-      background: linear-gradient(90deg, #e67e22, #f39c12);
-      color: white;
-      padding: 0.5rem;
-      border-radius: 16px;
-      animation: colorchange 5s infinite alternate;
+      font-size: 2em;
+      color: #e63946;
+      animation: pulse 2s infinite;
     }
-    @keyframes colorchange {
-      0% { background-color: #f39c12; }
-      100% { background-color: #e74c3c; }
+    @keyframes pulse {
+      0% { color: #e63946; }
+      50% { color: #ffb703; }
+      100% { color: #e63946; }
     }
-    form {
-      max-width: 400px;
-      margin: 2rem auto;
-      background: white;
-      padding: 1.5rem;
-      border-radius: 12px;
-      box-shadow: 0 0 15px rgba(0,0,0,0.1);
-    }
-    input, select {
+    input, select, button {
+      display: block;
       width: 100%;
-      padding: 0.7rem;
-      margin: 0.5rem 0;
-      border-radius: 8px;
-      border: 1px solid #ccc;
-      font-size: 1rem;
+      margin-bottom: 10px;
+      padding: 10px;
+      font-size: 1em;
     }
     button {
-      background: #27ae60;
+      background: #457b9d;
       color: white;
-      padding: 0.7rem;
-      width: 100%;
-      font-size: 1rem;
       border: none;
-      border-radius: 8px;
-      cursor: pointer;
+      border-radius: 5px;
     }
-    .share-btn {
-      background: #25d366;
-      margin-top: 1rem;
+    #status {
+      margin-top: 10px;
+      font-weight: bold;
     }
   </style>
 </head>
 <body>
-  <h1>بازار ارزوئیه</h1>
-  <form id="productForm">
-    <input type="text" name="product" placeholder="نام محصول" required>
-    <input type="number" name="price" placeholder="قیمت (تومان)" required>
-    <input type="number" name="quantity" placeholder="تعداد موجودی" required>
-    <input type="text" name="category" placeholder="دسته‌بندی (مثلاً لبنیات، گیاه دارویی...)" required>
-    <input type="text" name="name" placeholder="نام فروشنده" required>
-    <input type="tel" name="phone" placeholder="شماره تماس" required>
-    <button type="submit">ثبت محصول</button>
-    <button type="button" class="share-btn" onclick="shareJSON()">اشتراک‌گذاری محصول در واتساپ</button>
-  </form>  <script>
-    const FORM_URL = 'https://script.google.com/macros/s/AKfycbyHUiGDSpKq6_vsC5jgc7Q0H9yX98KHDKZhT2O_gHze8-yniK_oLqOg3vwE7tQVeoMlHg/exec';
-    const form = document.getElementById('productForm');
+  <h1>بازار ارزوئیه</h1>  <form id="product-form">
+    <input type="text" id="product" placeholder="نام محصول" required />
+    <input type="text" id="price" placeholder="قیمت (تومان)" required />
+    <input type="number" id="quantity" placeholder="تعداد موجودی" required />
+    <input type="text" id="category" placeholder="دسته‌بندی (مثلاً لبنیات)" required />
+    <input type="text" id="name" placeholder="نام فروشنده" required />
+    <input type="tel" id="phone" placeholder="شماره تماس واتساپ" required />
+    <button type="submit">ذخیره محصول</button>
+  </form><button onclick="shareJson()">اشتراک‌گذاری در واتساپ</button>
 
-    form.addEventListener('submit', async (e) => {
+  <p id="status"></p>  <script>
+    const endpoint = "https://script.google.com/macros/s/AKfycbyHUiGDSpKq6_vsC5jgc7Q0H9yX98KHDKZhT2O_gHze8-yniK_oLqOg3vwE7tQVeoMlHg/exec";
+
+    document.getElementById("product-form").addEventListener("submit", async (e) => {
       e.preventDefault();
-      const data = Object.fromEntries(new FormData(form).entries());
+      const formData = {
+        product: document.getElementById("product").value,
+        price: document.getElementById("price").value,
+        quantity: document.getElementById("quantity").value,
+        category: document.getElementById("category").value,
+        name: document.getElementById("name").value,
+        phone: document.getElementById("phone").value
+      };
+
+      // ذخیره آفلاین در LocalStorage اگر آفلاین باشه
+      if (!navigator.onLine) {
+        localStorage.setItem("pendingProduct", JSON.stringify(formData));
+        document.getElementById("status").innerText = "آفلاین هستید. اطلاعات ذخیره شد و پس از اتصال ارسال می‌شود.";
+        return;
+      }
 
       try {
-        await fetch(FORM_URL, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(data)
+        const res = await fetch(endpoint, {
+          method: "POST",
+          body: JSON.stringify(formData),
+          headers: { "Content-Type": "application/json" }
         });
-        alert('محصول با موفقیت ثبت شد!');
-        localStorage.removeItem('unsavedProduct');
-        form.reset();
+        const json = await res.json();
+        document.getElementById("status").innerText = "✅ محصول با موفقیت ثبت شد.";
+        document.getElementById("product-form").reset();
       } catch (err) {
-        alert('آفلاین هستید. اطلاعات ذخیره شد تا بعداً ارسال شود.');
-        localStorage.setItem('unsavedProduct', JSON.stringify(data));
+        document.getElementById("status").innerText = "❌ خطا در ارسال اطلاعات.";
       }
     });
 
-    window.addEventListener('online', () => {
-      const offlineData = localStorage.getItem('unsavedProduct');
-      if (offlineData) {
-        fetch(FORM_URL, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: offlineData
+    // ارسال خودکار بعد از آنلاین شدن
+    window.addEventListener("online", () => {
+      const pending = localStorage.getItem("pendingProduct");
+      if (pending) {
+        fetch(endpoint, {
+          method: "POST",
+          body: pending,
+          headers: { "Content-Type": "application/json" }
         }).then(() => {
-          alert('اطلاعات ذخیره‌شده با موفقیت ارسال شد.');
-          localStorage.removeItem('unsavedProduct');
+          localStorage.removeItem("pendingProduct");
+          document.getElementById("status").innerText = "✅ اطلاعات آفلاین ارسال شد.";
         });
       }
     });
 
-    function shareJSON() {
-      const data = Object.fromEntries(new FormData(form).entries());
-      const message = `📦 بازار ارزوئیه\nنام محصول: ${data.product}\nقیمت: ${data.price} تومان\nموجودی: ${data.quantity}\nدسته‌بندی: ${data.category}\nفروشنده: ${data.name}\n📞 ${data.phone}`;
-      const url = `https://wa.me/?text=${encodeURIComponent(message)}`;
+    // دکمه اشتراک‌گذاری واتساپ
+    function shareJson() {
+      const text = `📦 محصول جدید در بازار ارزوئیه ثبت شد!\nبرای دیدن محصولات به لینک سایت بروید:\nhttps://orzooiyehmarket.github.io/bazar_orzooiyeh/`;
+      const url = `https://wa.me/?text=${encodeURIComponent(text)}`;
       window.open(url, '_blank');
     }
   </script></body>
