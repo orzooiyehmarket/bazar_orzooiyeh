@@ -1,251 +1,194 @@
 <!DOCTYPE html>
-<html lang="fa" dir="rtl">
-
+<html lang="fa">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>بازار ارزوئیه</title>
+  <link href="https://fonts.googleapis.com/css2?family=Vazirmatn&display=swap" rel="stylesheet">
   <style>
     body {
-      font-family: sans-serif;
-      background-color: #f9f9f9;
+      font-family: 'Vazirmatn', sans-serif;
+      background-color: #f0f0f5;
       margin: 0;
       padding: 0;
+      direction: rtl;
     }
-
     header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 10px 20px;
-      background: linear-gradient(to left, #ff9a9e, #fad0c4);
-      color: #fff;
+      background: linear-gradient(90deg, #ff5f6d, #ffc371);
+      color: white;
+      padding: 15px;
+      text-align: center;
       font-size: 24px;
-      font-weight: bold;
+      position: relative;
     }
-
-    .datetime {
-      font-size: 14px;
-      background-color: #fff;
-      color: #000;
+    .datetime-box {
+      position: absolute;
+      left: 15px;
+      top: 15px;
+      background-color: white;
+      color: black;
       padding: 5px 10px;
       border-radius: 8px;
-      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+      box-shadow: 0 0 5px rgba(0,0,0,0.2);
+      font-size: 14px;
     }
-
     .container {
       padding: 20px;
     }
-
-    .field {
-      margin-bottom: 10px;
-    }
-
-    .field label {
+    input, textarea, button, select {
       display: block;
-      margin-bottom: 5px;
-    }
-
-    .field input, .field textarea {
       width: 100%;
+      margin: 10px 0;
       padding: 10px;
+      border-radius: 8px;
       border: 1px solid #ccc;
-      border-radius: 5px;
+      font-family: inherit;
     }
-
-    .preview {
-      margin-top: 10px;
+    .row {
       display: flex;
       gap: 10px;
-      overflow-x: auto;
     }
-
-    .preview img {
-      max-height: 100px;
-      border-radius: 5px;
+    .row > * {
+      flex: 1;
     }
-
-    .buttons {
-      display: flex;
-      justify-content: space-around;
-      margin-top: 20px;
+    .shadow {
+      box-shadow: 0 4px 6px rgba(0,0,0,0.1);
     }
-
-    button {
-      padding: 10px 20px;
-      border: none;
-      border-radius: 5px;
-      background-color: #28a745;
-      color: #fff;
-      font-size: 16px;
+    .upload-icon {
+      border: 2px dashed #aaa;
+      text-align: center;
+      padding: 20px;
       cursor: pointer;
+      background-color: white;
     }
-
-    .price-box, .buy-box {
-      padding: 15px;
-      background: #fff;
-      margin-top: 20px;
-      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-      border-radius: 10px;
+    #preview img {
+      max-width: 100%;
+      margin: 10px auto;
+      display: block;
+      border-radius: 8px;
     }
-
-    .nav-panel {
+    .nav {
       position: fixed;
-      top: 0;
       right: -100%;
-      width: 100%;
+      top: 0;
+      width: 80%;
       height: 100%;
-      background-color: rgba(255,255,255,0.95);
-      transition: right 0.3s ease-in-out;
+      background: white;
+      box-shadow: -2px 0 10px rgba(0,0,0,0.2);
+      transition: 0.3s;
+      padding: 20px;
       z-index: 1000;
-      padding: 40px 20px;
-      box-sizing: border-box;
     }
-
-    .nav-panel.open {
+    .nav.open {
       right: 0;
     }
-
-    .nav-panel a {
+    .nav a {
       display: block;
-      margin-bottom: 20px;
-      font-size: 18px;
+      margin: 15px 0;
       color: #333;
+      font-size: 18px;
       text-decoration: none;
-    }
-
-    @media screen and (max-width: 768px) {
-      .buttons {
-        flex-direction: column;
-        gap: 10px;
-      }
     }
   </style>
 </head>
-
 <body>
   <header>
-    <div>بازار ارزوئیه</div>
-    <div class="datetime" id="datetime"></div>
+    <div class="datetime-box" id="datetime">در حال بارگذاری...</div>
+    بازار ارزوئیه
   </header>
+  <div class="container" ontouchstart="openNav()">
+    <input type="text" id="title" placeholder="نام محصول">
+    <input type="text" id="price" placeholder="قیمت">
+    <input type="text" id="seller" placeholder="نام فروشنده">
+    <input type="text" id="contact" placeholder="تماس با فروشنده">
+    <input type="text" id="address" placeholder="آدرس">
 
-  <div class="container">
-    <div class="field">
-      <label>نام محصول</label>
-      <input type="text" id="name">
+    <div class="upload-icon" onclick="document.getElementById('images').click()">
+      آپلود تصاویر
     </div>
-    <div class="field">
-      <label>قیمت</label>
-      <input type="text" id="price">
-    </div>
-    <div class="field">
-      <label>نام فروشنده</label>
-      <input type="text" id="seller">
-    </div>
-    <div class="field">
-      <label>تماس با فروشنده</label>
-      <input type="text" id="contact">
-    </div>
-    <div class="field">
-      <label>آدرس</label>
-      <input type="text" id="address">
+    <input type="file" id="images" accept="image/*" multiple style="display:none">
+    <div id="preview"></div>
+
+    <textarea id="description" placeholder="توضیحات محصول"></textarea>
+
+    <div class="row">
+      <button onclick="shareWhatsApp()">اشتراک‌گذاری در واتساپ</button>
+      <button onclick="saveToSheet()">ذخیره</button>
+      <button onclick="reserveProduct()">رزرو</button>
     </div>
 
-    <div class="field">
-      <label>تصویر محصول (تا ۵ عدد)</label>
-      <input type="file" id="images" accept="image/*" multiple style="display:none">
-      <button onclick="document.getElementById('images').click()">
-        📤 بارگذاری عکس
-      </button>
-      <div class="preview" id="preview"></div>
-    </div>
-
-    <div class="price-box">
-      قیمت نهایی: <span id="final-price">0</span> تومان
-    </div>
-
-    <div class="buy-box">
-      تعداد باقی‌مانده: <span id="stock">5</span>
-    </div>
-
-    <div class="field">
-      <label>رزرو محصول</label>
-      <input type="text" id="buyer-name" placeholder="نام خریدار">
-      <input type="text" id="buyer-phone" placeholder="شماره تماس">
-      <input type="text" id="buyer-address" placeholder="آدرس">
-    </div>
-
-    <div class="buttons">
-      <button onclick="shareToWhatsApp()">📤 اشتراک‌گذاری</button>
-      <button onclick="saveData()">💾 ذخیره</button>
-      <button onclick="reserveProduct()">📝 رزرو</button>
+    <div>
+      <label>فرم رزرو:</label>
+      <input type="text" id="buyerName" placeholder="نام خریدار">
+      <input type="text" id="buyerPhone" placeholder="شماره تماس">
+      <input type="text" id="buyerAddress" placeholder="آدرس">
     </div>
   </div>
 
-  <div class="nav-panel" id="nav">
+  <div class="nav" id="nav">
     <a href="#">اشتراک‌گذاری</a>
     <a href="#">درباره ما</a>
     <a href="#">تماس با ما</a>
   </div>
 
   <script>
-    document.addEventListener('touchstart', handleTouchStart, false);
-    document.addEventListener('touchmove', handleTouchMove, false);
-
-    let xDown = null;
-
-    function handleTouchStart(evt) {
-      xDown = evt.touches[0].clientX;
+    function openNav() {
+      document.getElementById('nav').classList.add('open');
     }
 
-    function handleTouchMove(evt) {
-      if (!xDown) return;
-      let xUp = evt.touches[0].clientX;
-      let xDiff = xDown - xUp;
-      if (xDiff > 50) document.getElementById('nav').classList.add('open');
-      xDown = null;
-    }
+    document.body.addEventListener('touchstart', function(e) {
+      if (e.touches[0].clientX < 50) {
+        openNav();
+      }
+    });
 
     function updateDateTime() {
       const now = new Date();
-      const date = now.toLocaleDateString('fa-IR');
+      const options = { year: 'numeric', month: 'long', day: 'numeric', weekday: 'long' };
       const time = now.toLocaleTimeString('fa-IR');
-      document.getElementById('datetime').innerText = `${date} - ${time}`;
+      const date = now.toLocaleDateString('fa-IR', options);
+      document.getElementById('datetime').textContent = `${date} - ${time}`;
     }
     setInterval(updateDateTime, 1000);
     updateDateTime();
 
-    function shareToWhatsApp() {
-      const img = document.querySelector('#preview img')?.src || '';
-      const data = `نام ${name.value}\nقیمت ${price.value}\nفروشنده ${seller.value}\nتماس ${contact.value}\nآدرس ${address.value}`;
-      const msg = img + '\n' + data;
-      window.open(`https://wa.me/989136666552?text=${encodeURIComponent(msg)}`);
-    }
-
-    function saveData() {
-      alert('ذخیره شد (به‌صورت نمایشی)');
-    }
-
-    function reserveProduct() {
-      const name = document.getElementById('buyer-name').value;
-      const phone = document.getElementById('buyer-phone').value;
-      const address = document.getElementById('buyer-address').value;
-      alert(`رزرو با موفقیت انجام شد برای ${name}`);
-    }
-
-    images.onchange = () => {
+    document.getElementById('images').addEventListener('change', function(event) {
+      const files = event.target.files;
+      const preview = document.getElementById('preview');
       preview.innerHTML = '';
-      [...images.files].slice(0, 5).forEach(file => {
+      for (let i = 0; i < Math.min(files.length, 5); i++) {
         const reader = new FileReader();
-        reader.onload = e => {
+        reader.onload = function(e) {
           const img = document.createElement('img');
           img.src = e.target.result;
           preview.appendChild(img);
         };
-        reader.readAsDataURL(file);
-      });
-    };
+        reader.readAsDataURL(files[i]);
+      }
+    });
+
+    function shareWhatsApp() {
+      const title = document.getElementById('title').value;
+      const price = document.getElementById('price').value;
+      const seller = document.getElementById('seller').value;
+      const contact = document.getElementById('contact').value;
+      const address = document.getElementById('address').value;
+      const description = document.getElementById('description').value;
+      const jsonText = `نام ${title}\nقیمت ${price}\nفروشنده ${seller}\nتماس ${contact}\nآدرس ${address}\nتوضیحات ${description}`;
+      const url = `https://wa.me/989136666552?text=${encodeURIComponent(jsonText)}`;
+      window.open(url, '_blank');
+    }
+
+    function saveToSheet() {
+      alert("ذخیره‌سازی اطلاعات در Google Sheets در نسخه بعدی افزوده خواهد شد.");
+    }
+
+    function reserveProduct() {
+      const name = document.getElementById('buyerName').value;
+      const phone = document.getElementById('buyerPhone').value;
+      const address = document.getElementById('buyerAddress').value;
+      alert(`رزرو ثبت شد برای ${name}`);
+    }
   </script>
 </body>
-
 </html>
