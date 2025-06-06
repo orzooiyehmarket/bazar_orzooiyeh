@@ -1,116 +1,159 @@
 <!DOCTYPE html>
-<html lang="fa">
+<html lang="fa" dir="rtl">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>بازار ارزوئیه</title>
-  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
   <style>
-    body { direction: rtl; background: #fefce8; font-family: sans-serif; }
-    h1 { animation: rainbow 5s linear infinite; font-weight: bold; }
-    @keyframes rainbow {
-      0% { color: red; }
-      25% { color: orange; }
-      50% { color: green; }
-      75% { color: blue; }
-      100% { color: violet; }
+    body {
+      font-family: sans-serif;
+      background: linear-gradient(to bottom left, #fdf6e3, #e0f7fa);
+      margin: 0;
+      padding: 20px;
+    }
+
+    h1 {
+      text-align: center;
+      font-size: 32px;
+      color: #e91e63;
+      animation: fadeIn 3s ease-in-out infinite alternate;
+    }
+
+    @keyframes fadeIn {
+      0% { opacity: 0.2; }
+      100% { opacity: 1; }
+    }
+
+    .form-group {
+      margin-bottom: 12px;
+    }
+
+    label {
+      display: block;
+      font-weight: bold;
+      margin-bottom: 5px;
+    }
+
+    input[type="text"], input[type="number"], input[type="file"] {
+      width: 100%;
+      padding: 8px;
+      border: 1px solid #ccc;
+      border-radius: 10px;
+    }
+
+    #productImage {
+      max-width: 100%;
+      margin-top: 10px;
+      border-radius: 12px;
+    }
+
+    .buttons {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 20px;
+      gap: 10px;
+    }
+
+    button {
+      flex: 1;
+      padding: 12px;
+      background-color: #009688;
+      color: white;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      font-size: 16px;
+    }
+
+    button:hover {
+      background-color: #00796b;
     }
   </style>
 </head>
-<body class="p-4">
+<body>
+  <h1>بازار ارزوئیه</h1>
 
-  <h1 class="text-3xl text-center mb-6">بازار ارزوئیه</h1>
+  <div class="form-group">
+    <label for="name">نام محصول:</label>
+    <input type="text" id="name" />
+  </div>
 
-  <form id="فرم_محصول" class="bg-white p-4 rounded-xl shadow-lg space-y-4">
-    <input type="hidden" id="شناسه_محصول">
+  <div class="form-group">
+    <label for="price">قیمت:</label>
+    <input type="number" id="price" />
+  </div>
 
-    <div>
-      <label class="block text-sm">نام محصول</label>
-      <input id="نام" class="w-full border p-2 rounded" required>
-    </div>
+  <div class="form-group">
+    <label for="quantity">تعداد:</label>
+    <input type="number" id="quantity" />
+  </div>
 
-    <div>
-      <label class="block text-sm">قیمت (تومان)</label>
-      <input id="قیمت" type="number" class="w-full border p-2 rounded" required>
-    </div>
+  <div class="form-group">
+    <label for="contact">تماس با فروشنده:</label>
+    <input type="text" id="contact" />
+  </div>
 
-    <div>
-      <label class="block text-sm">تعداد موجودی</label>
-      <input id="تعداد" type="number" class="w-full border p-2 rounded" required>
-    </div>
+  <div class="form-group">
+    <label for="imageUpload">تصویر محصول:</label>
+    <input type="file" id="imageUpload" accept="image/*" />
+    <img id="productImage" src="" alt="پیش‌نمایش تصویر" />
+  </div>
 
-    <div>
-      <label class="block text-sm">شماره تماس فروشنده</label>
-      <input id="شماره_تماس" type="tel" class="w-full border p-2 rounded" required>
-    </div>
-
-    <div>
-      <label class="block text-sm">بارگذاری تصویر</label>
-      <input id="تصویر" type="file" accept="image/*" class="w-full border p-2 rounded">
-      <img id="پیش‌نمایش_تصویر" src="" alt="پیش‌نمایش" class="mt-2 w-40 h-40 object-cover rounded hidden">
-    </div>
-
-    <div class="flex gap-4">
-      <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded">ذخیره محصول</button>
-      <a id="اشتراک_واتساپ" class="bg-green-500 text-white px-4 py-2 rounded" target="_blank">اشتراک‌گذاری در واتساپ</a>
-    </div>
-  </form>
+  <div class="buttons">
+    <button onclick="saveData()">ذخیره محصول</button>
+    <button onclick="shareOnWhatsApp()">اشتراک‌گذاری در واتساپ</button>
+    <button onclick="reserveProduct()">رزرو</button>
+  </div>
 
   <script>
-    function تولید_شناسه() {
-      const تاریخ = new Date();
-      const سال = تاریخ.getFullYear();
-      const ماه = ("0" + (تاریخ.getMonth() + 1)).slice(-2);
-      const روز = ("0" + تاریخ.getDate()).slice(-2);
-      const رند = Math.floor(Math.random() * 9000 + 1000);
-      return `${سال}${ماه}${روز}-${رند}`;
+    let imageDataUrl = '';
+
+    document.getElementById('imageUpload').addEventListener('change', function(event) {
+      const file = event.target.files[0];
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        imageDataUrl = e.target.result;
+        document.getElementById('productImage').src = imageDataUrl;
+      };
+      if (file) {
+        reader.readAsDataURL(file);
+      }
+    });
+
+    function toPersianDate(date) {
+      const options = { year: 'numeric', month: '2-digit', day: '2-digit' };
+      return new Intl.DateTimeFormat('fa-IR', options).format(date);
     }
 
-    document.getElementById("شناسه_محصول").value = تولید_شناسه();
+    function shareOnWhatsApp() {
+      const name = document.getElementById("name").value;
+      const price = document.getElementById("price").value;
+      const quantity = document.getElementById("quantity").value;
+      const contact = document.getElementById("contact").value;
+      const date = toPersianDate(new Date());
 
-    document.getElementById("تصویر").addEventListener("change", function () {
-      const فایل = this.files[0];
-      const خواننده = new FileReader();
-      خواننده.onload = function (e) {
-        const تصویر = document.getElementById("پیش‌نمایش_تصویر");
-        تصویر.src = e.target.result;
-        تصویر.classList.remove("hidden");
+      const productData = {
+        "نام": name,
+        "قیمت": price + " تومان",
+        "تعداد": quantity,
+        "تماس با فروشنده": contact,
+        "تاریخ": date
       };
-      if (فایل) خواننده.readAsDataURL(فایل);
-    });
 
-    document.getElementById("فرم_محصول").addEventListener("submit", function (e) {
-      e.preventDefault();
-      alert("محصول ذخیره شد (برای تست).");
-    });
-
-    function لینک_واتساپ(اطلاعات) {
-      const شماره = "09136666552";
-      const متن = `🛒 محصول جدید در بازار ارزوئیه:
-📦 نام محصول: ${اطلاعات.نام}
-💰 قیمت: ${اطلاعات.قیمت} تومان
-📞 تماس فروشنده: ${اطلاعات.شماره}
-📸 تصویر: ${اطلاعات.تصویر ? اطلاعات.تصویر : "ندارد"}
-📅 تاریخ: ${اطلاعات.تاریخ}
-🆔 شناسه محصول: ${اطلاعات.شناسه}`;
-      return `https://wa.me/98${شماره}?text=${encodeURIComponent(متن)}`;
+      const jsonText = JSON.stringify(productData, null, 2);
+      const message = `${imageDataUrl}\n\n${jsonText}`;
+      const phoneNumber = "09136666552";
+      const whatsappUrl = `https://wa.me/98${phoneNumber}?text=${encodeURIComponent(message)}`;
+      window.open(whatsappUrl, '_blank');
     }
 
-    document.getElementById("اشتراک_واتساپ").addEventListener("click", function (e) {
-      e.preventDefault();
+    function saveData() {
+      alert("🔒 ذخیره‌سازی به‌زودی متصل می‌شود...");
+    }
 
-      const اطلاعات = {
-        نام: document.getElementById("نام").value,
-        قیمت: document.getElementById("قیمت").value,
-        شماره: document.getElementById("شماره_تماس").value,
-        تصویر: document.getElementById("پیش‌نمایش_تصویر").src || "",
-        تاریخ: new Date().toLocaleDateString("fa-IR"),
-        شناسه: document.getElementById("شناسه_محصول").value
-      };
-
-      const لینک = لینک_واتساپ(اطلاعات);
-      window.open(لینک, "_blank");
-    });
+    function reserveProduct() {
+      alert("📝 فرم رزرو به‌زودی افزوده خواهد شد...");
+    }
   </script>
 </body>
 </html>
