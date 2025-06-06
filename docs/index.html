@@ -6,197 +6,174 @@
   <title>بازار ارزوئیه</title>
   <style>
     body {
-      font-family: sans-serif;
       margin: 0;
-      background: #fdfdfd;
+      font-family: 'Vazir', sans-serif;
+      background-color: #fefefe;
+      direction: rtl;
     }
     header {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      padding: 1rem;
-      background: linear-gradient(to left, #ff6f61, #ffcc70);
-      color: white;
-      font-size: 1.4rem;
-    }
-    #time-box {
-      background: rgba(0, 0, 0, 0.2);
-      padding: 0.5rem 1rem;
-      border-radius: 1rem;
-    }
-    #animated-title {
+      background: linear-gradient(to left, #ffd700, #ffa500);
+      padding: 10px 20px;
+      color: #fff;
+      font-size: 22px;
       font-weight: bold;
-      animation: rainbow 5s infinite;
+      position: relative;
     }
-    @keyframes rainbow {
-      0% { color: red; }
-      20% { color: orange; }
-      40% { color: green; }
-      60% { color: blue; }
-      80% { color: indigo; }
-      100% { color: violet; }
-    }
-    .container {
-      padding: 1rem;
-    }
-    input, textarea, button, select {
-      display: block;
-      width: 100%;
-      margin: 0.5rem 0;
-      padding: 0.6rem;
-      font-size: 1rem;
-      border-radius: 0.5rem;
-      border: 1px solid #ccc;
-    }
-    .shadow-box {
+    #clockBox {
+      background-color: #fff;
+      color: #000;
+      padding: 5px 10px;
+      border-radius: 12px;
+      font-size: 14px;
       box-shadow: 0 2px 5px rgba(0,0,0,0.2);
-      margin-bottom: 1rem;
-      padding: 0.5rem;
-      background: #fff;
-      border-radius: 1rem;
     }
-    .image-preview {
-      max-width: 100%;
-      margin-top: 0.5rem;
-      border-radius: 1rem;
-    }
-    .buttons {
-      display: flex;
-      justify-content: space-between;
-      gap: 0.5rem;
-    }
-    .buttons button {
-      flex: 1;
-      background: #4CAF50;
-      color: white;
-      border: none;
-    }
-    .upload-icon {
-      background: none;
-      border: none;
-      font-size: 2rem;
-      cursor: pointer;
-    }
-    /* Navigation */
-    .nav-panel {
+    .nav-drawer {
       position: fixed;
-      right: -100%;
       top: 0;
-      height: 100vh;
+      right: -100%;
       width: 100%;
-      background: rgba(0, 0, 0, 0.8);
-      color: white;
-      padding: 2rem;
-      transition: right 0.4s ease-in-out;
-      display: flex;
-      flex-direction: column;
-      gap: 2rem;
+      height: 100%;
+      background-color: #fff;
+      z-index: 999;
+      transition: right 0.3s ease;
+      padding: 50px 20px;
     }
-    .nav-panel.active {
+    .nav-drawer ul {
+      list-style: none;
+      padding: 0;
+    }
+    .nav-drawer li {
+      font-size: 20px;
+      margin-bottom: 20px;
+      border-bottom: 1px solid #ccc;
+      padding-bottom: 10px;
+    }
+    .show-drawer {
       right: 0;
     }
-    .nav-toggle {
-      position: fixed;
-      right: 1rem;
-      top: 1rem;
-      font-size: 2rem;
-      color: white;
-      background: none;
+    .image-preview {
+      display: flex;
+      gap: 10px;
+      margin-top: 10px;
+    }
+    .image-preview img {
+      width: 100px;
+      height: 100px;
+      object-fit: cover;
+      border-radius: 8px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+    }
+    .form-section {
+      padding: 20px;
+    }
+    .form-section label {
+      display: block;
+      margin-bottom: 5px;
+      font-weight: bold;
+    }
+    .form-section input, .form-section textarea {
+      width: 100%;
+      padding: 10px;
+      margin-bottom: 15px;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+    }
+    .form-actions {
+      display: flex;
+      justify-content: space-around;
+      padding: 10px;
+    }
+    .form-actions button {
+      padding: 10px 20px;
       border: none;
-      z-index: 999;
+      background-color: #28a745;
+      color: #fff;
+      border-radius: 8px;
+      font-size: 16px;
+      cursor: pointer;
+    }
+    .form-actions button:hover {
+      opacity: 0.8;
+    }
+    .field-box {
+      background-color: #fff;
+      border: 1px solid #ccc;
+      padding: 10px;
+      margin: 10px 0;
+      box-shadow: 0 3px 6px rgba(0,0,0,0.1);
+      border-radius: 8px;
     }
   </style>
 </head>
 <body>
   <header>
-    <div id="time-box"></div>
-    <div id="animated-title">بازار ارزوئیه</div>
+    <div>بازار ارزوئیه</div>
+    <div id="clockBox"></div>
   </header>
-  <button class="nav-toggle" onclick="toggleNav()">☰</button>
-  <div class="nav-panel" id="navPanel">
-    <a href="#">اشتراک‌گذاری</a>
-    <a href="#">درباره ما</a>
-    <a href="#">تماس با ما</a>
-    <button onclick="toggleNav()">بستن ×</button>
+
+  <div class="form-section" id="form">
+    <label for="productName">نام محصول</label>
+    <input type="text" id="productName" placeholder="مثلاً: عسل کوهی">
+
+    <label for="price">قیمت (تومان)</label>
+    <input type="number" id="price" placeholder="مثلاً: ۱۲۰۰۰۰">
+
+    <label for="seller">نام فروشنده</label>
+    <input type="text" id="seller" placeholder="مثلاً: احمد رضایی">
+
+    <label for="phone">تماس با فروشنده</label>
+    <input type="tel" id="phone" placeholder="مثلاً: ۰۹۱۳xxxxxxx">
+
+    <label for="address">آدرس</label>
+    <textarea id="address" placeholder="مثلاً: ارزوئیه، محله بالا"></textarea>
+
+    <label>تصاویر محصول (حداکثر ۵ عدد)</label>
+    <input type="file" id="imageUpload" multiple accept="image/*">
+    <div class="image-preview" id="imagePreview"></div>
   </div>
-  <div class="container">
-    <div class="shadow-box">
-      <label>نام محصول</label>
-      <input type="text" id="name">
-      <label>قیمت</label>
-      <input type="number" id="price">
-      <label>فروشنده</label>
-      <input type="text" id="seller">
-      <label>تماس با فروشنده</label>
-      <input type="text" id="phone">
-      <label>آدرس</label>
-      <textarea id="address"></textarea>
-    </div>
-    <div class="shadow-box">
-      <label>آپلود تصویر</label>
-      <input type="file" id="images" accept="image/*" multiple style="display:none" onchange="previewImages(event)">
-      <button class="upload-icon" onclick="document.getElementById('images').click()">📤</button>
-      <div id="image-preview"></div>
-    </div>
-    <div class="buttons">
-      <button onclick="saveProduct()">ذخیره</button>
-      <button onclick="shareWhatsApp()">اشتراک‌گذاری</button>
-      <button onclick="reserveProduct()">رزرو</button>
-    </div>
+
+  <div class="form-actions">
+    <button onclick="shareProduct()">اشتراک‌گذاری در واتساپ</button>
+    <button onclick="saveProduct()">ذخیره محصول</button>
+    <button onclick="openReserveForm()">رزرو</button>
   </div>
+
+  <div class="nav-drawer" id="navDrawer">
+    <ul>
+      <li>اشتراک‌گذاری</li>
+      <li>درباره ما</li>
+      <li>تماس با ما</li>
+    </ul>
+  </div>
+
   <script>
-    function toggleNav() {
-      const panel = document.getElementById('navPanel');
-      panel.classList.toggle('active');
-    }
+    // ساعت دیجیتال
     function updateClock() {
       const now = new Date();
       const time = now.toLocaleTimeString('fa-IR');
       const date = now.toLocaleDateString('fa-IR');
-      document.getElementById('time-box').innerText = date + ' - ' + time;
+      document.getElementById('clockBox').textContent = date + ' - ' + time;
     }
     setInterval(updateClock, 1000);
     updateClock();
 
-    function previewImages(event) {
-      const files = event.target.files;
-      const preview = document.getElementById('image-preview');
-      preview.innerHTML = '';
-      for (let i = 0; i < files.length && i < 5; i++) {
-        const reader = new FileReader();
-        reader.onload = function(e) {
-          const img = document.createElement('img');
-          img.src = e.target.result;
-          img.className = 'image-preview';
-          preview.appendChild(img);
-        }
-        reader.readAsDataURL(files[i]);
+    // نویگیشن با کشیدن از راست به چپ
+    let startX = 0;
+    document.body.addEventListener('touchstart', e => {
+      startX = e.touches[0].clientX;
+    });
+    document.body.addEventListener('touchend', e => {
+      const endX = e.changedTouches[0].clientX;
+      if (startX - endX > 100) {
+        document.getElementById('navDrawer').classList.add('show-drawer');
       }
-    }
-    function shareWhatsApp() {
-      const name = document.getElementById('name').value;
-      const price = document.getElementById('price').value;
-      const seller = document.getElementById('seller').value;
-      const phone = document.getElementById('phone').value;
-      const address = document.getElementById('address').value;
-      const date = new Date().toLocaleDateString('fa-IR');
-
-      const message = `تصویر محصول بالا 👆\n\nنام ${name}\nقیمت ${price} تومان\nفروشنده ${seller}\nشماره ${phone}\nآدرس ${address}\nتاریخ ${date}`;
-
-      const waUrl = `https://wa.me/989136666552?text=${encodeURIComponent(message)}`;
-      window.open(waUrl, '_blank');
-    }
-    function saveProduct() {
-      alert('ذخیره‌سازی اطلاعات (اتصال به Google Sheet نیاز دارد)');
-    }
-    function reserveProduct() {
-      const name = prompt('نام شما:');
-      const phone = prompt('شماره تماس:');
-      const addr = prompt('آدرس شما:');
-      if (name && phone) {
-        alert('درخواست رزرو شما ثبت شد. (در آینده به Google Sheet ارسال می‌شود.)');
-      }
-    }
+    });
+    document.getElementById('navDrawer').addEventListener('click', () => {
+      document.getElementById('navDrawer').classList.remove('show-drawer');
+    });
   </script>
 </body>
 </html>
