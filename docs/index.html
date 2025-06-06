@@ -2,118 +2,112 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>بازار ارزوئیه</title>
+  <title>ثبت محصول - بازار ارزوئیه</title>
   <style>
     body {
       font-family: sans-serif;
-      direction: rtl;
+      background: #fff8f0;
       padding: 1rem;
-      background: #fefefe;
+      direction: rtl;
     }
     h1 {
       text-align: center;
       font-size: 2rem;
-      color: #fff;
-      background: linear-gradient(90deg, #ff6a00, #ee0979);
+      background: linear-gradient(90deg, #e67e22, #f39c12);
+      color: white;
       padding: 0.5rem;
-      border-radius: 12px;
-      animation: fadein 2s ease-in-out infinite alternate;
+      border-radius: 16px;
+      animation: colorchange 5s infinite alternate;
     }
-    @keyframes fadein {
-      from { opacity: 0.6; }
-      to { opacity: 1; }
+    @keyframes colorchange {
+      0% { background-color: #f39c12; }
+      100% { background-color: #e74c3c; }
     }
     form {
-      max-width: 500px;
+      max-width: 400px;
       margin: 2rem auto;
-      background: #fff;
-      padding: 1rem;
-      border-radius: 10px;
-      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+      background: white;
+      padding: 1.5rem;
+      border-radius: 12px;
+      box-shadow: 0 0 15px rgba(0,0,0,0.1);
     }
-    label {
-      display: block;
-      margin-top: 1rem;
-    }
-    input, button {
+    input, select {
       width: 100%;
-      padding: 0.5rem;
-      margin-top: 0.25rem;
-      border-radius: 6px;
+      padding: 0.7rem;
+      margin: 0.5rem 0;
+      border-radius: 8px;
       border: 1px solid #ccc;
+      font-size: 1rem;
     }
     button {
-      background-color: #28a745;
+      background: #27ae60;
       color: white;
-      margin-top: 1.5rem;
+      padding: 0.7rem;
+      width: 100%;
+      font-size: 1rem;
+      border: none;
+      border-radius: 8px;
       cursor: pointer;
+    }
+    .share-btn {
+      background: #25d366;
+      margin-top: 1rem;
     }
   </style>
 </head>
 <body>
   <h1>بازار ارزوئیه</h1>
   <form id="productForm">
-    <label>نام فروشنده:
-      <input type="text" id="name" required>
-    </label>
-    <label>نام محصول:
-      <input type="text" id="product" required>
-    </label>
-    <label>قیمت (تومان):
-      <input type="number" id="price" required>
-    </label>
-    <label>تعداد موجود:
-      <input type="number" id="quantity" required>
-    </label>
-    <label>شماره تماس:
-      <input type="tel" id="phone" required>
-    </label>
+    <input type="text" name="product" placeholder="نام محصول" required>
+    <input type="number" name="price" placeholder="قیمت (تومان)" required>
+    <input type="number" name="quantity" placeholder="تعداد موجودی" required>
+    <input type="text" name="category" placeholder="دسته‌بندی (مثلاً لبنیات، گیاه دارویی...)" required>
+    <input type="text" name="name" placeholder="نام فروشنده" required>
+    <input type="tel" name="phone" placeholder="شماره تماس" required>
     <button type="submit">ثبت محصول</button>
+    <button type="button" class="share-btn" onclick="shareJSON()">اشتراک‌گذاری محصول در واتساپ</button>
   </form>  <script>
+    const FORM_URL = 'https://script.google.com/macros/s/AKfycbyHUiGDSpKq6_vsC5jgc7Q0H9yX98KHDKZhT2O_gHze8-yniK_oLqOg3vwE7tQVeoMlHg/exec';
     const form = document.getElementById('productForm');
 
-    function sendToGoogleSheet(data) {
-      fetch('https://script.google.com/macros/s/AKfycbyHUiGDSpKq6_vsC5jgc7Q0H9yX98KHDKZhT2O_gHze8-yniK_oLqOg3vwE7tQVeoMlHg/exec', {
-        method: 'POST',
-        body: JSON.stringify(data),
-        headers: {
-          'Content-Type': 'application/json'
-        }
-      }).then(res => {
-        alert('محصول با موفقیت ثبت شد.');
-      }).catch(err => {
-        alert('خطا در ارسال اطلاعات.');
-      });
-    }
-
-    form.addEventListener('submit', function (e) {
+    form.addEventListener('submit', async (e) => {
       e.preventDefault();
+      const data = Object.fromEntries(new FormData(form).entries());
 
-      const formData = {
-        name: document.getElementById('name').value,
-        product: document.getElementById('product').value,
-        price: document.getElementById('price').value,
-        quantity: document.getElementById('quantity').value,
-        phone: document.getElementById('phone').value,
-        date: new Date().toISOString()
-      };
-
-      if (!navigator.onLine) {
-        let pending = JSON.parse(localStorage.getItem('pendingForms')) || [];
-        pending.push(formData);
-        localStorage.setItem('pendingForms', JSON.stringify(pending));
-        alert('آفلاین هستید. اطلاعات ذخیره شد و بعداً ارسال می‌شود.');
+      try {
+        await fetch(FORM_URL, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(data)
+        });
+        alert('محصول با موفقیت ثبت شد!');
+        localStorage.removeItem('unsavedProduct');
         form.reset();
-      } else {
-        sendToGoogleSheet(formData);
-        form.reset();
+      } catch (err) {
+        alert('آفلاین هستید. اطلاعات ذخیره شد تا بعداً ارسال شود.');
+        localStorage.setItem('unsavedProduct', JSON.stringify(data));
       }
     });
 
     window.addEventListener('online', () => {
-      let pending = JSON.parse(localStorage.getItem('pendingForms')) || [];
-      pending.forEach(data => sendToGoogleSheet(data));
-      localStorage.removeItem('pendingForms');
+      const offlineData = localStorage.getItem('unsavedProduct');
+      if (offlineData) {
+        fetch(FORM_URL, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: offlineData
+        }).then(() => {
+          alert('اطلاعات ذخیره‌شده با موفقیت ارسال شد.');
+          localStorage.removeItem('unsavedProduct');
+        });
+      }
     });
+
+    function shareJSON() {
+      const data = Object.fromEntries(new FormData(form).entries());
+      const message = `📦 بازار ارزوئیه\nنام محصول: ${data.product}\nقیمت: ${data.price} تومان\nموجودی: ${data.quantity}\nدسته‌بندی: ${data.category}\nفروشنده: ${data.name}\n📞 ${data.phone}`;
+      const url = `https://wa.me/?text=${encodeURIComponent(message)}`;
+      window.open(url, '_blank');
+    }
   </script></body>
 </html>
