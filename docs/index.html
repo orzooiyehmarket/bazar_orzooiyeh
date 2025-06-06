@@ -21,100 +21,95 @@
 
   <h1 class="text-3xl text-center mb-6">بازار ارزوئیه</h1>
 
-  <form id="productForm" class="bg-white p-4 rounded-xl shadow-lg space-y-4">
-    <input type="hidden" id="productId">
+  <form id="فرم_محصول" class="bg-white p-4 rounded-xl shadow-lg space-y-4">
+    <input type="hidden" id="شناسه_محصول">
 
     <div>
       <label class="block text-sm">نام محصول</label>
-      <input id="productName" class="w-full border p-2 rounded" required>
+      <input id="نام" class="w-full border p-2 rounded" required>
     </div>
 
     <div>
-      <label class="block text-sm">قیمت</label>
-      <input id="productPrice" type="number" class="w-full border p-2 rounded" required>
+      <label class="block text-sm">قیمت (تومان)</label>
+      <input id="قیمت" type="number" class="w-full border p-2 rounded" required>
     </div>
 
     <div>
-      <label class="block text-sm">تعداد</label>
-      <input id="productQty" type="number" class="w-full border p-2 rounded" required>
+      <label class="block text-sm">تعداد موجودی</label>
+      <input id="تعداد" type="number" class="w-full border p-2 rounded" required>
     </div>
 
     <div>
       <label class="block text-sm">شماره تماس فروشنده</label>
-      <input id="productContact" type="tel" class="w-full border p-2 rounded" required>
+      <input id="شماره_تماس" type="tel" class="w-full border p-2 rounded" required>
     </div>
 
     <div>
       <label class="block text-sm">بارگذاری تصویر</label>
-      <input id="productImage" type="file" accept="image/*" class="w-full border p-2 rounded">
-      <img id="productImagePreview" src="" alt="پیش‌نمایش" class="mt-2 w-40 h-40 object-cover rounded hidden">
+      <input id="تصویر" type="file" accept="image/*" class="w-full border p-2 rounded">
+      <img id="پیش‌نمایش_تصویر" src="" alt="پیش‌نمایش" class="mt-2 w-40 h-40 object-cover rounded hidden">
     </div>
 
     <div class="flex gap-4">
       <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded">ذخیره محصول</button>
-      <a id="whatsapp-share" class="bg-green-500 text-white px-4 py-2 rounded" target="_blank">اشتراک‌گذاری در واتساپ</a>
+      <a id="اشتراک_واتساپ" class="bg-green-500 text-white px-4 py-2 rounded" target="_blank">اشتراک‌گذاری در واتساپ</a>
     </div>
   </form>
 
   <script>
-    // تولید شناسه خودکار
-    function generateProductId() {
-      const date = new Date();
-      const year = date.getFullYear();
-      const month = ("0" + (date.getMonth() + 1)).slice(-2);
-      const day = ("0" + date.getDate()).slice(-2);
-      const rand = Math.floor(Math.random() * 9000 + 1000); // 4 رقم تصادفی
-      return `${year}${month}${day}-${rand}`;
+    function تولید_شناسه() {
+      const تاریخ = new Date();
+      const سال = تاریخ.getFullYear();
+      const ماه = ("0" + (تاریخ.getMonth() + 1)).slice(-2);
+      const روز = ("0" + تاریخ.getDate()).slice(-2);
+      const رند = Math.floor(Math.random() * 9000 + 1000);
+      return `${سال}${ماه}${روز}-${رند}`;
     }
 
-    document.getElementById("productId").value = generateProductId();
+    document.getElementById("شناسه_محصول").value = تولید_شناسه();
 
-    // پیش‌نمایش تصویر
-    document.getElementById("productImage").addEventListener("change", function () {
-      const file = this.files[0];
-      const reader = new FileReader();
-      reader.onload = function (e) {
-        const img = document.getElementById("productImagePreview");
-        img.src = e.target.result;
-        img.classList.remove("hidden");
+    document.getElementById("تصویر").addEventListener("change", function () {
+      const فایل = this.files[0];
+      const خواننده = new FileReader();
+      خواننده.onload = function (e) {
+        const تصویر = document.getElementById("پیش‌نمایش_تصویر");
+        تصویر.src = e.target.result;
+        تصویر.classList.remove("hidden");
       };
-      if (file) reader.readAsDataURL(file);
+      if (فایل) خواننده.readAsDataURL(فایل);
     });
 
-    // ارسال فرم به Google Sheets (اختیاری اگر وصل شده باشید)
-    document.getElementById("productForm").addEventListener("submit", function (e) {
+    document.getElementById("فرم_محصول").addEventListener("submit", function (e) {
       e.preventDefault();
-      alert("اطلاعات ثبت شد (نمونه). اتصال به شیت باید اینجا فعال شود.");
+      alert("محصول ذخیره شد (برای تست).");
     });
 
-    // ساخت لینک واتساپ
-    function generateWhatsAppLink(productData) {
-      const phoneNumber = "09136666552"; // فقط همین شماره
-      const text = `🛒 محصول جدید از بازار ارزوئیه:
-📦 نام محصول: ${productData.name}
-💰 قیمت: ${productData.price}
-📞 تماس فروشنده: ${productData.contact}
-📸 تصویر: ${productData.image ? productData.image : "ندارد"}
-📅 تاریخ: ${productData.date}
-📌 شناسه: ${productData.id}`;
-      const encodedText = encodeURIComponent(text);
-      return `https://wa.me/98${phoneNumber}?text=${encodedText}`;
+    function لینک_واتساپ(اطلاعات) {
+      const شماره = "09136666552";
+      const متن = `🛒 محصول جدید در بازار ارزوئیه:
+📦 نام محصول: ${اطلاعات.نام}
+💰 قیمت: ${اطلاعات.قیمت} تومان
+📞 تماس فروشنده: ${اطلاعات.شماره}
+📸 تصویر: ${اطلاعات.تصویر ? اطلاعات.تصویر : "ندارد"}
+📅 تاریخ: ${اطلاعات.تاریخ}
+🆔 شناسه محصول: ${اطلاعات.شناسه}`;
+      return `https://wa.me/98${شماره}?text=${encodeURIComponent(متن)}`;
     }
 
-    document.getElementById("whatsapp-share").addEventListener("click", function (e) {
+    document.getElementById("اشتراک_واتساپ").addEventListener("click", function (e) {
       e.preventDefault();
 
-      const productData = {
-        name: document.getElementById("productName").value,
-        price: document.getElementById("productPrice").value,
-        contact: document.getElementById("productContact").value,
-        image: document.getElementById("productImagePreview").src || "",
-        date: new Date().toLocaleDateString("fa-IR"),
-        id: document.getElementById("productId").value
+      const اطلاعات = {
+        نام: document.getElementById("نام").value,
+        قیمت: document.getElementById("قیمت").value,
+        شماره: document.getElementById("شماره_تماس").value,
+        تصویر: document.getElementById("پیش‌نمایش_تصویر").src || "",
+        تاریخ: new Date().toLocaleDateString("fa-IR"),
+        شناسه: document.getElementById("شناسه_محصول").value
       };
 
-      const link = generateWhatsAppLink(productData);
-      window.open(link, "_blank");
+      const لینک = لینک_واتساپ(اطلاعات);
+      window.open(لینک, "_blank");
     });
   </script>
 </body>
