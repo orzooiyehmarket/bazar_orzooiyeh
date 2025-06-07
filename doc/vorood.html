@@ -2,40 +2,32 @@
 <html lang="fa">
 <head>
   <meta charset="UTF-8">
-  <title>نقشه ایران (SVG)</title>
+  <title>نقشه کلیک‌پذیر ایران</title>
   <style>
     body {
-      direction: rtl;
       text-align: center;
+      direction: rtl;
       font-family: Tahoma;
-      background: #f2f2f2;
     }
-    svg {
-      width: 90%;
-      max-width: 800px;
-      margin-top: 30px;
-    }
-    .province {
-      fill: #ddd;
-      stroke: #444;
-      cursor: pointer;
-      transition: fill 0.3s;
-    }
-    .province:hover {
-      fill: #999;
+    img {
+      max-width: 90%;
+      border: 2px solid #aaa;
+      border-radius: 10px;
     }
   </style>
 </head>
 <body>
 
-<h2>نقشه ایران به صورت SVG</h2>
+<h2>روی استان کرمان کلیک کنید</h2>
 
-<svg viewBox="0 0 800 500">
-  <!-- فقط چند استان نمونه: -->
-  <path id="tehran" class="province" d="M100,150 L130,130 L150,160 Z" title="تهران"/>
-  <path id="fars" class="province" d="M200,300 L240,280 L260,310 Z" title="فارس"/>
-  <path id="kerman" class="province" d="M400,350 L450,340 L460,390 Z" title="کرمان"/>
-</svg>
+<img src="https://upload.wikimedia.org/wikipedia/commons/thumb/3/30/Iran_provinces_blank.png/800px-Iran_provinces_blank.png"
+     usemap="#iranmap" alt="نقشه ایران">
+
+<map name="iranmap">
+  <!-- مختصات تقریبی ناحیه کرمان در تصویر بالا -->
+  <area shape="rect" coords="480,360,540,420" href="#kerman" alt="کرمان" title="کرمان"
+        onclick="alert('ورود به استان کرمان - بازار ارزوئیه');">
+</map>
 
 </body>
 </html>
