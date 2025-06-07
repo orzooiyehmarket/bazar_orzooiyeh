@@ -2,42 +2,81 @@
 <html lang="fa">
 <head>
   <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>بازار ارزوئیه</title>
   <style>
     body {
       font-family: Tahoma, sans-serif;
       direction: rtl;
+      margin: 0;
       padding: 20px;
-      background-color: #f9f9f9;
+      background-color: #f0f0f0;
     }
 
     .clock-box {
       background: #eeeeee;
       padding: 10px 15px;
       border-radius: 10px;
-      margin-bottom: 30px;
       text-align: center;
       font-size: 18px;
       font-weight: bold;
+      margin-bottom: 20px;
     }
 
-    .buyers-list {
+    .buyers-section {
       display: flex;
-      flex-direction: column;
-      gap: 10px;
-      max-width: 350px;
+      flex-wrap: wrap;
+      gap: 15px;
+      justify-content: center;
     }
 
-    .buyer {
-      padding: 10px;
-      border-radius: 8px;
-      color: white;
-      font-weight: bold;
+    .buyer-card {
+      background-color: #fff;
+      border-radius: 12px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+      padding: 15px 20px;
+      width: 280px;
+      display: flex;
+      align-items: center;
+      transition: transform 0.2s ease;
+    }
+
+    .buyer-card:hover {
+      transform: scale(1.02);
+    }
+
+    .badge {
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      margin-left: 12px;
+      flex-shrink: 0;
     }
 
     .max-invest { background-color: #d32f2f; } /* قرمز */
     .med-invest { background-color: #388e3c; } /* سبز */
     .min-invest { background-color: #1976d2; } /* آبی */
+
+    .buyer-info {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .buyer-name {
+      font-size: 16px;
+      font-weight: bold;
+    }
+
+    .buyer-amount {
+      font-size: 14px;
+      color: #555;
+    }
+
+    @media (max-width: 600px) {
+      .buyer-card {
+        width: 90%;
+      }
+    }
   </style>
 </head>
 <body>
@@ -46,13 +85,35 @@
   <div class="clock-box" id="clock">در حال بارگذاری ساعت...</div>
 
   <!-- لیست خریداران -->
-  <h2>لیست خریداران</h2>
-  <div class="buyers-list">
-    <div class="buyer max-invest">علی رضایی - ۲۵۰ میلیون تومان</div>
-    <div class="buyer med-invest">سارا محمدی - ۱۲۰ میلیون تومان</div>
-    <div class="buyer min-invest">مجتبی امینی - ۳۰ میلیون تومان</div>
+  <h2 style="text-align:center;">سرمایه‌گذاران</h2>
+
+  <div class="buyers-section">
+    <div class="buyer-card">
+      <div class="badge max-invest"></div>
+      <div class="buyer-info">
+        <div class="buyer-name">علی رضایی</div>
+        <div class="buyer-amount">۲۵۰ میلیون تومان</div>
+      </div>
+    </div>
+
+    <div class="buyer-card">
+      <div class="badge med-invest"></div>
+      <div class="buyer-info">
+        <div class="buyer-name">سارا محمدی</div>
+        <div class="buyer-amount">۱۲۰ میلیون تومان</div>
+      </div>
+    </div>
+
+    <div class="buyer-card">
+      <div class="badge min-invest"></div>
+      <div class="buyer-info">
+        <div class="buyer-name">مجتبی امینی</div>
+        <div class="buyer-amount">۳۰ میلیون تومان</div>
+      </div>
+    </div>
   </div>
 
+  <!-- ساعت شمسی -->
   <script>
     function updateClock() {
       const now = new Date();
@@ -63,7 +124,7 @@
     }
 
     updateClock();
-    setInterval(updateClock, 1000); // به‌روزرسانی هر ثانیه
+    setInterval(updateClock, 1000);
   </script>
 
 </body>
