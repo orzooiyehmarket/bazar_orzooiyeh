@@ -37,7 +37,7 @@
       padding: 15px 20px;
       width: 280px;
       display: flex;
-      align-items: center;
+      flex-direction: column;
       transition: transform 0.2s ease;
     }
 
@@ -45,31 +45,29 @@
       transform: scale(1.02);
     }
 
+    .buyer-name {
+      font-size: 16px;
+      font-weight: bold;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
     .badge {
-      width: 16px;
-      height: 16px;
+      width: 10px;
+      height: 10px;
       border-radius: 50%;
-      margin-left: 12px;
-      flex-shrink: 0;
+      display: inline-block;
     }
 
     .max-invest { background-color: #d32f2f; } /* قرمز */
     .med-invest { background-color: #388e3c; } /* سبز */
     .min-invest { background-color: #1976d2; } /* آبی */
 
-    .buyer-info {
-      display: flex;
-      flex-direction: column;
-    }
-
-    .buyer-name {
-      font-size: 16px;
-      font-weight: bold;
-    }
-
     .buyer-amount {
       font-size: 14px;
       color: #555;
+      margin-top: 5px;
     }
 
     @media (max-width: 600px) {
@@ -89,27 +87,27 @@
 
   <div class="buyers-section">
     <div class="buyer-card">
-      <div class="badge max-invest"></div>
-      <div class="buyer-info">
-        <div class="buyer-name">علی رضایی</div>
-        <div class="buyer-amount">۲۵۰ میلیون تومان</div>
+      <div class="buyer-name">
+        <span class="badge max-invest"></span>
+        علی رضایی
       </div>
+      <div class="buyer-amount">۲۵۰ میلیون تومان</div>
     </div>
 
     <div class="buyer-card">
-      <div class="badge med-invest"></div>
-      <div class="buyer-info">
-        <div class="buyer-name">سارا محمدی</div>
-        <div class="buyer-amount">۱۲۰ میلیون تومان</div>
+      <div class="buyer-name">
+        <span class="badge med-invest"></span>
+        سارا محمدی
       </div>
+      <div class="buyer-amount">۱۲۰ میلیون تومان</div>
     </div>
 
     <div class="buyer-card">
-      <div class="badge min-invest"></div>
-      <div class="buyer-info">
-        <div class="buyer-name">مجتبی امینی</div>
-        <div class="buyer-amount">۳۰ میلیون تومان</div>
+      <div class="buyer-name">
+        <span class="badge min-invest"></span>
+        مجتبی امینی
       </div>
+      <div class="buyer-amount">۳۰ میلیون تومان</div>
     </div>
   </div>
 
