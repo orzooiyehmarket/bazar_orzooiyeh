@@ -1,63 +1,77 @@
 <!DOCTYPE html>
 <html lang="fa">
 <head>
-  <meta charset="UTF-8">
-  <title>تقسیمات کشوری ایران</title>
-  <style>
-    svg {
-      width: 100%;
-      max-width: 600px;
-      margin: auto;
-      display: block;
-    }
-    .iran-map path {
-      fill: #ccc;
-      stroke: #333;
-      cursor: pointer;
-    }
-    .iran-map path:hover {
-      fill: orange;
-    }
-    #kerman-divisions {
-      display: none;
-      margin-top: 20px;
-      padding: 10px;
-      border: 1px solid #aaa;
-      background: #f9f9f9;
-    }
-  </style>
+<meta charset="UTF-8" />
+<title>نقشه ایران با کلیک روی کرمان</title>
+<style>
+  body {
+    font-family: Tahoma, sans-serif;
+    direction: rtl;
+    text-align: center;
+    padding: 20px;
+  }
+  #info {
+    margin-top: 20px;
+    display: none;
+    background: #f0f0f0;
+    padding: 15px;
+    border-radius: 8px;
+    max-width: 600px;
+    margin-left: auto;
+    margin-right: auto;
+    text-align: right;
+  }
+  area {
+    cursor: pointer;
+  }
+</style>
 </head>
 <body>
 
-<h2 style="text-align:center;">نقشه ایران - کلیک روی استان کرمان</h2>
+<h1>نقشه ایران - کلیک روی استان کرمان</h1>
 
-<!-- نقشه ساده با یک استان فعال (مثلاً کرمان) -->
-<svg class="iran-map" viewBox="0 0 800 600">
-  <!-- استان کرمان با id خاص -->
-  <path id="kerman" d="M300,300 L350,280 L360,310 L320,340 Z" title="کرمان" />
-  <!-- بقیه استان‌ها -->
-  <path d="M200,200 L250,180 L260,210 L220,240 Z" title="تهران" />
-</svg>
+<img src="https://upload.wikimedia.org/wikipedia/commons/thumb/9/9b/Iran_provinces_map.svg/600px-Iran_provinces_map.svg.png"
+     alt="نقشه استان‌های ایران"
+     usemap="#iranmap"
+     width="600"
+     height="686"
+>
 
-<!-- بخش تقسیمات کرمان -->
-<div id="kerman-divisions">
-  <h3>تقسیمات استان کرمان</h3>
+<map name="iranmap">
+  <!-- مختصات چندضلعی استان کرمان -->
+  <area shape="poly"
+        coords="370,460,385,460,400,470,415,475,425,490,430,505,435,515,420,520,400,510,390,500,375,490,360,475"
+        alt="کرمان"
+        onclick="showKermanInfo()"
+        >
+</map>
+
+<div id="info">
+  <h2>استان کرمان</h2>
+  <p>استان کرمان یکی از بزرگ‌ترین استان‌های ایران است و دارای شهرستان‌های مهمی مانند کرمان، رفسنجان، سیرجان، بم و ... می‌باشد.</p>
   <ul>
-    <li>شهرستان کرمان</li>
+    <li>کرمان</li>
     <li>رفسنجان</li>
     <li>سیرجان</li>
+    <li>بم</li>
     <li>جیرفت</li>
     <li>عنبرآباد</li>
+    <li>زرند</li>
+    <li>بافت</li>
+    <li>بردسیر</li>
     <li>ارزوئیه</li>
-    <li>بم</li>
-    <!-- می‌تونی تکمیلش کنی -->
   </ul>
 </div>
 
 <script>
-  document.getElementById('kerman').addEventListener('click', () => {
-    document.getElementById('kerman-divisions').style.display = 'block';
-  });
+  function showKermanInfo() {
+    const infoDiv = document.getElementById('info');
+    if(infoDiv.style.display === 'none' || infoDiv.style.display === '') {
+      infoDiv.style.display = 'block';
+    } else {
+      infoDiv.style.display = 'none';
+    }
+  }
 </script>
 
 </body>
