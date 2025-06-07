@@ -2,130 +2,92 @@
 <html lang="fa">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>بازار ارزوئیه</title>
+  <title>جستجوی اعتبار سرمایه‌گذار</title>
   <style>
     body {
       font-family: Tahoma, sans-serif;
       direction: rtl;
-      margin: 0;
       padding: 20px;
-      background-color: #f0f0f0;
+      background: #f9f9f9;
     }
-
-    .clock-box {
-      background: #eeeeee;
-      padding: 10px 15px;
-      border-radius: 10px;
-      text-align: center;
-      font-size: 18px;
-      font-weight: bold;
-      margin-bottom: 20px;
-    }
-
-    .buyers-section {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 15px;
-      justify-content: center;
-    }
-
-    .buyer-card {
-      background-color: #fff;
-      border-radius: 12px;
-      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-      padding: 15px 20px;
-      width: 280px;
-      display: flex;
-      align-items: center;
-      gap: 15px;
-      transition: transform 0.2s ease;
-    }
-
-    .buyer-card:hover {
-      transform: scale(1.02);
-    }
-
-    .badge {
-      width: 40px;
-      height: 40px;
-      border-radius: 50%;
-      flex-shrink: 0;
-    }
-
-    .max-invest { background-color: #d32f2f; } /* قرمز */
-    .med-invest { background-color: #388e3c; } /* سبز */
-    .min-invest { background-color: #1976d2; } /* آبی */
-
-    .buyer-info {
-      display: flex;
-      flex-direction: column;
-    }
-
-    .buyer-name {
+    label, input, button {
       font-size: 16px;
+      margin: 5px 0;
+    }
+    input {
+      padding: 6px;
+      width: 200px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+    }
+    button {
+      cursor: pointer;
+      background-color: #1976d2;
+      color: white;
+      border: none;
+      padding: 8px 12px;
+      border-radius: 4px;
+    }
+    .result {
+      margin-top: 20px;
+      padding: 15px;
+      border-radius: 10px;
       font-weight: bold;
+      font-size: 18px;
+      display: none;
+      color: white;
+      width: fit-content;
     }
-
-    .buyer-amount {
-      font-size: 14px;
-      color: #555;
-      margin-top: 3px;
-    }
-
-    @media (max-width: 600px) {
-      .buyer-card {
-        width: 90%;
-      }
-    }
+    .high { background-color: #d32f2f; }   /* قرمز - اعتبار بالا */
+    .medium { background-color: #388e3c; } /* سبز - اعتبار متوسط */
+    .low { background-color: #1976d2; }    /* آبی - اعتبار پایین */
   </style>
 </head>
 <body>
 
-  <!-- ساعت و تاریخ -->
-  <div class="clock-box" id="clock">در حال بارگذاری ساعت...</div>
+  <h2>جستجوی اعتبار سرمایه‌گذار بر اساس شناسه</h2>
 
-  <!-- لیست خریداران -->
-  <h2 style="text-align:center;">سرمایه‌گذاران</h2>
+  <label for="investorId">شناسه سرمایه‌گذار را وارد کنید:</label><br />
+  <input type="text" id="investorId" placeholder="مثلاً INV001" />
+  <button onclick="searchInvestor()">جستجو</button>
 
-  <div class="buyers-section">
-    <div class="buyer-card">
-      <div class="badge max-invest"></div>
-      <div class="buyer-info">
-        <div class="buyer-name">علی رضایی</div>
-        <div class="buyer-amount">۲۵۰ میلیون تومان</div>
-      </div>
-    </div>
+  <div id="result" class="result"></div>
 
-    <div class="buyer-card">
-      <div class="badge med-invest"></div>
-      <div class="buyer-info">
-        <div class="buyer-name">سارا محمدی</div>
-        <div class="buyer-amount">۱۲۰ میلیون تومان</div>
-      </div>
-    </div>
-
-    <div class="buyer-card">
-      <div class="badge min-invest"></div>
-      <div class="buyer-info">
-        <div class="buyer-name">مجتبی امینی</div>
-        <div class="buyer-amount">۳۰ میلیون تومان</div>
-      </div>
-    </div>
-  </div>
-
-  <!-- ساعت شمسی -->
   <script>
-    function updateClock() {
-      const now = new Date();
-      const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
-      const dateStr = new Intl.DateTimeFormat('fa-IR', options).format(now);
-      const timeStr = now.toLocaleTimeString('fa-IR');
-      document.getElementById('clock').innerText = `${dateStr} - ${timeStr}`;
+    const investors = {
+      "INV001": { satisfaction: 85 },
+      "INV002": { satisfaction: 65 },
+      "INV003": { satisfaction: 40 },
+    };
+
+    function getCreditLevel(sat) {
+      if (sat >= 80) return { level: "بالا", className: "high" };
+      if (sat >= 50) return { level: "متوسط", className: "medium" };
+      return { level: "پایین", className: "low" };
     }
 
-    updateClock();
-    setInterval(updateClock, 1000);
+    function searchInvestor() {
+      const input = document.getElementById("investorId").value.trim().toUpperCase();
+      const resultDiv = document.getElementById("result");
+
+      if (!input) {
+        resultDiv.style.display = "none";
+        alert("لطفاً شناسه را وارد کنید.");
+        return;
+      }
+
+      const investor = investors[input];
+      if (!investor) {
+        resultDiv.style.display = "none";
+        alert("سرمایه‌گذار با این شناسه پیدا نشد.");
+        return;
+      }
+
+      const credit = getCreditLevel(investor.satisfaction);
+      resultDiv.textContent = `شناسه: ${input} - اعتبار: ${credit.level} (${investor.satisfaction}٪ رضایت بازار)`;
+      resultDiv.className = `result ${credit.className}`;
+      resultDiv.style.display = "block";
+    }
   </script>
 
 </body>
