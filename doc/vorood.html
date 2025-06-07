@@ -1,73 +1,41 @@
 <!DOCTYPE html>
 <html lang="fa">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>نقشه تعاملی ایران - بازار ارزوئیه</title>
-<style>
-  body { font-family: Tahoma; direction: rtl; text-align: center; background: #f4f4f4; margin: 0; padding: 20px; }
-  svg { width: 100%; max-width: 800px; height: auto; }
-  .map-container { margin: auto; position: relative; }
-  .popup {
-    position: absolute; top: 100px; left: 50%; transform: translateX(-50%);
-    background: white; border: 1px solid #aaa; border-radius: 8px;
-    padding: 16px; display: none; width: 260px; z-index: 10; box-shadow: 0 0 10px rgba(0,0,0,0.3);
-  }
-  .popup button {
-    width: 100%; padding: 8px; margin-top: 6px;
-    border: none; background: #007acc; color: white; border-radius: 4px;
-    cursor: pointer; font-size: 14px;
-  }
-  .popup button:hover { background: #005f9c; }
-  .province { fill: #ddd; stroke: #333; cursor: pointer; }
-  .province:hover { fill: #bbb; }
-  #kerman { fill: orange !important; }
-  #arzooieh { fill: yellow !important; stroke: #000; }
-</style>
+  <meta charset="UTF-8">
+  <title>نقشه ایران (SVG)</title>
+  <style>
+    body {
+      direction: rtl;
+      text-align: center;
+      font-family: Tahoma;
+      background: #f2f2f2;
+    }
+    svg {
+      width: 90%;
+      max-width: 800px;
+      margin-top: 30px;
+    }
+    .province {
+      fill: #ddd;
+      stroke: #444;
+      cursor: pointer;
+      transition: fill 0.3s;
+    }
+    .province:hover {
+      fill: #999;
+    }
+  </style>
 </head>
 <body>
 
-<h2>نقشه ایران</h2>
-<div class="map-container">
-  <!-- نقشه SVG ایران با شناسه kerman -->
-  <svg viewBox="0 0 800 500" id="iran-map">
-    <path id="tehran" class="province" d="M100,150 L130,130 L150,160 Z" />
-    <path id="fars" class="province" d="M200,300 L240,280 L260,310 Z" />
-    <path id="kerman" class="province" d="M400,350 L450,340 L460,390 Z" onclick="showKermanMap()" />
-    <!-- بقیه استان‌ها می‌توانند اضافه شوند -->
-  </svg>
-</div>
+<h2>نقشه ایران به صورت SVG</h2>
 
-<div id="kerman-map" class="map-container" style="display:none;">
-  <h3>استان کرمان</h3>
-  <!-- نقشه SVG کرمان با شناسه arzooieh -->
-  <svg viewBox="0 0 800 500">
-    <path id="bam" class="province" d="M200,150 L240,140 L260,180 Z" />
-    <path id="kerman-shahr" class="province" d="M300,250 L340,240 L360,290 Z" />
-    <path id="arzooieh" class="province" d="M500,400 L550,390 L560,440 Z" onclick="showPopup('ارزوئیه')" />
-  </svg>
-</div>
-
-<div id="popup" class="popup">
-  <strong>بازار ارزوئیه</strong>
-  <button onclick="alert('ورود به عنوان فروشنده')">ورود به عنوان فروشنده</button>
-  <button onclick="alert('ورود به عنوان خریدار')">ورود به عنوان خریدار</button>
-  <button onclick="alert('تماس با پشتیبانی اپ')">تماس با پشتیبانی اپ</button>
-</div>
-
-<script>
-function showKermanMap() {
-  document.getElementById('kerman-map').style.display = 'block';
-  window.scrollTo(0, document.getElementById('kerman-map').offsetTop);
-}
-
-function showPopup(region) {
-  if(region === 'ارزوئیه') {
-    const popup = document.getElementById('popup');
-    popup.style.display = 'block';
-  }
-}
-</script>
+<svg viewBox="0 0 800 500">
+  <!-- فقط چند استان نمونه: -->
+  <path id="tehran" class="province" d="M100,150 L130,130 L150,160 Z" title="تهران"/>
+  <path id="fars" class="province" d="M200,300 L240,280 L260,310 Z" title="فارس"/>
+  <path id="kerman" class="province" d="M400,350 L450,340 L460,390 Z" title="کرمان"/>
+</svg>
 
 </body>
 </html>
