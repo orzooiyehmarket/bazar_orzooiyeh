@@ -1,53 +1,18 @@
-<!DOCTYPE html>
-<html lang="fa">
-<head>
-  <meta charset="UTF-8">
-  <title>نقشه کلیک‌پذیر ایران</title>
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 1100">
   <style>
-    body {
-      margin: 0;
-      padding: 0;
-      background-image: url('https://upload.wikimedia.org/wikipedia/commons/1/11/Provinces_of_Iran_Blank.png');
-      background-size: cover;
-      background-position: center;
-      background-repeat: no-repeat;
-      height: 100vh;
-      font-family: Tahoma;
-      direction: rtl;
-    }
-    #kerman-btn {
-      position: absolute;
-      /* مختصاتی تقریبی بر اساس تصویر بالا */
-      top: 55%;
-      left: 48%;
-      width: 100px;
-      height: 80px;
-      background-color: rgba(255, 215, 0, 0.5);
-      border: 2px solid #fbbc05;
-      border-radius: 8px;
-      cursor: pointer;
-      transition: background-color 0.3s;
-    }
-    #kerman-btn:hover {
-      background-color: rgba(255, 215, 0, 0.8);
-    }
-    #label-kerman {
-      position: absolute;
-      top: 64%;
-      left: 50%;
-      transform: translateX(-50%);
-      background: rgba(255, 255, 255, 0.8);
-      padding: 6px 12px;
-      border-radius: 6px;
-      font-weight: bold;
-    }
+    .province { fill: #ffffff; stroke: #888888; stroke-width:1; }
+    #kerman { fill: #FFD700; stroke: #000000; stroke-width:2; }
   </style>
-</head>
-<body>
 
-<!-- دکمه قابل کلیک روی استان کرمان -->
-<div id="kerman-btn" onclick="alert('ورود به استان کرمان - بازار ارزوئیه')"></div>
-<div id="label-kerman">کرمان</div>
+  <!-- مسیر مثال استان ها (برای نمایش فقط) -->
+  <path id="tehran" class="province"
+        d="M200,200 L300,180 L320,240 L220,260 Z"/>
+  <path id="fars" class="province"
+        d="M350,500 L450,480 L480,550 L380,580 Z"/>
+  <!-- استان کرمان -->
+  <path id="kerman" class="province"
+        d="M400,700 L520,680 L560,770 L450,800 Z"/>
 
-</body>
-</html>
+  <!-- مسیرهای سایر استان‌ها (می‌توان تکمیل کرد) -->
+</svg>
