@@ -2,7 +2,7 @@
 <html lang="fa">
 <head>
   <meta charset="UTF-8" />
-  <title>جستجوی اعتبار سرمایه‌گذار</title>
+  <title>جستجوی اعتبار سرمایه‌گذار - بازار ارزوئیه</title>
   <style>
     body {
       font-family: Tahoma, sans-serif;
@@ -46,9 +46,13 @@
     .color-boxes {
       margin-top: 15px;
       display: flex;
-      gap: 10px;
+      gap: 15px;
       flex-wrap: wrap;
-      max-width: 450px;
+      max-width: 700px;
+    }
+    .color-box-wrapper {
+      flex: 1 1 110px;
+      text-align: center;
     }
     .color-box {
       width: 60px;
@@ -65,6 +69,8 @@
       text-align: center;
       user-select: none;
       box-sizing: border-box;
+      margin: 0 auto;
+      border: none;
     }
     .color-black {
       background-color: black;
@@ -79,34 +85,65 @@
       color: black;
       border: 1px solid #ccc;
     }
+    .investor-list {
+      margin-top: 8px;
+      font-size: 13px;
+      max-height: 120px;
+      overflow-y: auto;
+      text-align: right;
+      color: #333;
+    }
+    .investor-list span {
+      display: block;
+      margin: 2px 0;
+      cursor: default;
+    }
   </style>
 </head>
 <body>
 
-  <h2>جستجوی اعتبار سرمایه‌گذار بر اساس شناسه</h2>
+  <h2>جستجوی اعتبار سرمایه‌گذار بر اساس شناسه - بازار ارزوئیه</h2>
 
   <label for="investorId">شناسه سرمایه‌گذار را وارد کنید:</label><br />
   <input type="text" id="investorId" placeholder="مثلاً INV001" />
   <button onclick="searchInvestor()">جستجو</button>
 
   <div class="color-boxes">
-    <div class="color-box color-black" onclick="alert('خریدار مورد اعتماد نیست')">
-      سیاه<br />0٪
+    <div class="color-box-wrapper">
+      <div class="color-box color-black" onclick="alert('خریدار مورد اعتماد نیست')">
+        سیاه<br />0٪
+      </div>
+      <div class="investor-list" id="black-list"></div>
     </div>
-    <div class="color-box color-red" onclick="alert('اعتبار 0 تا 10 درصد')">
-      قرمز<br />0-10٪
+    <div class="color-box-wrapper">
+      <div class="color-box color-red" onclick="alert('اعتبار 0 تا 10 درصد')">
+        قرمز<br />0-10٪
+      </div>
+      <div class="investor-list" id="red-list"></div>
     </div>
-    <div class="color-box color-gray" onclick="alert('اعتبار 10 تا 30 درصد')">
-      خاکستری<br />10-30٪
+    <div class="color-box-wrapper">
+      <div class="color-box color-gray" onclick="alert('اعتبار 10 تا 30 درصد')">
+        خاکستری<br />10-30٪
+      </div>
+      <div class="investor-list" id="gray-list"></div>
     </div>
-    <div class="color-box color-yellow" onclick="alert('اعتبار 30 تا 50 درصد')">
-      زرد<br />30-50٪
+    <div class="color-box-wrapper">
+      <div class="color-box color-yellow" onclick="alert('اعتبار 30 تا 50 درصد')">
+        زرد<br />30-50٪
+      </div>
+      <div class="investor-list" id="yellow-list"></div>
     </div>
-    <div class="color-box color-blue" onclick="alert('اعتبار 50 تا 70 درصد')">
-      آبی<br />50-70٪
+    <div class="color-box-wrapper">
+      <div class="color-box color-blue" onclick="alert('اعتبار 50 تا 70 درصد')">
+        آبی<br />50-70٪
+      </div>
+      <div class="investor-list" id="blue-list"></div>
     </div>
-    <div class="color-box color-white" onclick="alert('اعتبار 70 تا 100 درصد')">
-      سفید<br />70-100٪
+    <div class="color-box-wrapper">
+      <div class="color-box color-white" onclick="alert('اعتبار 70 تا 100 درصد')">
+        سفید<br />70-100٪
+      </div>
+      <div class="investor-list" id="white-list"></div>
     </div>
   </div>
 
@@ -117,12 +154,51 @@
       "INV001": { satisfaction: 85 },
       "INV002": { satisfaction: 65 },
       "INV003": { satisfaction: 40 },
+      "INV004": { satisfaction: 15 },
+      "INV005": { satisfaction: 5 },
+      "INV006": { satisfaction: 0 },
+      "INV007": { satisfaction: 72 },
+      "INV008": { satisfaction: 28 },
+      "INV009": { satisfaction: 45 },
+      "INV010": { satisfaction: 10 },
     };
 
     function getCreditLevel(sat) {
-      if (sat >= 80) return { level: "بالا", className: "high" };
-      if (sat >= 50) return { level: "متوسط", className: "medium" };
-      return { level: "پایین", className: "low" };
+      if (sat >= 70) return { level: "بالا", className: "white", colorListId: "white-list" };
+      if (sat >= 50) return { level: "متوسط", className: "blue", colorListId: "blue-list" };
+      if (sat >= 30) return { level: "پایین", className: "yellow", colorListId: "yellow-list" };
+      if (sat >= 10) return { level: "خیلی پایین", className: "gray", colorListId: "gray-list" };
+      if (sat > 0) return { level: "خیلی خیلی پایین", className: "red", colorListId: "red-list" };
+      return { level: "نامعتبر", className: "black", colorListId: "black-list" };
+    }
+
+    // پر کردن لیست‌ها بر اساس رتبه بندی
+    function populateInvestorLists() {
+      const lists = {
+        black: document.getElementById("black-list"),
+        red: document.getElementById("red-list"),
+        gray: document.getElementById("gray-list"),
+        yellow: document.getElementById("yellow-list"),
+        blue: document.getElementById("blue-list"),
+        white: document.getElementById("white-list"),
+      };
+
+      // پاک کردن قبلی
+      for (const key in lists) {
+        lists[key].innerHTML = "";
+      }
+
+      // اضافه کردن هر سرمایه‌گذار به لیست مربوطه
+      for (const id in investors) {
+        const sat = investors[id].satisfaction;
+        const credit = getCreditLevel(sat);
+        const listElement = lists[credit.className];
+        if (listElement) {
+          const span = document.createElement("span");
+          span.textContent = id;
+          listElement.appendChild(span);
+        }
+      }
     }
 
     function searchInvestor() {
@@ -147,6 +223,9 @@
       resultDiv.className = `result ${credit.className}`;
       resultDiv.style.display = "block";
     }
+
+    // اجرا هنگام بارگذاری صفحه
+    window.onload = populateInvestorLists;
   </script>
 
 </body>
