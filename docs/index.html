@@ -146,7 +146,7 @@
 
   <div id="chart-container">
     <svg viewBox="0 0 200 200" role="img" aria-label="نمودار دایره‌ای اعتبار سرمایه‌گذاران">
-      <!-- بخش‌های نمودار با جاوااسکریپت پر می‌شود -->
+      <!-- بخش‌های نمودار -->
     </svg>
 
     <div class="legend" id="legend">
@@ -176,7 +176,7 @@
     "INV010": { satisfaction: 10 },
   };
 
-  // تعریف رده‌های اعتبار با رنگ و درصد
+  // رده‌های اعتبار با رنگ و درصد
   const creditLevels = [
     { name: "سیاه", color: "#000000", range: [0, 0], label: "0٪" },
     { name: "قرمز", color: "#d32f2f", range: [1, 10], label: "1-10٪" },
@@ -192,7 +192,6 @@
     for (let i=1; i<creditLevels.length; i++) {
       if (sat >= creditLevels[i].range[0] && sat <= creditLevels[i].range[1]) return creditLevels[i];
     }
-    // اگر بیشتر از 100 یا کمتر از 0 بود
     return creditLevels[creditLevels.length -1];
   }
 
@@ -206,7 +205,7 @@
     groupedInvestors[level.name].push(id);
   }
 
-  // رسم نمودار دایره‌ای با SVG
+  // رسم نمودار دایره‌ای SVG
   const svg = document.querySelector("svg");
   const radius = 90;
   const center = 100;
@@ -239,29 +238,92 @@
     ].join(" ");
   }
 
-  // پاک کردن هرچی قبلا بود
   svg.innerHTML = "";
 
   creditLevels.forEach((level, i) => {
     const startAngle = currentAngle;
     const endAngle = currentAngle + arcAngle;
 
-    // رسم بخش
+    // مسیر بخش دایره
     const path = document.createElementNS("http://www.w3.org/2000/svg", "path");
     path.setAttribute("d", describeArc(center, center, radius, startAngle, endAngle));
     path.setAttribute("fill", level.color);
     path.classList.add("slice");
     path.style.stroke = "#fff";
     path.style.strokeWidth = "2";
-    path.style.transition = "transform 0.3s";
     path.title = `${level.name} (${level.label})`;
     path.style.cursor = "pointer";
 
-    // کلیک روی بخش رنگی - نمایش لیست سرمایه‌گذاران مربوطه
     path.addEventListener("click", () => {
       showInvestorList(level.name);
     });
 
     svg.appendChild(path);
 
-    // اضافه کردن
+    // اضافه کردن متن درصد وسط هر بخش
+    const midAngle = startAngle + arcAngle / 2;
+    const textRadius = radius * 0.65;
+    const textX = center + textRadius * Math.cos(degToRad(midAngle));
+    const textY = center + textRadius * Math.sin(degToRad(midAngle));
+
+    const text = document.createElementNS("http://www.w3.org/2000/svg", "text");
+    text.setAttribute("x", textX);
+    text.setAttribute("y", textY);
+    text.setAttribute("fill", level.color === "white" ? "black" : "white");
+    text.setAttribute("font-size", "10");
+    text.setAttribute("font-weight", "bold");
+    text.setAttribute("text-anchor", "middle");
+    text.setAttribute("alignment-baseline", "middle");
+    text.style.userSelect = "none";
+    text.textContent = level.label;
+    svg.appendChild(text);
+
+    currentAngle += arcAngle;
+  });
+
+  // نمایش لیست سرمایه‌گذاران برای هر رده اعتبار
+  function showInvestorList(levelName) {
+    const container = document.getElementById("investor-list-container");
+    const list = document.getElementById("investor-list");
+    list.innerHTML = "";
+
+    const investorsInLevel = groupedInvestors[levelName];
+    if (investorsInLevel.length === 0) {
+      list.innerHTML = "<li>سرمایه‌گذاری در این رده وجود ندارد.</li>";
+    } else {
+      investorsInLevel.forEach(id => {
+        const li = document.createElement("li");
+        li.textContent = id + " - اعتبار: " + investors[id].satisfaction + "%";
+        list.appendChild(li);
+      });
+    }
+    container.style.display = "block";
+  }
+
+  // جستجوی شناسه سرمایه‌گذار و نمایش اعتبار و هشدار اگر 0 باشد
+  function searchInvestor() {
+    const input = document.getElementById("investorId").value.trim().toUpperCase();
+    const result = document.getElementById("result");
+
+    if (!input) {
+      result.textContent = "لطفاً شناسه سرمایه‌گذار را وارد کنید.";
+      return;
+    }
+
+    if (!(input in investors)) {
+      result.textContent = "سرمایه‌گذار یافت نشد.";
+      return;
+    }
+
+    const sat = investors[input].satisfaction;
+    const level = getCreditLevel(sat);
+
+    result.textContent = `اعتبار سرمایه‌گذار ${input}: ${sat}% (رده: ${level.name})`;
+
+    if (sat === 0) {
+      alert("خریدار مورد اعتماد نیست - بازار ارزوئیه");
+    }
+  }
+</script>
+</body>
+</html>
