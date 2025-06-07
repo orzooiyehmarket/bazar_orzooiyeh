@@ -1,57 +1,63 @@
 <!DOCTYPE html>
 <html lang="fa">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>نقشه تعاملی ایران - بازار ارزوئیه</title>
-<style>
-  body { font-family: Tahoma; direction: rtl; text-align: center; background: #f4f4f4; margin: 0; padding: 20px; }
-  .map-container { position: relative; max-width: 700px; margin: auto; }
-  .map-container img { width: 100%; height: auto; cursor: pointer; }
-  .popup {
-    position: absolute; top: 100px; left: 50%; transform: translateX(-50%);
-    background: white; border: 1px solid #aaa; border-radius: 8px;
-    padding: 16px; display: none; width: 260px; z-index: 10; box-shadow: 0 0 10px rgba(0,0,0,0.3);
-  }
-  .popup button {
-    width: 100%; padding: 8px; margin-top: 6px;
-    border: none; background: #007acc; color: white; border-radius: 4px;
-    cursor: pointer; font-size: 14px;
-  }
-  .popup button:hover { background: #005f9c; }
-</style>
+  <meta charset="UTF-8">
+  <title>تقسیمات کشوری ایران</title>
+  <style>
+    svg {
+      width: 100%;
+      max-width: 600px;
+      margin: auto;
+      display: block;
+    }
+    .iran-map path {
+      fill: #ccc;
+      stroke: #333;
+      cursor: pointer;
+    }
+    .iran-map path:hover {
+      fill: orange;
+    }
+    #kerman-divisions {
+      display: none;
+      margin-top: 20px;
+      padding: 10px;
+      border: 1px solid #aaa;
+      background: #f9f9f9;
+    }
+  </style>
 </head>
 <body>
 
-<h2>نقشه ایران</h2>
-<div class="map-container">
-  <img src="iran-map.png" alt="نقشه ایران" onclick="showKermanMap()">
-</div>
+<h2 style="text-align:center;">نقشه ایران - کلیک روی استان کرمان</h2>
 
-<div id="kerman-map" class="map-container" style="display:none;">
-  <h3>استان کرمان</h3>
-  <img src="kerman-map.png" alt="نقشه کرمان" onclick="showPopup('ارزوئیه')">
-</div>
+<!-- نقشه ساده با یک استان فعال (مثلاً کرمان) -->
+<svg class="iran-map" viewBox="0 0 800 600">
+  <!-- استان کرمان با id خاص -->
+  <path id="kerman" d="M300,300 L350,280 L360,310 L320,340 Z" title="کرمان" />
+  <!-- بقیه استان‌ها -->
+  <path d="M200,200 L250,180 L260,210 L220,240 Z" title="تهران" />
+</svg>
 
-<div id="popup" class="popup">
-  <strong>بازار ارزوئیه</strong>
-  <button onclick="alert('ورود به عنوان فروشنده')">ورود به عنوان فروشنده</button>
-  <button onclick="alert('ورود به عنوان خریدار')">ورود به عنوان خریدار</button>
-  <button onclick="alert('تماس با پشتیبانی اپ')">تماس با پشتیبانی اپ</button>
+<!-- بخش تقسیمات کرمان -->
+<div id="kerman-divisions">
+  <h3>تقسیمات استان کرمان</h3>
+  <ul>
+    <li>شهرستان کرمان</li>
+    <li>رفسنجان</li>
+    <li>سیرجان</li>
+    <li>جیرفت</li>
+    <li>عنبرآباد</li>
+    <li>ارزوئیه</li>
+    <li>بم</li>
+    <!-- می‌تونی تکمیلش کنی -->
+  </ul>
 </div>
 
 <script>
-function showKermanMap() {
-  document.getElementById('kerman-map').style.display = 'block';
-  window.scrollTo(0, document.getElementById('kerman-map').offsetTop);
-}
-
-function showPopup(region) {
-  if(region === 'ارزوئیه') {
-    const popup = document.getElementById('popup');
-    popup.style.display = 'block';
-  }
-}
+  document.getElementById('kerman').addEventListener('click', () => {
+    document.getElementById('kerman-divisions').style.display = 'block';
+  });
 </script>
 
 </body>
