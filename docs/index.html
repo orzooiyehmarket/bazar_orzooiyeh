@@ -1,232 +1,267 @@
 <!DOCTYPE html>
 <html lang="fa">
 <head>
-  <meta charset="UTF-8" />
-  <title>جستجوی اعتبار سرمایه‌گذار - بازار ارزوئیه</title>
-  <style>
-    body {
-      font-family: Tahoma, sans-serif;
-      direction: rtl;
-      padding: 20px;
-      background: #f9f9f9;
-    }
-    label, input, button {
-      font-size: 16px;
-      margin: 5px 0;
-    }
-    input {
-      padding: 6px;
-      width: 200px;
-      border: 1px solid #ccc;
-      border-radius: 4px;
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>نمودار دایره‌ای اعتبار سرمایه‌گذاران - بازار ارزوئیه</title>
+<style>
+  body {
+    font-family: Tahoma, sans-serif;
+    direction: rtl;
+    margin: 0;
+    padding: 20px;
+    background: #f9f9f9;
+  }
+  h2 {
+    text-align: center;
+    margin-bottom: 10px;
+  }
+  #search-container {
+    max-width: 400px;
+    margin: 0 auto 20px auto;
+    text-align: center;
+  }
+  input[type=text] {
+    width: 70%;
+    padding: 10px;
+    font-size: 16px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+  }
+  button {
+    padding: 10px 14px;
+    font-size: 16px;
+    border: none;
+    background-color: #1976d2;
+    color: white;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-left: 5px;
+  }
+  button:hover {
+    background-color: #155fa0;
+  }
+
+  #chart-container {
+    max-width: 500px;
+    margin: 0 auto;
+    position: relative;
+  }
+
+  svg {
+    width: 100%;
+    height: auto;
+    max-width: 500px;
+    display: block;
+    margin: 0 auto;
+  }
+
+  .slice {
+    cursor: pointer;
+    transition: transform 0.3s;
+  }
+  .slice:hover {
+    transform: scale(1.05);
+  }
+
+  .legend {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    margin-top: 15px;
+    gap: 12px;
+  }
+
+  .legend-item {
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    font-size: 14px;
+    user-select: none;
+  }
+  .legend-color {
+    width: 18px;
+    height: 18px;
+    border-radius: 4px;
+    margin-left: 6px;
+  }
+
+  #investor-list-container {
+    max-width: 500px;
+    margin: 20px auto 0 auto;
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 0 8px rgba(0,0,0,0.1);
+    padding: 15px;
+    min-height: 80px;
+    overflow-y: auto;
+    max-height: 180px;
+    display: none;
+  }
+  #investor-list-container h3 {
+    margin-top: 0;
+    margin-bottom: 8px;
+    text-align: center;
+    font-weight: bold;
+  }
+  #investor-list-container ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+  #investor-list-container ul li {
+    padding: 4px 6px;
+    border-bottom: 1px solid #eee;
+  }
+
+  #result {
+    max-width: 400px;
+    margin: 10px auto 0 auto;
+    text-align: center;
+    font-weight: bold;
+    font-size: 18px;
+    color: #444;
+  }
+
+  /* Responsive */
+  @media (max-width: 600px) {
+    input[type=text] {
+      width: 100%;
+      margin-bottom: 10px;
     }
     button {
-      cursor: pointer;
-      background-color: #1976d2;
-      color: white;
-      border: none;
-      padding: 8px 12px;
-      border-radius: 4px;
+      width: 100%;
+      margin-left: 0;
     }
-    .result {
-      margin-top: 20px;
-      padding: 15px;
-      border-radius: 10px;
-      font-weight: bold;
-      font-size: 18px;
-      display: none;
-      color: white;
-      width: fit-content;
-    }
-    .high { background-color: #d32f2f; }   /* قرمز - اعتبار بالا */
-    .medium { background-color: #388e3c; } /* سبز - اعتبار متوسط */
-    .low { background-color: #1976d2; }    /* آبی - اعتبار پایین */
-
-    /* باکس رنگ‌ها */
-    .color-boxes {
-      margin-top: 15px;
-      display: flex;
-      gap: 15px;
-      flex-wrap: wrap;
-      max-width: 700px;
-    }
-    .color-box-wrapper {
-      flex: 1 1 110px;
-      text-align: center;
-    }
-    .color-box {
-      width: 60px;
-      height: 60px;
-      border-radius: 8px;
-      cursor: pointer;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
-      color: white;
-      font-weight: bold;
-      font-size: 12px;
-      text-align: center;
-      user-select: none;
-      box-sizing: border-box;
-      margin: 0 auto;
-      border: none;
-    }
-    .color-black {
-      background-color: black;
-      border: 2px solid white;
-    }
-    .color-red { background-color: #d32f2f; }
-    .color-gray { background-color: gray; }
-    .color-yellow { background-color: #fbc02d; color: black; }
-    .color-blue { background-color: #1976d2; }
-    .color-white {
-      background-color: white;
-      color: black;
-      border: 1px solid #ccc;
-    }
-    .investor-list {
-      margin-top: 8px;
-      font-size: 13px;
-      max-height: 120px;
-      overflow-y: auto;
-      text-align: right;
-      color: #333;
-    }
-    .investor-list span {
-      display: block;
-      margin: 2px 0;
-      cursor: default;
-    }
-  </style>
+  }
+</style>
 </head>
 <body>
 
-  <h2>جستجوی اعتبار سرمایه‌گذار بر اساس شناسه - بازار ارزوئیه</h2>
+  <h2>جستجوی اعتبار سرمایه‌گذار - بازار ارزوئیه</h2>
+  <div id="search-container">
+    <input type="text" id="investorId" placeholder="شناسه سرمایه‌گذار را وارد کنید" />
+    <button onclick="searchInvestor()">جستجو</button>
+  </div>
 
-  <label for="investorId">شناسه سرمایه‌گذار را وارد کنید:</label><br />
-  <input type="text" id="investorId" placeholder="مثلاً INV001" />
-  <button onclick="searchInvestor()">جستجو</button>
+  <div id="chart-container">
+    <svg viewBox="0 0 200 200" role="img" aria-label="نمودار دایره‌ای اعتبار سرمایه‌گذاران">
+      <!-- بخش‌های نمودار با جاوااسکریپت پر می‌شود -->
+    </svg>
 
-  <div class="color-boxes">
-    <div class="color-box-wrapper">
-      <div class="color-box color-black" onclick="alert('خریدار مورد اعتماد نیست')">
-        سیاه<br />0٪
-      </div>
-      <div class="investor-list" id="black-list"></div>
-    </div>
-    <div class="color-box-wrapper">
-      <div class="color-box color-red" onclick="alert('اعتبار 0 تا 10 درصد')">
-        قرمز<br />0-10٪
-      </div>
-      <div class="investor-list" id="red-list"></div>
-    </div>
-    <div class="color-box-wrapper">
-      <div class="color-box color-gray" onclick="alert('اعتبار 10 تا 30 درصد')">
-        خاکستری<br />10-30٪
-      </div>
-      <div class="investor-list" id="gray-list"></div>
-    </div>
-    <div class="color-box-wrapper">
-      <div class="color-box color-yellow" onclick="alert('اعتبار 30 تا 50 درصد')">
-        زرد<br />30-50٪
-      </div>
-      <div class="investor-list" id="yellow-list"></div>
-    </div>
-    <div class="color-box-wrapper">
-      <div class="color-box color-blue" onclick="alert('اعتبار 50 تا 70 درصد')">
-        آبی<br />50-70٪
-      </div>
-      <div class="investor-list" id="blue-list"></div>
-    </div>
-    <div class="color-box-wrapper">
-      <div class="color-box color-white" onclick="alert('اعتبار 70 تا 100 درصد')">
-        سفید<br />70-100٪
-      </div>
-      <div class="investor-list" id="white-list"></div>
+    <div class="legend" id="legend">
+      <!-- راهنما -->
     </div>
   </div>
 
-  <div id="result" class="result"></div>
+  <div id="investor-list-container">
+    <h3>لیست سرمایه‌گذاران</h3>
+    <ul id="investor-list"></ul>
+  </div>
 
-  <script>
-    const investors = {
-      "INV001": { satisfaction: 85 },
-      "INV002": { satisfaction: 65 },
-      "INV003": { satisfaction: 40 },
-      "INV004": { satisfaction: 15 },
-      "INV005": { satisfaction: 5 },
-      "INV006": { satisfaction: 0 },
-      "INV007": { satisfaction: 72 },
-      "INV008": { satisfaction: 28 },
-      "INV009": { satisfaction: 45 },
-      "INV010": { satisfaction: 10 },
+  <div id="result"></div>
+
+<script>
+  // داده سرمایه‌گذاران
+  const investors = {
+    "INV001": { satisfaction: 85 },
+    "INV002": { satisfaction: 65 },
+    "INV003": { satisfaction: 40 },
+    "INV004": { satisfaction: 15 },
+    "INV005": { satisfaction: 5 },
+    "INV006": { satisfaction: 0 },
+    "INV007": { satisfaction: 72 },
+    "INV008": { satisfaction: 28 },
+    "INV009": { satisfaction: 45 },
+    "INV010": { satisfaction: 10 },
+  };
+
+  // تعریف رده‌های اعتبار با رنگ و درصد
+  const creditLevels = [
+    { name: "سیاه", color: "#000000", range: [0, 0], label: "0٪" },
+    { name: "قرمز", color: "#d32f2f", range: [1, 10], label: "1-10٪" },
+    { name: "خاکستری", color: "gray", range: [11, 30], label: "11-30٪" },
+    { name: "زرد", color: "#fbc02d", range: [31, 50], label: "31-50٪" },
+    { name: "آبی", color: "#1976d2", range: [51, 70], label: "51-70٪" },
+    { name: "سفید", color: "white", range: [71, 100], label: "71-100٪" },
+  ];
+
+  // تابع تعیین رده اعتبار بر اساس درصد رضایت
+  function getCreditLevel(sat) {
+    if (sat === 0) return creditLevels[0];
+    for (let i=1; i<creditLevels.length; i++) {
+      if (sat >= creditLevels[i].range[0] && sat <= creditLevels[i].range[1]) return creditLevels[i];
+    }
+    // اگر بیشتر از 100 یا کمتر از 0 بود
+    return creditLevels[creditLevels.length -1];
+  }
+
+  // گروه‌بندی سرمایه‌گذاران بر اساس رده اعتبار
+  const groupedInvestors = {};
+  creditLevels.forEach(level => groupedInvestors[level.name] = []);
+
+  for (const id in investors) {
+    const sat = investors[id].satisfaction;
+    const level = getCreditLevel(sat);
+    groupedInvestors[level.name].push(id);
+  }
+
+  // رسم نمودار دایره‌ای با SVG
+  const svg = document.querySelector("svg");
+  const radius = 90;
+  const center = 100;
+  const total = creditLevels.length;
+  const arcAngle = 360 / total;
+  let currentAngle = 0;
+
+  // تبدیل درجه به رادیان
+  function degToRad(deg) {
+    return deg * Math.PI / 180;
+  }
+
+  // رسم هر بخش به صورت Path
+  function describeArc(cx, cy, r, startAngle, endAngle){
+    const start = {
+      x: cx + r * Math.cos(degToRad(startAngle)),
+      y: cy + r * Math.sin(degToRad(startAngle))
     };
+    const end = {
+      x: cx + r * Math.cos(degToRad(endAngle)),
+      y: cy + r * Math.sin(degToRad(endAngle))
+    };
+    const largeArcFlag = endAngle - startAngle <= 180 ? "0" : "1";
 
-    function getCreditLevel(sat) {
-      if (sat >= 70) return { level: "بالا", className: "white", colorListId: "white-list" };
-      if (sat >= 50) return { level: "متوسط", className: "blue", colorListId: "blue-list" };
-      if (sat >= 30) return { level: "پایین", className: "yellow", colorListId: "yellow-list" };
-      if (sat >= 10) return { level: "خیلی پایین", className: "gray", colorListId: "gray-list" };
-      if (sat > 0) return { level: "خیلی خیلی پایین", className: "red", colorListId: "red-list" };
-      return { level: "نامعتبر", className: "black", colorListId: "black-list" };
-    }
+    return [
+      `M ${cx} ${cy}`,
+      `L ${start.x} ${start.y}`,
+      `A ${r} ${r} 0 ${largeArcFlag} 1 ${end.x} ${end.y}`,
+      "Z"
+    ].join(" ");
+  }
 
-    // پر کردن لیست‌ها بر اساس رتبه بندی
-    function populateInvestorLists() {
-      const lists = {
-        black: document.getElementById("black-list"),
-        red: document.getElementById("red-list"),
-        gray: document.getElementById("gray-list"),
-        yellow: document.getElementById("yellow-list"),
-        blue: document.getElementById("blue-list"),
-        white: document.getElementById("white-list"),
-      };
+  // پاک کردن هرچی قبلا بود
+  svg.innerHTML = "";
 
-      // پاک کردن قبلی
-      for (const key in lists) {
-        lists[key].innerHTML = "";
-      }
+  creditLevels.forEach((level, i) => {
+    const startAngle = currentAngle;
+    const endAngle = currentAngle + arcAngle;
 
-      // اضافه کردن هر سرمایه‌گذار به لیست مربوطه
-      for (const id in investors) {
-        const sat = investors[id].satisfaction;
-        const credit = getCreditLevel(sat);
-        const listElement = lists[credit.className];
-        if (listElement) {
-          const span = document.createElement("span");
-          span.textContent = id;
-          listElement.appendChild(span);
-        }
-      }
-    }
+    // رسم بخش
+    const path = document.createElementNS("http://www.w3.org/2000/svg", "path");
+    path.setAttribute("d", describeArc(center, center, radius, startAngle, endAngle));
+    path.setAttribute("fill", level.color);
+    path.classList.add("slice");
+    path.style.stroke = "#fff";
+    path.style.strokeWidth = "2";
+    path.style.transition = "transform 0.3s";
+    path.title = `${level.name} (${level.label})`;
+    path.style.cursor = "pointer";
 
-    function searchInvestor() {
-      const input = document.getElementById("investorId").value.trim().toUpperCase();
-      const resultDiv = document.getElementById("result");
+    // کلیک روی بخش رنگی - نمایش لیست سرمایه‌گذاران مربوطه
+    path.addEventListener("click", () => {
+      showInvestorList(level.name);
+    });
 
-      if (!input) {
-        resultDiv.style.display = "none";
-        alert("لطفاً شناسه را وارد کنید.");
-        return;
-      }
+    svg.appendChild(path);
 
-      const investor = investors[input];
-      if (!investor) {
-        resultDiv.style.display = "none";
-        alert("سرمایه‌گذار با این شناسه پیدا نشد.");
-        return;
-      }
-
-      const credit = getCreditLevel(investor.satisfaction);
-      resultDiv.textContent = `شناسه: ${input} - اعتبار: ${credit.level} (${investor.satisfaction}٪ رضایت بازار)`;
-      resultDiv.className = `result ${credit.className}`;
-      resultDiv.style.display = "block";
-    }
-
-    // اجرا هنگام بارگذاری صفحه
-    window.onload = populateInvestorLists;
-  </script>
-
-</body>
-</html>
+    // اضافه کردن
