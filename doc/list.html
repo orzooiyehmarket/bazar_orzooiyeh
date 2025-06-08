@@ -145,6 +145,17 @@
     <div class="profile">
       <h3>پروفایل: یوسف پذیرش</h3>
       <p>شماره تماس: 0912XXXXXXX</p>
+
+      <!-- انتخاب پیک مجازی -->
+      <div style="margin-top: 10px;">
+        <label for="delivery-agent"><strong>🛵 انتخاب پیک مجازی:</strong></label>
+        <select id="delivery-agent" onchange="selectAgent(this.value)" style="width: 100%; padding: 10px; margin-top: 5px; font-size: 16px; border-radius: 8px;">
+          <option value="">-- انتخاب کنید --</option>
+          <option value="رضا پیک ویژه">رضا پیک ویژه</option>
+          <option value="سارا سریع‌رس">سارا سریع‌رس</option>
+          <option value="قاسم پایدار">قاسم پایدار</option>
+        </select>
+      </div>
     </div>
 
     <!-- لیست محصولات -->
@@ -162,6 +173,7 @@
   <!-- اسکریپت -->
   <script>
     const MAX_CAPITAL = 200000;
+    let selectedAgent = "";
 
     const products = [
       { id: 1, name: 'گوجه فرنگی', price: 10000 },
@@ -276,8 +288,14 @@
         قیمت_واحد: item.price,
         قیمت_کل: item.price * item.quantity
       }));
-      console.log('📦 سفارش ثبت شد:', order);
-      alert('سفارش شما ثبت شد! (در نسخه کامل، اطلاعات به گوگل‌شیت یا سرور ارسال می‌شود)');
+      console.log('📦 سفارش ثبت شد برای پیک:', selectedAgent);
+      console.table(order);
+      alert('سفارش شما ثبت شد!');
+    }
+
+    function selectAgent(agentName) {
+      selectedAgent = agentName;
+      if (agentName) console.log("✅ پیک انتخاب‌شده:", agentName);
     }
 
     renderProducts();
