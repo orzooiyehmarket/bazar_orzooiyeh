@@ -1,1 +1,48 @@
+<!DOCTYPE html>
+<html lang="fa">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>صفحه اصلی بازار ارزوئیه</title>
+<style>
+  body {
+    font-family: Tahoma, sans-serif;
+    direction: rtl;
+    margin: 0; padding: 0;
+  }
+  header {
+    background: #228B22;
+    color: white;
+    padding: 10px 15px;
+    display: flex;
+    align-items: center;
+  }
+  button.back-btn {
+    background: white;
+    color: #228B22;
+    border: none;
+    border-radius: 5px;
+    padding: 6px 12px;
+    font-weight: bold;
+    cursor: pointer;
+    margin-left: auto;
+  }
+  button.back-btn:hover {
+    background: #e2f0e2;
+  }
+  main {
+    padding: 20px;
+  }
+</style>
+</head>
+<body>
+<header>
+  <h1>بازار ارزوئیه</h1>
+  <button class="back-btn" onclick="window.history.back()">بازگشت</button>
+</header>
 
+<main>
+  <p>اینجا صفحه اصلی بازار ارزوئیه است. محتویات سبد خرید و محصولات اینجا نمایش داده می‌شود.</p>
+</main>
+</body>
+</html>
