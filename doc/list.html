@@ -14,7 +14,6 @@
     }
     .profile {
       padding: 15px;
-      position: relative;
       background: #f5f5f5;
       z-index: 20;
     }
@@ -31,8 +30,9 @@
     }
     .progress {
       height: 100%;
-      background: linear-gradient(to right, green, yellow, red);
+      background: green;
       width: 0%;
+      transition: all 0.3s ease;
     }
     select {
       font-size: 16px;
@@ -45,8 +45,6 @@
       gap: 15px;
       padding: 15px;
       background: rgba(255 255 255 / 0.8);
-      position: relative;
-      z-index: 10;
     }
     .product {
       min-width: 120px;
@@ -56,6 +54,7 @@
       text-align: center;
       cursor: pointer;
       box-shadow: 0 0 5px rgba(0,0,0,0.1);
+      flex-shrink: 0;
     }
     .product img {
       width: 100%;
@@ -76,29 +75,36 @@
       bottom: 0;
       left: 0;
       width: 100%;
-      max-height: 50vh;
+      max-height: 60vh;
       background: #e6ffe6ee;
       overflow-y: auto;
       transition: transform 0.3s ease;
       transform: translateY(100%);
       z-index: 30;
       padding: 10px;
+      border-top: 1px solid #ccc;
     }
     .cart.open {
       transform: translateY(0);
     }
-    .cart-item {
+    .cart-items-container {
       display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 10px;
+      overflow-x: auto;
+      gap: 10px;
+      padding-bottom: 10px;
+    }
+    .cart-item {
+      flex: 0 0 auto;
       background: #d7f0d7;
       padding: 8px;
       border-radius: 8px;
+      text-align: center;
+      width: 160px;
     }
     .cart-item input[type="number"] {
       width: 50px;
-      margin: 0 10px;
+      margin: 5px auto;
+      display: block;
     }
     .submit-btn {
       width: 100%;
@@ -116,6 +122,15 @@
     .error {
       color: red;
       margin-top: 10px;
+      text-align: center;
+    }
+    @media (max-width: 600px) {
+      .product h4, .product p {
+        font-size: 14px;
+      }
+      .submit-btn {
+        font-size: 16px;
+      }
     }
   </style>
 </head>
@@ -136,7 +151,7 @@
   <div class="product-list" id="productList"></div>
 
   <div class="cart" id="cart">
-    <div id="cartItems"></div>
+    <div class="cart-items-container" id="cartItems"></div>
     <p id="totalPrice"></p>
     <button id="submitBtn" class="submit-btn" disabled>ثبت خرید</button>
     <div class="error" id="error"></div>
@@ -205,16 +220,19 @@
         const div = document.createElement("div");
         div.className = "cart-item";
         div.innerHTML = `
-          <span>${p.name}</span>
+          <strong>${p.name}</strong>
           <input type="number" value="${p.quantity}" min="1" onchange="updateQuantity(${p.id}, this.value)" />
           <span>${(p.price * p.quantity).toLocaleString()} تومان</span>
-          <button onclick="removeFromCart(${p.id})">×</button>
+          <br><button onclick="removeFromCart(${p.id})">حذف</button>
         `;
         cartItems.appendChild(div);
       });
       totalPriceEl.textContent = `مجموع: ${total.toLocaleString()} تومان`;
+
       const percent = Math.min(100, total / maxCredit * 100);
       creditBar.style.width = percent + "%";
+      creditBar.style.background = total > maxCredit ? "red" : "green";
+
       errorDiv.textContent = total > maxCredit ? "اعتبار کافی نیست!" : "";
       submitBtn.disabled = total === 0 || total > maxCredit;
     }
