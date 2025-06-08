@@ -10,6 +10,20 @@
       font-family: sans-serif;
       direction: rtl;
       display: flex;
+      flex-direction: row;
+    }
+    @media (max-width: 768px) {
+      body {
+        flex-direction: column;
+      }
+      .cart {
+        width: 100% !important;
+        height: auto;
+        order: -1;
+      }
+      .main {
+        padding: 10px;
+      }
     }
     .cart {
       width: 300px;
@@ -58,6 +72,7 @@
       padding: 10px;
       border-radius: 8px;
       font-size: 18px;
+      flex-wrap: wrap;
     }
     .product input[type="checkbox"] {
       width: 20px;
