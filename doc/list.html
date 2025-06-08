@@ -1,1 +1,169 @@
+<!DOCTYPE html>
+<html lang="fa">
+<head>
+  <meta charset="UTF-8">
+  <title>سبد خرید کشاورزی</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      direction: rtl;
+      margin: 0;
+      padding: 0;
+      display: flex;
+    }
 
+    /* محصولات + پروفایل */
+    .main {
+      width: 75%;
+      padding: 20px;
+    }
+
+    .profile {
+      background: #f2f2f2;
+      padding: 10px;
+      margin-bottom: 20px;
+      border-radius: 10px;
+    }
+
+    .product-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .product {
+      border: 1px solid #ccc;
+      border-radius: 10px;
+      padding: 10px;
+      width: 180px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .product input[type="checkbox"] {
+      width: 20px;
+      height: 20px;
+      accent-color: green;
+      border-radius: 50%;
+    }
+
+    /* سبد خرید (نوگیشن) */
+    .cart {
+      width: 25%;
+      background: #e6ffe6;
+      padding: 20px;
+      height: 100vh;
+      overflow-y: auto;
+      border-right: 1px solid #ccc;
+    }
+
+    .cart-item {
+      border-bottom: 1px solid #ccc;
+      padding: 10px 0;
+    }
+
+    .cart-item button {
+      background: red;
+      color: white;
+      border: none;
+      padding: 2px 8px;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+
+    .total {
+      font-weight: bold;
+      margin-top: 20px;
+      font-size: 18px;
+      color: darkgreen;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- بخش محصولات و پروفایل -->
+  <div class="main">
+    <div class="profile">
+      <h3>پروفایل: یوسف پذیرش</h3>
+      <p>شماره تماس: 0912XXXXXXX</p>
+    </div>
+
+    <div class="product-list" id="product-list">
+      <!-- محصولات به صورت داینامیک قرار می‌گیرند -->
+    </div>
+  </div>
+
+  <!-- سبد خرید -->
+  <div class="cart">
+    <h3>🛒 سبد خرید شما</h3>
+    <div id="cart-items"></div>
+    <div class="total">جمع: ۰ تومان</div>
+  </div>
+
+  <script>
+    const products = [
+      { id: 1, name: 'گوجه فرنگی', price: 10000 },
+      { id: 2, name: 'خیار محلی', price: 8000 },
+      { id: 3, name: 'هندوانه', price: 25000 },
+      { id: 4, name: 'خرما کبکاب', price: 30000 },
+      { id: 5, name: 'زعفران یک مثقالی', price: 600000 },
+    ];
+
+    const productList = document.getElementById('product-list');
+    const cartItemsDiv = document.getElementById('cart-items');
+    const totalDiv = document.querySelector('.total');
+
+    let cart = [];
+
+    function renderProducts() {
+      products.forEach(product => {
+        const div = document.createElement('div');
+        div.className = 'product';
+        div.innerHTML = `
+          <label>
+            <input type="checkbox" onchange="toggleProduct(${product.id}, this.checked)">
+            ${product.name} <br><small>${product.price.toLocaleString()} تومان</small>
+          </label>
+        `;
+        productList.appendChild(div);
+      });
+    }
+
+    function toggleProduct(id, checked) {
+      const product = products.find(p => p.id === id);
+      if (checked) {
+        cart.push(product);
+      } else {
+        cart = cart.filter(p => p.id !== id);
+      }
+      renderCart();
+    }
+
+    function removeFromCart(id) {
+      cart = cart.filter(p => p.id !== id);
+      document.querySelector(`input[type="checkbox"][onchange="toggleProduct(${id}, true)"]`).checked = false;
+      renderCart();
+    }
+
+    function renderCart() {
+      cartItemsDiv.innerHTML = '';
+      let total = 0;
+      cart.forEach(item => {
+        const div = document.createElement('div');
+        div.className = 'cart-item';
+        div.innerHTML = `
+          ${item.name} - ${item.price.toLocaleString()} تومان
+          <button onclick="removeFromCart(${item.id})">×</button>
+        `;
+        cartItemsDiv.appendChild(div);
+        total += item.price;
+      });
+      totalDiv.textContent = `جمع: ${total.toLocaleString()} تومان`;
+    }
+
+    renderProducts();
+  </script>
+
+</body>
+</html>
