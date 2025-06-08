@@ -13,8 +13,9 @@
     }
 
     .main {
-      width: 75%;
+      width: 100%;
       padding: 20px;
+      transition: width 0.3s ease;
     }
 
     #capital-bar {
@@ -62,12 +63,13 @@
     }
 
     .cart {
-      width: 25%;
       background: #e6ffe6;
       padding: 20px;
       height: 100vh;
       overflow-y: auto;
       border-right: 1px solid #ccc;
+      display: none;
+      transition: all 0.3s ease;
     }
 
     .cart h3 {
@@ -126,8 +128,8 @@
 </head>
 <body>
 
-  <!-- بخش سمت راست: نمایش محصولات و پروفایل -->
-  <div class="main">
+  <!-- بخش اصلی -->
+  <div class="main" id="main-content">
 
     <!-- نوار سرمایه -->
     <div id="capital-bar">
@@ -139,7 +141,7 @@
       </div>
     </div>
 
-    <!-- پروفایل شخص -->
+    <!-- پروفایل -->
     <div class="profile">
       <h3>پروفایل: یوسف پذیرش</h3>
       <p>شماره تماس: 0912XXXXXXX</p>
@@ -149,15 +151,15 @@
     <div class="product-list" id="product-list"></div>
   </div>
 
-  <!-- سبد خرید (نوگیشن) -->
-  <div class="cart">
+  <!-- سبد خرید -->
+  <div class="cart" id="cart-panel">
     <h3>🛒 سبد خرید شما</h3>
     <div id="cart-items"></div>
     <div class="total" id="total-price">جمع: ۰ تومان</div>
     <button id="submit-btn" disabled onclick="submitOrder()">ثبت سفارش</button>
   </div>
 
-  <!-- اسکریپت‌ها -->
+  <!-- اسکریپت -->
   <script>
     const MAX_CAPITAL = 200000;
 
@@ -174,6 +176,7 @@
     const totalDiv = document.getElementById('total-price');
     const submitBtn = document.getElementById('submit-btn');
     const capitalProgress = document.getElementById('capital-progress');
+    const cartPanel = document.getElementById('cart-panel');
 
     let cart = [];
 
@@ -216,6 +219,7 @@
     function renderCart() {
       cartItemsDiv.innerHTML = '';
       let total = 0;
+
       cart.forEach(item => {
         const itemTotal = item.price * item.quantity;
         const div = document.createElement('div');
@@ -243,6 +247,25 @@
       } else {
         capitalProgress.style.backgroundColor = 'green';
         submitBtn.disabled = cart.length === 0;
+      }
+
+      // تنظیم نمایش نویگیشن و عرض آن
+      const mainContent = document.getElementById('main-content');
+      if (cart.length > 0) {
+        cartPanel.style.display = 'block';
+        if (cart.length <= 2) {
+          cartPanel.style.width = '25%';
+          mainContent.style.width = '75%';
+        } else if (cart.length <= 5) {
+          cartPanel.style.width = '30%';
+          mainContent.style.width = '70%';
+        } else {
+          cartPanel.style.width = '35%';
+          mainContent.style.width = '65%';
+        }
+      } else {
+        cartPanel.style.display = 'none';
+        mainContent.style.width = '100%';
       }
     }
 
