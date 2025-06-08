@@ -1,18 +1,107 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 1100">
-  <style>
-    .province { fill: #ffffff; stroke: #888888; stroke-width:1; }
-    #kerman { fill: #FFD700; stroke: #000000; stroke-width:2; }
-  </style>
+<!DOCTYPE html>
+<html lang="fa">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>صفحه ورود بازار ارزوئیه</title>
+<style>
+  body, html {
+    margin: 0; padding: 0; height: 100%;
+    font-family: Tahoma, sans-serif;
+    background: linear-gradient(135deg, #a1c4fd 0%, #c2e9fb 100%);
+    direction: rtl;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+  }
+  .login-container {
+    position: relative;
+    text-align: center;
+    cursor: pointer;
+    color: #004d00;
+    font-weight: bold;
+    font-size: 3rem;
+    user-select: none;
+    padding: 30px 40px;
+    background: #d0f0d0cc;
+    border-radius: 25px;
+    box-shadow: 0 4px 15px rgba(0,100,0,0.3);
+    width: 90vw;
+    max-width: 450px;
+  }
+  .login-container:hover {
+    background: #b6dfb6cc;
+  }
+  .palms {
+    position: absolute;
+    bottom: 10px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    align-items: flex-end;
+    gap: 15px;
+    z-index: 0;
+  }
+  .palm-small, .palm-big {
+    position: relative;
+  }
+  /* ریشه مشترک */
+  .palm-root {
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    height: 40px;
+    width: 8px;
+    background: #004d00;
+    transform: translateX(-50%);
+    border-radius: 4px;
+    z-index: -1;
+  }
+  /* برگ‌های نخل کوچک */
+  .palm-small svg {
+    width: 50px;
+    height: 90px;
+    fill: #2a7f2a;
+  }
+  /* برگ‌های نخل بزرگ */
+  .palm-big svg {
+    width: 90px;
+    height: 150px;
+    fill: #1a5e1a;
+  }
+</style>
+</head>
+<body>
 
-  <!-- مسیر مثال استان ها (برای نمایش فقط) -->
-  <path id="tehran" class="province"
-        d="M200,200 L300,180 L320,240 L220,260 Z"/>
-  <path id="fars" class="province"
-        d="M350,500 L450,480 L480,550 L380,580 Z"/>
-  <!-- استان کرمان -->
-  <path id="kerman" class="province"
-        d="M400,700 L520,680 L560,770 L450,800 Z"/>
+<div class="login-container" id="loginBtn" role="button" tabindex="0" aria-label="ورود به بازار ارزوئیه">
+  بازار ارزوئیه
+  <div class="palms">
+    <div class="palm-small">
+      <svg viewBox="0 0 64 128" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false">
+        <path d="M32 128C22 80 5 40 32 0c27 40 10 80 0 128z"/>
+      </svg>
+    </div>
+    <div class="palm-big">
+      <svg viewBox="0 0 64 128" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false">
+        <path d="M32 128C12 60 0 20 32 0c32 20 20 80 0 128z"/>
+      </svg>
+    </div>
+    <div class="palm-root"></div>
+  </div>
+</div>
 
-  <!-- مسیرهای سایر استان‌ها (می‌توان تکمیل کرد) -->
-</svg>
+<script>
+  document.getElementById('loginBtn').addEventListener('click', () => {
+    window.location.href = 'main.html';
+  });
+  document.getElementById('loginBtn').addEventListener('keypress', e => {
+    if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault();
+      window.location.href = 'main.html';
+    }
+  });
+</script>
+
+</body>
+</html>
