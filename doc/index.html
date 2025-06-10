@@ -1,1 +1,193 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>ورود - بازار ارزوئیه</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Vazirmatn&display=swap');
+    body {
+      font-family: 'Vazirmatn', sans-serif;
+      background: #f0f4f8;
+      margin: 0; padding: 0;
+      display: flex; flex-direction: column; align-items: center; justify-content: start;
+      min-height: 100vh;
+      padding-top: 60px;
+    }
+    h1 {
+      font-size: 2.8rem;
+      font-weight: 900;
+      background: linear-gradient(270deg, #ff0057, #00f7ff, #ffcc00, #ff0057);
+      background-size: 800% 800%;
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      animation: rainbowRotate 10s ease infinite;
+      margin-bottom: 40px;
+      text-align: center;
+      user-select: none;
+    }
+    @keyframes rainbowRotate {
+      0%{background-position:0% 50%}
+      50%{background-position:100% 50%}
+      100%{background-position:0% 50%}
+    }
+    .container {
+      background: white;
+      padding: 30px 20px 40px;
+      border-radius: 16px;
+      box-shadow: 0 10px 30px rgb(0 0 0 / 0.1);
+      width: 320px;
+      max-width: 90vw;
+    }
+    label {
+      display: block;
+      margin-bottom: 6px;
+      font-weight: 600;
+      color: #444;
+    }
+    select, input {
+      width: 100%;
+      padding: 10px 14px;
+      margin-bottom: 20px;
+      border-radius: 10px;
+      border: 1.8px solid #aaa;
+      font-size: 1rem;
+      transition: border-color 0.3s;
+      box-sizing: border-box;
+    }
+    select:focus, input:focus {
+      outline: none;
+      border-color: #00c6ff;
+      box-shadow: 0 0 6px #00c6ffaa;
+    }
+    button {
+      width: 100%;
+      padding: 12px 0;
+      background: #00c6ff;
+      color: white;
+      font-size: 1.1rem;
+      font-weight: 700;
+      border: none;
+      border-radius: 12px;
+      cursor: pointer;
+      transition: background-color 0.3s;
+    }
+    button:hover:not(:disabled) {
+      background: #0099cc;
+    }
+    button:disabled {
+      background: #b0dfff;
+      cursor: not-allowed;
+    }
+    .hidden {
+      display: none;
+    }
+    .info-text {
+      font-size: 0.85rem;
+      color: #555;
+      margin-top: -15px;
+      margin-bottom: 25px;
+    }
+  </style>
+</head>
+<body>
 
+  <h1>بازار ارزوئیه</h1>
+
+  <div class="container">
+    <label for="roleSelect">ورود به عنوان</label>
+    <select id="roleSelect" aria-label="انتخاب نقش">
+      <option value="" disabled selected>یک گزینه انتخاب کنید</option>
+      <option value="seller">فروشنده</option>
+      <option value="buyer">خریدار</option>
+    </select>
+
+    <form id="loginForm" class="hidden" autocomplete="off">
+      <label for="phoneInput">شماره تلفن همراه</label>
+      <input type="tel" id="phoneInput" name="phone" placeholder="مثلاً 09123456789" pattern="09[0-9]{9}" required />
+      
+      <label for="codeInput" class="hidden" id="codeLabel">کد تأیید</label>
+      <input type="text" id="codeInput" name="code" placeholder="کد تأیید را وارد کنید" minlength="4" maxlength="6" class="hidden" />
+
+      <button type="submit" id="sendCodeBtn">ارسال کد تأیید</button>
+      <button type="button" id="verifyCodeBtn" class="hidden" disabled>تأیید کد و ورود</button>
+
+      <p class="info-text" id="infoText"></p>
+    </form>
+  </div>
+
+  <script>
+    const roleSelect = document.getElementById('roleSelect');
+    const loginForm = document.getElementById('loginForm');
+    const phoneInput = document.getElementById('phoneInput');
+    const codeInput = document.getElementById('codeInput');
+    const codeLabel = document.getElementById('codeLabel');
+    const sendCodeBtn = document.getElementById('sendCodeBtn');
+    const verifyCodeBtn = document.getElementById('verifyCodeBtn');
+    const infoText = document.getElementById('infoText');
+
+    let selectedRole = null;
+    let codeSent = false;
+    let fakeCode = '1234';  // شبیه‌سازی کد ارسال شده
+
+    roleSelect.addEventListener('change', () => {
+      selectedRole = roleSelect.value;
+      loginForm.classList.remove('hidden');
+      resetForm();
+      infoText.textContent = '';
+    });
+
+    function resetForm() {
+      phoneInput.value = '';
+      codeInput.value = '';
+      codeInput.classList.add('hidden');
+      codeLabel.classList.add('hidden');
+      sendCodeBtn.classList.remove('hidden');
+      verifyCodeBtn.classList.add('hidden');
+      verifyCodeBtn.disabled = true;
+      codeSent = false;
+    }
+
+    sendCodeBtn.addEventListener('click', e => {
+      e.preventDefault();
+      if(!phoneInput.checkValidity()) {
+        infoText.textContent = 'لطفاً شماره تلفن معتبر وارد کنید.';
+        phoneInput.focus();
+        return;
+      }
+      infoText.textContent = `کد تأیید به شماره ${phoneInput.value} ارسال شد (شبیه‌سازی).`;
+      codeInput.classList.remove('hidden');
+      codeLabel.classList.remove('hidden');
+      sendCodeBtn.classList.add('hidden');
+      verifyCodeBtn.classList.remove('hidden');
+      verifyCodeBtn.disabled = false;
+      codeSent = true;
+    });
+
+    codeInput.addEventListener('input', () => {
+      if(codeInput.value.length >= 4) {
+        verifyCodeBtn.disabled = false;
+      } else {
+        verifyCodeBtn.disabled = true;
+      }
+    });
+
+    verifyCodeBtn.addEventListener('click', () => {
+      if(codeInput.value === fakeCode) {
+        infoText.textContent = 'کد تأیید صحیح است. در حال هدایت...';
+        setTimeout(() => {
+          if(selectedRole === 'seller') {
+            window.location.href = 'foroosh.html';
+          } else if(selectedRole === 'buyer') {
+            window.location.href = 'buyer.html';
+          }
+        }, 1200);
+      } else {
+        infoText.textContent = 'کد تأیید اشتباه است. دوباره تلاش کنید.';
+        codeInput.focus();
+      }
+    });
+  </script>
+
+</body>
+</html>
