@@ -3,247 +3,246 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>ورود به بازار ارزوئیه</title>
+<title>ورود - بازار ارزوئیه</title>
+
 <style>
-  @import url('https://cdn.jsdelivr.net/gh/rastikerdar/vazirmatn@v33.003/Vazirmatn-font-face.css');
+  @import url('https://fonts.googleapis.com/css2?family=Vazirmatn&display=swap');
+
   body {
-    font-family: 'Vazirmatn', sans-serif;
-    background: #f5f5f7;
     margin: 0; padding: 0;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
+    font-family: 'Vazirmatn', Tahoma, sans-serif;
+    background: #f9f9f9;
+    direction: rtl;
+    color: #333;
   }
+
+  /* هدر رنگارنگ مارپیچ */
   header {
-    overflow: hidden;
-    height: 50px;
+    width: 100%;
+    min-height: 75px;
     display: flex;
     justify-content: center;
     align-items: center;
-    width: 100%;
-    background: linear-gradient(270deg, #ff4e50, #f9d423, #24c6dc, #ab47bc, #ff4e50);
-    background-size: 1000% 1000%;
-    animation: bgGradient 15s ease infinite;
-  }
-  #spiral-text {
-    font-weight: bold;
-    font-size: 1.8rem;
-    color: #fff;
-    white-space: nowrap;
-    user-select: none;
+    margin-top: 20px;
     position: relative;
-    animation: spiralMotion 6s linear infinite;
+    background: linear-gradient(90deg, #ff0057, #ffb700, #00c6ff, #ff0057);
   }
-  @keyframes bgGradient {
-    0% { background-position: 0% 50%; }
-    50% { background-position: 100% 50%; }
-    100% { background-position: 0% 50%; }
-  }
-  @keyframes spiralMotion {
-    0% {
-      transform: rotate(0deg) translate(0px) rotate(0deg);
-      color: hsl(0, 100%, 70%);
-    }
-    25% {
-      transform: rotate(90deg) translate(10px) rotate(-90deg);
-      color: hsl(90, 100%, 70%);
-    }
-    50% {
-      transform: rotate(180deg) translate(20px) rotate(-180deg);
-      color: hsl(180, 100%, 70%);
-    }
-    75% {
-      transform: rotate(270deg) translate(10px) rotate(-270deg);
-      color: hsl(270, 100%, 70%);
-    }
-    100% {
-      transform: rotate(360deg) translate(0px) rotate(-360deg);
-      color: hsl(360, 100%, 70%);
-    }
-  }
-  main {
-    margin-top: 30px;
-    width: 320px;
-    background: white;
-    border-radius: 12px;
-    box-shadow: 0 0 15px rgba(0,0,0,0.1);
-    padding: 20px;
-  }
-  label {
-    display: block;
-    margin-bottom: 6px;
-    font-weight: 600;
-    font-size: 1.1rem;
-  }
-  select, input {
-    width: 100%;
-    padding: 10px;
-    font-size: 1rem;
-    border-radius: 6px;
-    border: 1px solid #ccc;
-    margin-bottom: 15px;
+
+  .spiral-text {
+    font-size: 3rem;
+    font-weight: 900;
+    padding: 10px 25px;
+    border-radius: 50%;
+    display: inline-block;
+    animation: spin 8s linear infinite, colorchange 10s linear infinite;
+    background: linear-gradient(45deg, #ff0057, #ffb700, #00c6ff, #ff0057);
+    background-size: 400% 400%;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    width: 150px;
+    height: 150px;
+    line-height: 150px;
+    text-align: center;
     box-sizing: border-box;
   }
-  button {
-    width: 100%;
-    padding: 12px;
-    font-size: 1.1rem;
-    font-weight: 700;
-    background: #24c6dc;
-    border: none;
-    border-radius: 8px;
+
+  @keyframes spin {
+    0%   { transform: rotate(0deg) scale(1); }
+    50%  { transform: rotate(180deg) scale(0.8); }
+    100% { transform: rotate(360deg) scale(1); }
+  }
+
+  @keyframes colorchange {
+    0%   { background-position: 0% 50%; }
+    50%  { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+  }
+
+  /* ناوبری کشویی راهنما */
+  nav {
+    position: fixed;
+    top: 15px;
+    right: 15px;
+    font-size: 1rem;
+    z-index: 1000;
+  }
+
+  .nav-toggle {
+    background-color: #ff5c5c;
     color: white;
+    border: none;
+    border-radius: 5px;
+    padding: 10px 18px;
     cursor: pointer;
-    transition: background 0.3s ease;
+    user-select: none;
+    font-weight: 700;
+    transition: background-color 0.3s;
   }
-  button:hover {
-    background: #1da8b7;
+
+  .nav-toggle:hover {
+    background-color: #ff3737;
   }
-  #otp-section {
-    margin-top: 15px;
+
+  .nav-menu {
+    background: #fff;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    margin-top: 8px;
+    width: 200px;
+    box-shadow: 0 3px 10px rgba(0,0,0,0.2);
     display: none;
   }
-  #otp-input {
-    width: 60%;
-    display: inline-block;
+
+  .nav-menu.show {
+    display: block;
+  }
+
+  .nav-menu button {
+    width: 100%;
+    padding: 8px 12px;
+    border: none;
+    background: none;
+    text-align: right;
+    cursor: pointer;
+    font-weight: 600;
+    border-bottom: 1px solid #eee;
+    transition: background-color 0.2s;
+  }
+
+  .nav-menu button:last-child {
+    border-bottom: none;
+  }
+
+  .nav-menu button:hover {
+    background-color: #ffefef;
+  }
+
+  .description-box {
+    background: #ffe8e8;
+    margin-top: 8px;
     padding: 10px;
+    border-radius: 6px;
+    font-size: 0.9rem;
+    color: #a33;
+    min-height: 70px;
+    text-align: justify;
+  }
+
+  /* فرم اصلی */
+  main {
+    max-width: 400px;
+    margin: 30px auto 60px;
+    background: #fff;
+    padding: 25px 30px;
+    box-shadow: 0 0 15px rgba(0,0,0,0.1);
+    border-radius: 12px;
+  }
+
+  label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 700;
+  }
+
+  select, input[type="text"], input[type="tel"], input[type="number"] {
+    width: 100%;
+    padding: 10px 12px;
     font-size: 1rem;
+    margin-bottom: 18px;
     border-radius: 6px;
     border: 1px solid #ccc;
+    box-sizing: border-box;
   }
-  #otp-timer {
-    display: inline-block;
-    font-size: 1rem;
-    margin-right: 10px;
-    vertical-align: middle;
-    color: #555;
+
+  button {
+    background-color: #ff5c5c;
+    color: white;
+    border: none;
+    font-size: 1.1rem;
+    font-weight: 700;
+    padding: 12px;
+    border-radius: 8px;
+    width: 100%;
+    cursor: pointer;
+    transition: background-color 0.3s;
   }
-  #message {
-    margin-top: 10px;
+
+  button:hover {
+    background-color: #ff3737;
+  }
+
+  .hidden {
+    display: none;
+  }
+
+  .error-msg {
+    color: #c00;
+    margin-bottom: 12px;
     font-weight: 600;
-    color: red;
   }
+
+  /* شمارش معکوس */
+  .countdown {
+    font-weight: 600;
+    margin-bottom: 12px;
+    font-size: 1rem;
+    color: #555;
+    text-align: center;
+  }
+
 </style>
 </head>
 <body>
 
 <header>
-  <div id="spiral-text">بازار ارزوئیه</div>
+  <div class="spiral-text">بازار ارزوئیه</div>
 </header>
 
+<nav>
+  <button class="nav-toggle" aria-expanded="false" aria-controls="nav-menu">راهنمایی ▼</button>
+  <div id="nav-menu" class="nav-menu" role="menu" aria-hidden="true">
+    <button type="button" data-role="foroosh">فروشنده</button>
+    <button type="button" data-role="kharidar">خریدار</button>
+    <button type="button" data-role="peyk">پیک مجازی</button>
+    <div id="desc-box" class="description-box">برای مشاهده توضیحات روی هر گزینه کلیک کنید.</div>
+  </div>
+</nav>
+
 <main>
-  <label for="role">نقش خود را انتخاب کنید</label>
-  <select id="role">
-    <option value="" selected disabled>انتخاب کنید</option>
-    <option value="foroosh">فروشنده</option>
-    <option value="buyer">خریدار</option>
-  </select>
+  <!-- انتخاب نقش -->
+  <div id="role-selection">
+    <label for="role">نقش خود را انتخاب کنید</label>
+    <select id="role" name="role" required>
+      <option value="" disabled selected>انتخاب کنید</option>
+      <option value="foroosh">فروشنده</option>
+      <option value="kharidar">خریدار</option>
+      <option value="peyk">پیک مجازی</option>
+    </select>
+  </div>
 
-  <label for="email">ایمیل خود را وارد کنید</label>
-  <input type="email" id="email" placeholder="example@domain.com" autocomplete="email" />
+  <!-- فرم شماره موبایل -->
+  <form id="phone-form" autocomplete="off">
+    <label for="phone-input">شماره موبایل خود را وارد کنید</label>
+    <input type="tel" id="phone-input" name="phone" placeholder="مثال: 09123456789" pattern="09\d{9}" required />
+    <div class="error-msg" id="phone-error"></div>
+    <button type="submit" id="send-code-btn">ارسال کد تایید</button>
+  </form>
 
-  <button id="send-otp-btn">ارسال کد تایید</button>
-
-  <section id="otp-section">
-    <label for="otp-input">کد تایید را وارد کنید</label>
-    <input type="text" id="otp-input" maxlength="6" placeholder="۶ رقم کد تایید" />
-    <div>
-      <span id="otp-timer">60</span> ثانیه تا انقضای کد
-    </div>
-    <button id="verify-otp-btn">تایید و ورود</button>
-  </section>
-
-  <div id="message"></div>
+  <!-- فرم تایید کد -->
+  <form id="code-form" class="hidden" autocomplete="off">
+    <label for="code-input">کد تایید را وارد کنید</label>
+    <input type="number" id="code-input" name="code" placeholder="کد ۵ رقمی" minlength="5" maxlength="5" required />
+    <div class="countdown" id="countdown">60 ثانیه باقی مانده</div>
+    <div class="error-msg" id="code-error"></div>
+    <button type="submit" id="verify-code-btn">تایید و ورود</button>
+  </form>
 </main>
 
-<script src="https://cdn.jsdelivr.net/npm/emailjs-com@3/dist/email.min.js"></script>
 <script>
-  emailjs.init("KgkhWLKTjPLxddRPS"); // کلید عمومی درست
+  // کنترل ناوبری کشویی
+  const navToggle = document.querySelector('.nav-toggle');
+  const navMenu = document.getElementById('nav-menu');
+  const descBox = document.getElementById('desc-box');
 
-  const roleSelect = document.getElementById('role');
-  const emailInput = document.getElementById('email');
-  const sendOtpBtn = document.getElementById('send-otp-btn');
-  const otpSection = document.getElementById('otp-section');
-  const otpInput = document.getElementById('otp-input');
-  const verifyOtpBtn = document.getElementById('verify-otp-btn');
-  const otpTimer = document.getElementById('otp-timer');
-  const messageDiv = document.getElementById('message');
-
-  let generatedOtp = null;
-  let countdownInterval = null;
-  let timeLeft = 60;
-
-  function startCountdown() {
-    timeLeft = 60;
-    otpTimer.textContent = timeLeft;
-    countdownInterval = setInterval(() => {
-      timeLeft--;
-      otpTimer.textContent = timeLeft;
-      if (timeLeft <= 0) {
-        clearInterval(countdownInterval);
-        messageDiv.style.color = 'red';
-        messageDiv.textContent = 'کد تایید منقضی شده است. لطفاً دوباره ارسال کنید.';
-        otpSection.style.display = 'none';
-      }
-    }, 1000);
-  }
-
-  function generateOtp() {
-    return Math.floor(100000 + Math.random() * 900000).toString();
-  }
-
-  sendOtpBtn.addEventListener('click', () => {
-    messageDiv.textContent = '';
-    if (!roleSelect.value) {
-      messageDiv.style.color = 'red';
-      messageDiv.textContent = 'لطفاً نقش خود را انتخاب کنید.';
-      return;
-    }
-    if (!emailInput.value || !emailInput.value.includes('@')) {
-      messageDiv.style.color = 'red';
-      messageDiv.textContent = 'لطفاً یک ایمیل معتبر وارد کنید.';
-      return;
-    }
-
-    generatedOtp = generateOtp();
-
-    emailjs.send("service_bazar", "template_ztidbsk", {
-      to_email: emailInput.value,
-      otp_code: generatedOtp
-    })
-    .then(() => {
-      messageDiv.style.color = 'green';
-      messageDiv.textContent = 'کد تایید ارسال شد. لطفاً ایمیل خود را بررسی کنید.';
-      otpSection.style.display = 'block';
-      startCountdown();
-    })
-    .catch((error) => {
-      messageDiv.style.color = 'red';
-      messageDiv.textContent = 'خطا در ارسال کد تایید. لطفاً دوباره تلاش کنید.';
-      console.error('EmailJS error:', error);
-    });
-  });
-
-  verifyOtpBtn.addEventListener('click', () => {
-    if (!otpInput.value) {
-      messageDiv.style.color = 'red';
-      messageDiv.textContent = 'لطفاً کد تایید را وارد کنید.';
-      return;
-    }
-    if (otpInput.value !== generatedOtp) {
-      messageDiv.style.color = 'red';
-      messageDiv.textContent = 'کد تایید اشتباه است.';
-      return;
-    }
-    clearInterval(countdownInterval);
-    messageDiv.style.color = 'green';
-    messageDiv.textContent = 'ورود موفقیت‌آمیز بود، در حال انتقال...';
-
-    setTimeout(() => {
-      if (roleSelect.value === 'foroosh') {
-        window.location.href = 'https://orzooiyehmarket.github.io/bazar_orzooiyeh/docs/foroosh.html';
-      } else if (roleSelect.value === 'buyer') {
-        window.location.href = 'https://orzooiyehmarket.github.io/bazar_orzooiyeh/docs/buyer.html';
-      }
-    }, 1500);
-  });
+  navToggle.addEventListener('click', () => {
+    const expanded
