@@ -28,19 +28,19 @@
     font-size: 2.5rem;
     font-weight: bold;
     padding: 10px 0;
-    animation: scrollLeft 15s linear infinite;
+    animation: scrollRight 15s linear infinite;
     background: linear-gradient(90deg, 
       #f44336, #ff9800, #ffeb3b, #4caf50, #2196f3, #9c27b0, #e91e63);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
   }
 
-  @keyframes scrollLeft {
+  @keyframes scrollRight {
     0% {
-      transform: translateX(100%);
+      transform: translateX(-100%);
     }
     100% {
-      transform: translateX(-100%);
+      transform: translateX(100%);
     }
   }
 
@@ -59,7 +59,7 @@
     font-weight: 600;
   }
 
-  select, input[type="text"], input[type="tel"], input[type="number"] {
+  select, input[type="text"], input[type="number"] {
     width: 100%;
     padding: 10px 12px;
     margin-bottom: 20px;
@@ -94,6 +94,15 @@
     margin-top: 15px;
     font-size: 15px;
     color: #d32f2f;
+    min-height: 20px;
+  }
+
+  .countdown {
+    font-size: 14px;
+    color: #555;
+    margin-top: -15px;
+    margin-bottom: 20px;
+    text-align: center;
   }
 </style>
 
@@ -109,14 +118,19 @@
     const sendOtpBtn = document.getElementById("send-otp");
     const verifyOtpBtn = document.getElementById("verify-otp");
     const messageBox = document.getElementById("message");
+    const countdownBox = document.getElementById("countdown");
 
     let currentOtp = null;
     let currentRole = null;
+    let countdownInterval = null;
+    let countdownSeconds = 60;
 
     roleSelect.addEventListener("change", () => {
       if(roleSelect.value === "") {
         formContainer.classList.add("hidden");
         messageBox.textContent = "";
+        countdownBox.textContent = "";
+        resetCountdown();
         return;
       }
       formContainer.classList.remove("hidden");
@@ -124,6 +138,8 @@
       verifyOtpBtn.classList.add("hidden");
       sendOtpBtn.classList.remove("hidden");
       messageBox.textContent = "";
+      countdownBox.textContent = "";
+      resetCountdown();
       currentRole = roleSelect.value;
       emailInput.value = "";
       otpInput.value = "";
@@ -131,17 +147,14 @@
 
     sendOtpBtn.addEventListener("click", () => {
       const email = emailInput.value.trim();
-      // بررسی ساده ایمیل
       if(!email.match(/^[^\s@]+@[^\s@]+\.[^\s@]+$/)) {
         messageBox.style.color = "#d32f2f";
         messageBox.textContent = "لطفاً ایمیل معتبر وارد کنید";
         return;
       }
 
-      // تولید کد OTP تصادفی ۶ رقمی
       currentOtp = Math.floor(100000 + Math.random() * 900000).toString();
 
-      // ارسال ایمیل با EmailJS
       emailjs.send("service_bazar", "Template_ztidbsk", {
         otp_code: currentOtp,
         to_email: email
@@ -151,6 +164,7 @@
         otpInput.parentElement.classList.remove("hidden");
         verifyOtpBtn.classList.remove("hidden");
         sendOtpBtn.classList.add("hidden");
+        startCountdown();
       }, (error) => {
         messageBox.style.color = "#d32f2f";
         messageBox.textContent = "خطا در ارسال ایمیل لطفاً دوباره تلاش کنید";
@@ -163,7 +177,7 @@
       if(enteredOtp === currentOtp) {
         messageBox.style.color = "green";
         messageBox.textContent = "ورود موفقیت‌آمیز بود";
-        // انتقال به صفحه متناسب با نقش
+        resetCountdown();
         if(currentRole === "forooshande") {
           window.location.href = "https://orzooiyehmarket.github.io/bazar_orzooiyeh/docs/foroosh.html";
         } else if(currentRole === "kharidar") {
@@ -174,6 +188,30 @@
         messageBox.textContent = "کد تایید اشتباه است";
       }
     });
+
+    function startCountdown() {
+      countdownSeconds = 60;
+      countdownBox.textContent = `کد تایید تا ${countdownSeconds} ثانیه دیگر معتبر است`;
+      if(countdownInterval) clearInterval(countdownInterval);
+      countdownInterval = setInterval(() => {
+        countdownSeconds--;
+        if(countdownSeconds <= 0) {
+          clearInterval(countdownInterval);
+          countdownBox.textContent = "کد تایید منقضی شد. دوباره ارسال کنید.";
+          verifyOtpBtn.classList.add("hidden");
+          sendOtpBtn.classList.remove("hidden");
+          otpInput.parentElement.classList.add("hidden");
+          messageBox.textContent = "";
+        } else {
+          countdownBox.textContent = `کد تایید تا ${countdownSeconds} ثانیه دیگر معتبر است`;
+        }
+      }, 1000);
+    }
+
+    function resetCountdown() {
+      if(countdownInterval) clearInterval(countdownInterval);
+      countdownBox.textContent = "";
+    }
   };
 </script>
 
@@ -196,13 +234,15 @@
       <label for="email">ایمیل</label>
       <input type="text" id="email" name="email" placeholder="مثال: example@gmail.com" />
 
-      <div id="otp-container" style="margin-bottom: 20px;">
+      <div id="otp-container" style="margin-bottom: 0;">
         <label for="otp">کد تایید</label>
         <input type="number" id="otp" name="otp" placeholder="کد ۶ رقمی" maxlength="6" />
       </div>
 
+      <div id="countdown" class="countdown"></div>
+
       <button id="send-otp" type="button">ارسال کد تایید</button>
-      <button id="verify-otp" type="button" class="hidden">ورود</button>
+      <button id="verify-otp" type="button" class="hidden">تایید و ورود</button>
 
       <p id="message" class="message"></p>
     </div>
