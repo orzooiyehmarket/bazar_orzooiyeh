@@ -58,7 +58,7 @@
     100% { background-position: 0% 50%; }
   }
 
-  /* ناوبری کشویی راهنما */
+  /* ناوبری کشویی */
   nav {
     position: fixed;
     top: 15px;
@@ -68,19 +68,38 @@
   }
 
   .nav-toggle {
-    background-color: #ff5c5c;
-    color: white;
+    background-color: transparent;
     border: none;
-    border-radius: 5px;
-    padding: 10px 18px;
     cursor: pointer;
-    user-select: none;
+    display: flex;
+    align-items: center;
+    gap: 8px;
     font-weight: 700;
+    color: #ff5c5c;
+    user-select: none;
+    padding: 6px 12px;
+    border-radius: 6px;
     transition: background-color 0.3s;
   }
 
   .nav-toggle:hover {
-    background-color: #ff3737;
+    background-color: #ffe6e6;
+  }
+
+  /* سه خط همبرگر */
+  .hamburger {
+    width: 22px;
+    height: 16px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+  }
+
+  .hamburger span {
+    display: block;
+    height: 3px;
+    background-color: #ff5c5c;
+    border-radius: 3px;
   }
 
   .nav-menu {
@@ -88,7 +107,7 @@
     border: 1px solid #ddd;
     border-radius: 6px;
     margin-top: 8px;
-    width: 200px;
+    width: 220px;
     box-shadow: 0 3px 10px rgba(0,0,0,0.2);
     display: none;
   }
@@ -154,7 +173,7 @@
     box-sizing: border-box;
   }
 
-  button {
+  button[type="submit"] {
     background-color: #ff5c5c;
     color: white;
     border: none;
@@ -167,7 +186,7 @@
     transition: background-color 0.3s;
   }
 
-  button:hover {
+  button[type="submit"]:hover {
     background-color: #ff3737;
   }
 
@@ -199,11 +218,18 @@
 </header>
 
 <nav>
-  <button class="nav-toggle" aria-expanded="false" aria-controls="nav-menu">راهنمایی ▼</button>
+  <button class="nav-toggle" aria-expanded="false" aria-controls="nav-menu" aria-label="باز کردن منوی راهنمایی">
+    <div class="hamburger" aria-hidden="true">
+      <span></span>
+      <span></span>
+      <span></span>
+    </div>
+    راهنمایی
+  </button>
   <div id="nav-menu" class="nav-menu" role="menu" aria-hidden="true">
-    <button type="button" data-role="foroosh">فروشنده</button>
-    <button type="button" data-role="kharidar">خریدار</button>
-    <button type="button" data-role="peyk">پیک مجازی</button>
+    <button type="button" data-role="foroosh" role="menuitem">فروشنده</button>
+    <button type="button" data-role="kharidar" role="menuitem">خریدار</button>
+    <button type="button" data-role="peyk" role="menuitem">پیک مجازی</button>
     <div id="desc-box" class="description-box">برای مشاهده توضیحات روی هر گزینه کلیک کنید.</div>
   </div>
 </nav>
@@ -245,4 +271,95 @@
   const descBox = document.getElementById('desc-box');
 
   navToggle.addEventListener('click', () => {
-    const expanded
+    const expanded = navToggle.getAttribute('aria-expanded') === 'true';
+    navToggle.setAttribute('aria-expanded', String(!expanded));
+    navMenu.classList.toggle('show');
+    navMenu.setAttribute('aria-hidden', String(expanded));
+  });
+
+  // توضیحات برای هر نقش
+  const roleDescriptions = {
+    foroosh: `فروشنده: کاربرانی که محصولات خود را برای فروش در بازار ارزوئیه عرضه می‌کنند.`,
+    kharidar: `خریدار: کاربرانی که محصولات را مشاهده و خریداری می‌کنند.`,
+    peyk: `پیک مجازی: نماینده قانونی که مسئول ارسال و تحویل محصولات است.`
+  };
+
+  navMenu.querySelectorAll('button[data-role]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const role = btn.getAttribute('data-role');
+      descBox.textContent = roleDescriptions[role] || 'برای مشاهده توضیحات روی هر گزینه کلیک کنید.';
+    });
+  });
+
+  // فرم ها و کنترل ها
+  const phoneForm = document.getElementById('phone-form');
+  const codeForm = document.getElementById('code-form');
+  const phoneInput = document.getElementById('phone-input');
+  const codeInput = document.getElementById('code-input');
+  const phoneError = document.getElementById('phone-error');
+  const codeError = document.getElementById('code-error');
+  const countdownElem = document.getElementById('countdown');
+
+  let countdownInterval;
+  let timeLeft = 60;
+
+  function startCountdown() {
+    timeLeft = 60;
+    countdownElem.textContent = `${timeLeft} ثانیه باقی مانده`;
+    countdownInterval = setInterval(() => {
+      timeLeft--;
+      if (timeLeft <= 0) {
+        clearInterval(countdownInterval);
+        countdownElem.textContent = 'کد منقضی شده است.';
+      } else {
+        countdownElem.textContent = `${timeLeft} ثانیه باقی مانده`;
+      }
+    }, 1000);
+  }
+
+  phoneForm.addEventListener('submit', e => {
+    e.preventDefault();
+    phoneError.textContent = '';
+
+    const phoneValue = phoneInput.value.trim();
+    const phonePattern = /^09\d{9}$/;
+
+    if (!phonePattern.test(phoneValue)) {
+      phoneError.textContent = 'شماره موبایل معتبر نیست.';
+      return;
+    }
+
+    // اگر شماره درست بود:
+    // فرم شماره موبایل مخفی شود و فرم ورود کد نمایش داده شود
+    phoneForm.classList.add('hidden');
+    codeForm.classList.remove('hidden');
+
+    // شروع شمارش معکوس
+    startCountdown();
+
+    // در اینجا می‌توان کد ارسال پیامک را صدا زد (سمولیته یا api)
+    // alert('کد تایید ارسال شد!');
+  });
+
+  codeForm.addEventListener('submit', e => {
+    e.preventDefault();
+    codeError.textContent = '';
+
+    const codeValue = codeInput.value.trim();
+    if (codeValue.length !== 5 || isNaN(codeValue)) {
+      codeError.textContent = 'کد تایید باید ۵ رقم عددی باشد.';
+      return;
+    }
+
+    // شبیه‌سازی اعتبارسنجی کد
+    if (codeValue === '12345') {  // برای تست کد 12345 معتبر است
+      alert('ورود موفقیت‌آمیز بود!');
+      // اینجا می‌توان ریدایرکت کرد یا فرم‌ها را مخفی کرد
+    } else {
+      codeError.textContent = 'کد تایید اشتباه است.';
+    }
+  });
+</script>
+
+</body>
+</html>
