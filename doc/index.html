@@ -1,257 +1,79 @@
 <!DOCTYPE html>
-<html lang="fa" dir="rtl">
+<html lang="fa">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>ورود - بازار ارزوئیه</title>
-  <style>
-    @import url('https://fonts.googleapis.com/css2?family=Vazirmatn&display=swap');
-    body {
-      font-family: 'Vazirmatn', sans-serif;
-      background: #f0f4f8;
-      margin: 0; padding: 0;
-      display: flex; flex-direction: column; align-items: center; justify-content: start;
-      min-height: 100vh;
-      padding-top: 60px;
+  <meta charset="UTF-8">
+  <title>ورود با کد تایید</title>
+  <script src="https://cdn.jsdelivr.net/npm/emailjs-com@2/dist/email.min.js"></script>
+  <script>
+    emailjs.init("YOUR_USER_ID"); // جایگزین کن
+
+    let sentOTP = "";
+    let selectedRole = "";
+
+    function showLoginBox(role) {
+      selectedRole = role;
+      document.getElementById("login-box").style.display = "block";
     }
-    h1 {
-      font-size: 2.8rem;
-      font-weight: 900;
-      background: linear-gradient(270deg, #ff0057, #00f7ff, #ffcc00, #ff0057);
-      background-size: 800% 800%;
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      animation: rainbowRotate 10s ease infinite;
-      margin-bottom: 40px;
-      text-align: center;
-      user-select: none;
+
+    function sendOTP() {
+      const email = document.getElementById("email").value;
+      sentOTP = Math.floor(100000 + Math.random() * 900000);
+
+      emailjs.send("YOUR_SERVICE_ID", "YOUR_TEMPLATE_ID", {
+        to_email: email,
+        otp_code: sentOTP
+      }).then(function(response) {
+        alert("کد تایید ارسال شد!");
+        document.getElementById("otp-box").style.display = "block";
+      }, function(error) {
+        alert("خطا در ارسال ایمیل");
+      });
     }
-    @keyframes rainbowRotate {
-      0%{background-position:0% 50%}
-      50%{background-position:100% 50%}
-      100%{background-position:0% 50%}
+
+    function verifyOTP() {
+      const enteredOTP = document.getElementById("otp").value;
+      if (enteredOTP == sentOTP) {
+        alert("کد تایید صحیح است!");
+        if (selectedRole === "seller") {
+          window.location.href = "foroosh.html";
+        } else {
+          window.location.href = "buyer.html";
+        }
+      } else {
+        alert("کد وارد شده نادرست است.");
+      }
     }
-    .container {
-      background: white;
-      padding: 30px 20px 40px;
-      border-radius: 16px;
-      box-shadow: 0 10px 30px rgb(0 0 0 / 0.1);
-      width: 320px;
-      max-width: 90vw;
-    }
-    label {
-      display: block;
-      margin-bottom: 6px;
-      font-weight: 600;
-      color: #444;
-    }
-    select, input {
-      width: 100%;
-      padding: 10px 14px;
-      margin-bottom: 20px;
-      border-radius: 10px;
-      border: 1.8px solid #aaa;
-      font-size: 1rem;
-      transition: border-color 0.3s;
-      box-sizing: border-box;
-    }
-    select:focus, input:focus {
-      outline: none;
-      border-color: #00c6ff;
-      box-shadow: 0 0 6px #00c6ffaa;
-    }
-    button {
-      width: 100%;
-      padding: 12px 0;
-      background: #00c6ff;
-      color: white;
-      font-size: 1.1rem;
-      font-weight: 700;
-      border: none;
-      border-radius: 12px;
-      cursor: pointer;
-      transition: background-color 0.3s;
-    }
-    button:hover:not(:disabled) {
-      background: #0099cc;
-    }
-    button:disabled {
-      background: #b0dfff;
-      cursor: not-allowed;
-    }
-    .hidden {
-      display: none;
-    }
-    .info-text {
-      font-size: 0.85rem;
-      color: #555;
-      margin-top: -15px;
-      margin-bottom: 25px;
-      min-height: 20px;
-    }
-    #recaptcha-container {
-      margin-bottom: 20px;
-    }
-  </style>
+  </script>
 </head>
-<body>
+<body style="direction: rtl; font-family: Tahoma; text-align: center; padding: 30px;">
 
-  <h1>بازار ارزوئیه</h1>
+  <h1 style="font-size: 32px; animation: rainbow 5s infinite;">بازار ارزوئیه</h1>
 
-  <div class="container">
-    <label for="roleSelect">ورود به عنوان</label>
-    <select id="roleSelect" aria-label="انتخاب نقش">
-      <option value="" disabled selected>یک گزینه انتخاب کنید</option>
-      <option value="seller">فروشنده</option>
-      <option value="buyer">خریدار</option>
-    </select>
-
-    <form id="loginForm" class="hidden" autocomplete="off" onsubmit="return false;">
-      <label for="phoneInput">شماره تلفن همراه</label>
-      <input type="tel" id="phoneInput" name="phone" placeholder="مثلاً 09123456789" pattern="09[0-9]{9}" required />
-
-      <div id="recaptcha-container"></div>
-
-      <label for="codeInput" class="hidden" id="codeLabel">کد تأیید</label>
-      <input type="text" id="codeInput" name="code" placeholder="کد تأیید را وارد کنید" minlength="4" maxlength="6" class="hidden" />
-
-      <button type="button" id="sendCodeBtn">ارسال کد تأیید</button>
-      <button type="button" id="verifyCodeBtn" class="hidden" disabled>تأیید کد و ورود</button>
-
-      <p class="info-text" id="infoText"></p>
-    </form>
+  <div>
+    <button onclick="showLoginBox('seller')">ورود فروشنده</button>
+    <button onclick="showLoginBox('buyer')">ورود خریدار</button>
   </div>
 
-  <!-- Firebase SDK -->
-  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+  <div id="login-box" style="display:none; margin-top:20px;">
+    <input type="email" id="email" placeholder="ایمیل شما" required><br><br>
+    <button onclick="sendOTP()">ارسال کد تایید</button>
+  </div>
 
-  <script>
-    // TODO: مقدار زیر را با تنظیمات پروژه خود در Firebase Console جایگزین کن
-    const firebaseConfig = {
-      apiKey: "API_KEY_HERE",
-      authDomain: "PROJECT_ID.firebaseapp.com",
-      projectId: "PROJECT_ID",
-      storageBucket: "PROJECT_ID.appspot.com",
-      messagingSenderId: "SENDER_ID",
-      appId: "APP_ID",
-    };
+  <div id="otp-box" style="display:none; margin-top:20px;">
+    <input type="text" id="otp" placeholder="کد تایید را وارد کنید" required><br><br>
+    <button onclick="verifyOTP()">تایید</button>
+  </div>
 
-    firebase.initializeApp(firebaseConfig);
-
-    const auth = firebase.auth();
-
-    const roleSelect = document.getElementById('roleSelect');
-    const loginForm = document.getElementById('loginForm');
-    const phoneInput = document.getElementById('phoneInput');
-    const codeInput = document.getElementById('codeInput');
-    const codeLabel = document.getElementById('codeLabel');
-    const sendCodeBtn = document.getElementById('sendCodeBtn');
-    const verifyCodeBtn = document.getElementById('verifyCodeBtn');
-    const infoText = document.getElementById('infoText');
-
-    let selectedRole = null;
-    let confirmationResult = null;
-
-    roleSelect.addEventListener('change', () => {
-      selectedRole = roleSelect.value;
-      loginForm.classList.remove('hidden');
-      resetForm();
-      infoText.textContent = '';
-      renderRecaptcha();
-    });
-
-    function resetForm() {
-      phoneInput.value = '';
-      codeInput.value = '';
-      codeInput.classList.add('hidden');
-      codeLabel.classList.add('hidden');
-      sendCodeBtn.classList.remove('hidden');
-      verifyCodeBtn.classList.add('hidden');
-      verifyCodeBtn.disabled = true;
+  <style>
+    @keyframes rainbow {
+      0% { color: red; }
+      20% { color: orange; }
+      40% { color: green; }
+      60% { color: blue; }
+      80% { color: indigo; }
+      100% { color: violet; }
     }
-
-    function renderRecaptcha() {
-      if(window.recaptchaVerifier) {
-        window.recaptchaVerifier.clear();
-      }
-      window.recaptchaVerifier = new firebase.auth.RecaptchaVerifier('recaptcha-container', {
-        size: 'normal',
-        callback: (response) => {
-          sendCodeBtn.disabled = false;
-        },
-        'expired-callback': () => {
-          sendCodeBtn.disabled = true;
-        }
-      });
-      window.recaptchaVerifier.render();
-      sendCodeBtn.disabled = true;
-    }
-
-    sendCodeBtn.addEventListener('click', () => {
-      const phoneNumber = phoneInput.value.trim();
-      if(!phoneInput.checkValidity()) {
-        infoText.textContent = 'لطفاً شماره تلفن معتبر وارد کنید.';
-        phoneInput.focus();
-        return;
-      }
-      infoText.textContent = 'در حال ارسال کد تأیید ...';
-      sendCodeBtn.disabled = true;
-
-      auth.signInWithPhoneNumber(phoneNumber, window.recaptchaVerifier)
-        .then((result) => {
-          confirmationResult = result;
-          infoText.textContent = `کد تأیید به شماره ${phoneNumber} ارسال شد.`;
-          codeInput.classList.remove('hidden');
-          codeLabel.classList.remove('hidden');
-          sendCodeBtn.classList.add('hidden');
-          verifyCodeBtn.classList.remove('hidden');
-          verifyCodeBtn.disabled = false;
-        })
-        .catch((error) => {
-          console.error(error);
-          infoText.textContent = `خطا در ارسال کد: ${error.message}`;
-          sendCodeBtn.disabled = false;
-          window.recaptchaVerifier.render();
-        });
-    });
-
-    codeInput.addEventListener('input', () => {
-      if(codeInput.value.length >= 4) {
-        verifyCodeBtn.disabled = false;
-      } else {
-        verifyCodeBtn.disabled = true;
-      }
-    });
-
-    verifyCodeBtn.addEventListener('click', () => {
-      const code = codeInput.value.trim();
-      if(!confirmationResult) {
-        infoText.textContent = 'ابتدا کد تأیید را ارسال کنید.';
-        return;
-      }
-      infoText.textContent = 'در حال تایید کد ...';
-      verifyCodeBtn.disabled = true;
-
-      confirmationResult.confirm(code)
-        .then((result) => {
-          const user = result.user;
-          infoText.textContent = 'ورود موفقیت‌آمیز بود. در حال هدایت...';
-          setTimeout(() => {
-            if(selectedRole === 'seller') {
-              window.location.href = 'foroosh.html';
-            } else if(selectedRole === 'buyer') {
-              window.location.href = 'buyer.html';
-            }
-          }, 1500);
-        })
-        .catch((error) => {
-          infoText.textContent = 'کد تأیید اشتباه است. دوباره تلاش کنید.';
-          verifyCodeBtn.disabled = false;
-          codeInput.focus();
-        });
-    });
-  </script>
+  </style>
 
 </body>
 </html>
