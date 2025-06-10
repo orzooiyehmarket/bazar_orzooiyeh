@@ -1,252 +1,240 @@
 <!DOCTYPE html>
 <html lang="fa" dir="rtl">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>ورود - بازار ارزوئیه</title>
-
-<style>
-  body {
-    font-family: Tahoma, sans-serif;
-    background: #f5f5f5;
-    margin: 0; padding: 20px;
-    direction: rtl;
-    text-align: right;
-  }
-
-  .rainbow-scroll {
-    width: 100%;
-    overflow: hidden;
-    white-space: nowrap;
-    box-sizing: border-box;
-    border-bottom: 3px solid #ccc;
-    background: #fff;
-  }
-
-  .rainbow-scroll span {
-    display: inline-block;
-    font-size: 2.5rem;
-    font-weight: bold;
-    padding: 10px 0;
-    animation: scrollRight 15s linear infinite;
-    background: linear-gradient(90deg, 
-      #f44336, #ff9800, #ffeb3b, #4caf50, #2196f3, #9c27b0, #e91e63);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-  }
-
-  @keyframes scrollRight {
-    0% {
-      transform: translateX(-100%);
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>ورود بازار ارزوئیه</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Vazirmatn&display=swap');
+    body {
+      font-family: 'Vazirmatn', sans-serif;
+      background: #f0f0f0;
+      margin: 0; padding: 0;
+      direction: rtl;
+      text-align: right;
+      display: flex; flex-direction: column; align-items: center;
+      min-height: 100vh;
     }
-    100% {
-      transform: translateX(100%);
+    header {
+      background: linear-gradient(90deg, #f44336, #2196f3, #4caf50, #ffeb3b, #f44336);
+      background-size: 500% 100%;
+      animation: colorslide 15s linear infinite;
+      color: white;
+      font-size: 2.5rem;
+      font-weight: bold;
+      width: 100%;
+      padding: 20px 0;
+      text-align: center;
+      user-select: none;
+      white-space: nowrap;
+      overflow: hidden;
+      box-sizing: border-box;
     }
-  }
-
-  .container {
-    max-width: 400px;
-    margin: 30px auto 0 auto;
-    background: #fff;
-    padding: 30px 25px;
-    border-radius: 10px;
-    box-shadow: 0 0 15px rgba(0,0,0,0.08);
-  }
-
-  label {
-    display: block;
-    margin-bottom: 8px;
-    font-weight: 600;
-  }
-
-  select, input[type="text"], input[type="number"] {
-    width: 100%;
-    padding: 10px 12px;
-    margin-bottom: 20px;
-    border: 1.5px solid #ddd;
-    border-radius: 6px;
-    font-size: 16px;
-    box-sizing: border-box;
-  }
-
-  button {
-    background-color: #2e7d32;
-    color: white;
-    font-size: 18px;
-    font-weight: 600;
-    padding: 12px;
-    width: 100%;
-    border: none;
-    border-radius: 8px;
-    cursor: pointer;
-    transition: background-color 0.3s ease;
-  }
-
-  button:hover {
-    background-color: #276128;
-  }
-
-  .hidden {
-    display: none;
-  }
-
-  .message {
-    margin-top: 15px;
-    font-size: 15px;
-    color: #d32f2f;
-    min-height: 20px;
-  }
-
-  .countdown {
-    font-size: 14px;
-    color: #555;
-    margin-top: -15px;
-    margin-bottom: 20px;
-    text-align: center;
-  }
-</style>
-
-<script src="https://cdn.jsdelivr.net/npm/emailjs-com@3/dist/email.min.js"></script>
-<script>
-  emailjs.init("KgkhWLKTjPLxddRPS"); // کلید عمومی ایمیل جی‌اس
-
-  window.onload = function() {
-    const roleSelect = document.getElementById("role");
-    const formContainer = document.getElementById("form-container");
-    const emailInput = document.getElementById("email");
-    const otpInput = document.getElementById("otp");
-    const sendOtpBtn = document.getElementById("send-otp");
-    const verifyOtpBtn = document.getElementById("verify-otp");
-    const messageBox = document.getElementById("message");
-    const countdownBox = document.getElementById("countdown");
-
-    let currentOtp = null;
-    let currentRole = null;
-    let countdownInterval = null;
-    let countdownSeconds = 60;
-
-    roleSelect.addEventListener("change", () => {
-      if(roleSelect.value === "") {
-        formContainer.classList.add("hidden");
-        messageBox.textContent = "";
-        countdownBox.textContent = "";
-        resetCountdown();
-        return;
-      }
-      formContainer.classList.remove("hidden");
-      otpInput.parentElement.classList.add("hidden");
-      verifyOtpBtn.classList.add("hidden");
-      sendOtpBtn.classList.remove("hidden");
-      messageBox.textContent = "";
-      countdownBox.textContent = "";
-      resetCountdown();
-      currentRole = roleSelect.value;
-      emailInput.value = "";
-      otpInput.value = "";
-    });
-
-    sendOtpBtn.addEventListener("click", () => {
-      const email = emailInput.value.trim();
-      if(!email.match(/^[^\s@]+@[^\s@]+\.[^\s@]+$/)) {
-        messageBox.style.color = "#d32f2f";
-        messageBox.textContent = "لطفاً ایمیل معتبر وارد کنید";
-        return;
-      }
-
-      currentOtp = Math.floor(100000 + Math.random() * 900000).toString();
-
-      emailjs.send("service_bazar", "Template_ztidbsk", {
-        otp_code: currentOtp,
-        to_email: email
-      }).then(() => {
-        messageBox.style.color = "green";
-        messageBox.textContent = "کد تایید به ایمیل شما ارسال شد";
-        otpInput.parentElement.classList.remove("hidden");
-        verifyOtpBtn.classList.remove("hidden");
-        sendOtpBtn.classList.add("hidden");
-        startCountdown();
-      }, (error) => {
-        messageBox.style.color = "#d32f2f";
-        messageBox.textContent = "خطا در ارسال ایمیل لطفاً دوباره تلاش کنید";
-        console.error(error);
-      });
-    });
-
-    verifyOtpBtn.addEventListener("click", () => {
-      const enteredOtp = otpInput.value.trim();
-      if(enteredOtp === currentOtp) {
-        messageBox.style.color = "green";
-        messageBox.textContent = "ورود موفقیت‌آمیز بود";
-        resetCountdown();
-        if(currentRole === "forooshande") {
-          window.location.href = "https://orzooiyehmarket.github.io/bazar_orzooiyeh/docs/foroosh.html";
-        } else if(currentRole === "kharidar") {
-          window.location.href = "https://orzooiyehmarket.github.io/bazar_orzooiyeh/docs/buyer.html";
-        }
-      } else {
-        messageBox.style.color = "#d32f2f";
-        messageBox.textContent = "کد تایید اشتباه است";
-      }
-    });
-
-    function startCountdown() {
-      countdownSeconds = 60;
-      countdownBox.textContent = `کد تایید تا ${countdownSeconds} ثانیه دیگر معتبر است`;
-      if(countdownInterval) clearInterval(countdownInterval);
-      countdownInterval = setInterval(() => {
-        countdownSeconds--;
-        if(countdownSeconds <= 0) {
-          clearInterval(countdownInterval);
-          countdownBox.textContent = "کد تایید منقضی شد. دوباره ارسال کنید.";
-          verifyOtpBtn.classList.add("hidden");
-          sendOtpBtn.classList.remove("hidden");
-          otpInput.parentElement.classList.add("hidden");
-          messageBox.textContent = "";
-        } else {
-          countdownBox.textContent = `کد تایید تا ${countdownSeconds} ثانیه دیگر معتبر است`;
-        }
-      }, 1000);
+    @keyframes colorslide {
+      0% {background-position: 0% 0;}
+      100% {background-position: 100% 0;}
     }
-
-    function resetCountdown() {
-      if(countdownInterval) clearInterval(countdownInterval);
-      countdownBox.textContent = "";
+    main {
+      background: white;
+      padding: 25px 30px;
+      margin: 40px 15px;
+      max-width: 400px;
+      width: 100%;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+      border-radius: 12px;
     }
-  };
-</script>
-
+    label {
+      display: block;
+      margin-bottom: 8px;
+      font-weight: 600;
+      font-size: 1.1rem;
+    }
+    select, input[type="tel"], input[type="text"] {
+      width: 100%;
+      padding: 10px;
+      font-size: 1rem;
+      margin-bottom: 20px;
+      border: 1.8px solid #bbb;
+      border-radius: 8px;
+      outline: none;
+      transition: border-color 0.3s;
+      box-sizing: border-box;
+      direction: ltr;
+      text-align: left;
+    }
+    select:focus, input[type="tel"]:focus, input[type="text"]:focus {
+      border-color: #2196f3;
+      box-shadow: 0 0 6px #2196f3aa;
+    }
+    button {
+      width: 100%;
+      padding: 12px;
+      font-size: 1.1rem;
+      background-color: #2196f3;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background-color 0.3s;
+      font-weight: 600;
+    }
+    button:disabled {
+      background-color: #9bbde9;
+      cursor: not-allowed;
+    }
+    button:hover:not(:disabled) {
+      background-color: #1976d2;
+    }
+    .message {
+      margin: 10px 0 20px 0;
+      font-weight: 600;
+      min-height: 24px;
+    }
+    .otp-section {
+      display: none;
+    }
+    .countdown {
+      font-weight: 500;
+      margin-top: -16px;
+      margin-bottom: 20px;
+      color: #555;
+      font-size: 0.95rem;
+      text-align: center;
+      user-select: none;
+    }
+  </style>
 </head>
 <body>
 
-  <div class="rainbow-scroll">
-    <span>بازار ارزوئیه - بازار ارزوئیه - بازار ارزوئیه - بازار ارزوئیه - بازار ارزوئیه - بازار ارزوئیه</span>
+<header>
+  <div id="animated-title" aria-label="بازار ارزوئیه">
+    بازار ارزوئیه
   </div>
+</header>
 
-  <div class="container">
-    <label for="role">نوع حساب کاربری را انتخاب کنید</label>
-    <select id="role" name="role">
-      <option value="">انتخاب کنید</option>
-      <option value="forooshande">فروشنده</option>
-      <option value="kharidar">خریدار</option>
+<main>
+  <form id="loginForm" autocomplete="off" novalidate>
+    <label for="roleSelect">نقش خود را انتخاب کنید</label>
+    <select id="roleSelect" required>
+      <option value="" disabled selected>-- فروشنده یا خریدار --</option>
+      <option value="foroosh">فروشنده</option>
+      <option value="buyer">خریدار</option>
     </select>
 
-    <div id="form-container" class="hidden">
-      <label for="email">ایمیل</label>
-      <input type="text" id="email" name="email" placeholder="مثال: example@gmail.com" />
+    <label for="phoneInput">شماره تلفن همراه (با 09 شروع کنید)</label>
+    <input type="tel" id="phoneInput" placeholder="مثلاً 09123456789" pattern="09\d{9}" required />
 
-      <div id="otp-container" style="margin-bottom: 0;">
-        <label for="otp">کد تایید</label>
-        <input type="number" id="otp" name="otp" placeholder="کد ۶ رقمی" maxlength="6" />
-      </div>
+    <button type="button" id="sendOtpBtn">ارسال کد تایید</button>
 
-      <div id="countdown" class="countdown"></div>
+    <div class="message" id="messageBox"></div>
 
-      <button id="send-otp" type="button">ارسال کد تایید</button>
-      <button id="verify-otp" type="button" class="hidden">تایید و ورود</button>
-
-      <p id="message" class="message"></p>
+    <div class="otp-section" id="otpSection">
+      <label for="otpInput">کد تایید را وارد کنید</label>
+      <input type="text" id="otpInput" placeholder="کد ۴ رقمی" maxlength="4" pattern="\d{4}" />
+      <div class="countdown" id="countdownTimer"></div>
+      <button type="button" id="verifyOtpBtn" disabled>تایید و ورود</button>
     </div>
-  </div>
+  </form>
+</main>
+
+<script src="https://cdn.emailjs.com/dist/email.min.js"></script>
+<script>
+  (function() {
+    emailjs.init("KgkhWLKTjPLxddRPS");
+  })();
+
+  const roleSelect = document.getElementById('roleSelect');
+  const phoneInput = document.getElementById('phoneInput');
+  const sendOtpBtn = document.getElementById('sendOtpBtn');
+  const messageBox = document.getElementById('messageBox');
+  const otpSection = document.getElementById('otpSection');
+  const otpInput = document.getElementById('otpInput');
+  const verifyOtpBtn = document.getElementById('verifyOtpBtn');
+  const countdownTimer = document.getElementById('countdownTimer');
+
+  let currentOtp = null;
+  let countdownInterval = null;
+  let countdownSeconds = 120;
+
+  function generateOtp() {
+    return Math.floor(1000 + Math.random() * 9000).toString();
+  }
+
+  function startCountdown() {
+    countdownSeconds = 120;
+    countdownTimer.textContent = `انقضای کد: 02:00`;
+    countdownInterval = setInterval(() => {
+      countdownSeconds--;
+      if (countdownSeconds <= 0) {
+        clearInterval(countdownInterval);
+        countdownTimer.textContent = "کد تایید منقضی شده است";
+        verifyOtpBtn.disabled = true;
+      } else {
+        let m = Math.floor(countdownSeconds / 60).toString().padStart(2,'0');
+        let s = (countdownSeconds % 60).toString().padStart(2,'0');
+        countdownTimer.textContent = `انقضای کد: ${m}:${s}`;
+      }
+    }, 1000);
+  }
+
+  sendOtpBtn.addEventListener('click', () => {
+    messageBox.textContent = '';
+    const role = roleSelect.value;
+    const phone = phoneInput.value.trim();
+
+    if (!role) {
+      messageBox.style.color = "#d32f2f";
+      messageBox.textContent = "لطفاً نقش خود را انتخاب کنید";
+      return;
+    }
+    if (!/^09\d{9}$/.test(phone)) {
+      messageBox.style.color = "#d32f2f";
+      messageBox.textContent = "شماره تلفن صحیح وارد نشده است";
+      return;
+    }
+
+    currentOtp = generateOtp();
+
+    // ارسال ایمیل به خود کاربر برای شبیه سازی (به جای پیامک)
+    emailjs.send("service_bazar", "Template_ztidbsk", {
+      otp_code: currentOtp,
+      to_email: phone + "@example.com"  // به جای ایمیل واقعی، شبیه‌سازی با شماره
+    }).then(response => {
+      console.log("ایمیل ارسال شد:", response.status, response.text);
+      messageBox.style.color = "green";
+      messageBox.textContent = "کد تایید ارسال شد";
+      otpSection.style.display = "block";
+      verifyOtpBtn.disabled = false;
+      startCountdown();
+    }).catch(error => {
+      console.error("خطا در ارسال ایمیل:", error);
+      messageBox.style.color = "#d32f2f";
+      messageBox.textContent = "خطا در ارسال کد تایید، لطفاً دوباره تلاش کنید";
+    });
+  });
+
+  otpInput.addEventListener('input', () => {
+    verifyOtpBtn.disabled = !(otpInput.value.length === 4 && /^\d{4}$/.test(otpInput.value));
+  });
+
+  verifyOtpBtn.addEventListener('click', () => {
+    if (otpInput.value === currentOtp) {
+      messageBox.style.color = "green";
+      messageBox.textContent = "کد تایید صحیح است، در حال ورود...";
+      clearInterval(countdownInterval);
+
+      const role = roleSelect.value;
+      if (role === 'foroosh') {
+        window.location.href = "https://orzooiyehmarket.github.io/bazar_orzooiyeh/docs/foroosh.html";
+      } else if (role === 'buyer') {
+        window.location.href = "https://orzooiyehmarket.github.io/bazar_orzooiyeh/docs/buyer.html";
+      }
+    } else {
+      messageBox.style.color = "#d32f2f";
+      messageBox.textContent = "کد تایید اشتباه است";
+    }
+  });
+</script>
 
 </body>
 </html>
