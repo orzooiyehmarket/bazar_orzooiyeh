@@ -87,6 +87,10 @@
       color: #555;
       margin-top: -15px;
       margin-bottom: 25px;
+      min-height: 20px;
+    }
+    #recaptcha-container {
+      margin-bottom: 20px;
     }
   </style>
 </head>
@@ -102,21 +106,41 @@
       <option value="buyer">خریدار</option>
     </select>
 
-    <form id="loginForm" class="hidden" autocomplete="off">
+    <form id="loginForm" class="hidden" autocomplete="off" onsubmit="return false;">
       <label for="phoneInput">شماره تلفن همراه</label>
       <input type="tel" id="phoneInput" name="phone" placeholder="مثلاً 09123456789" pattern="09[0-9]{9}" required />
-      
+
+      <div id="recaptcha-container"></div>
+
       <label for="codeInput" class="hidden" id="codeLabel">کد تأیید</label>
       <input type="text" id="codeInput" name="code" placeholder="کد تأیید را وارد کنید" minlength="4" maxlength="6" class="hidden" />
 
-      <button type="submit" id="sendCodeBtn">ارسال کد تأیید</button>
+      <button type="button" id="sendCodeBtn">ارسال کد تأیید</button>
       <button type="button" id="verifyCodeBtn" class="hidden" disabled>تأیید کد و ورود</button>
 
       <p class="info-text" id="infoText"></p>
     </form>
   </div>
 
+  <!-- Firebase SDK -->
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+
   <script>
+    // TODO: مقدار زیر را با تنظیمات پروژه خود در Firebase Console جایگزین کن
+    const firebaseConfig = {
+      apiKey: "API_KEY_HERE",
+      authDomain: "PROJECT_ID.firebaseapp.com",
+      projectId: "PROJECT_ID",
+      storageBucket: "PROJECT_ID.appspot.com",
+      messagingSenderId: "SENDER_ID",
+      appId: "APP_ID",
+    };
+
+    firebase.initializeApp(firebaseConfig);
+
+    const auth = firebase.auth();
+
     const roleSelect = document.getElementById('roleSelect');
     const loginForm = document.getElementById('loginForm');
     const phoneInput = document.getElementById('phoneInput');
@@ -127,14 +151,14 @@
     const infoText = document.getElementById('infoText');
 
     let selectedRole = null;
-    let codeSent = false;
-    let fakeCode = '1234';  // شبیه‌سازی کد ارسال شده
+    let confirmationResult = null;
 
     roleSelect.addEventListener('change', () => {
       selectedRole = roleSelect.value;
       loginForm.classList.remove('hidden');
       resetForm();
       infoText.textContent = '';
+      renderRecaptcha();
     });
 
     function resetForm() {
@@ -145,23 +169,51 @@
       sendCodeBtn.classList.remove('hidden');
       verifyCodeBtn.classList.add('hidden');
       verifyCodeBtn.disabled = true;
-      codeSent = false;
     }
 
-    sendCodeBtn.addEventListener('click', e => {
-      e.preventDefault();
+    function renderRecaptcha() {
+      if(window.recaptchaVerifier) {
+        window.recaptchaVerifier.clear();
+      }
+      window.recaptchaVerifier = new firebase.auth.RecaptchaVerifier('recaptcha-container', {
+        size: 'normal',
+        callback: (response) => {
+          sendCodeBtn.disabled = false;
+        },
+        'expired-callback': () => {
+          sendCodeBtn.disabled = true;
+        }
+      });
+      window.recaptchaVerifier.render();
+      sendCodeBtn.disabled = true;
+    }
+
+    sendCodeBtn.addEventListener('click', () => {
+      const phoneNumber = phoneInput.value.trim();
       if(!phoneInput.checkValidity()) {
         infoText.textContent = 'لطفاً شماره تلفن معتبر وارد کنید.';
         phoneInput.focus();
         return;
       }
-      infoText.textContent = `کد تأیید به شماره ${phoneInput.value} ارسال شد (شبیه‌سازی).`;
-      codeInput.classList.remove('hidden');
-      codeLabel.classList.remove('hidden');
-      sendCodeBtn.classList.add('hidden');
-      verifyCodeBtn.classList.remove('hidden');
-      verifyCodeBtn.disabled = false;
-      codeSent = true;
+      infoText.textContent = 'در حال ارسال کد تأیید ...';
+      sendCodeBtn.disabled = true;
+
+      auth.signInWithPhoneNumber(phoneNumber, window.recaptchaVerifier)
+        .then((result) => {
+          confirmationResult = result;
+          infoText.textContent = `کد تأیید به شماره ${phoneNumber} ارسال شد.`;
+          codeInput.classList.remove('hidden');
+          codeLabel.classList.remove('hidden');
+          sendCodeBtn.classList.add('hidden');
+          verifyCodeBtn.classList.remove('hidden');
+          verifyCodeBtn.disabled = false;
+        })
+        .catch((error) => {
+          console.error(error);
+          infoText.textContent = `خطا در ارسال کد: ${error.message}`;
+          sendCodeBtn.disabled = false;
+          window.recaptchaVerifier.render();
+        });
     });
 
     codeInput.addEventListener('input', () => {
@@ -173,19 +225,31 @@
     });
 
     verifyCodeBtn.addEventListener('click', () => {
-      if(codeInput.value === fakeCode) {
-        infoText.textContent = 'کد تأیید صحیح است. در حال هدایت...';
-        setTimeout(() => {
-          if(selectedRole === 'seller') {
-            window.location.href = 'foroosh.html';
-          } else if(selectedRole === 'buyer') {
-            window.location.href = 'buyer.html';
-          }
-        }, 1200);
-      } else {
-        infoText.textContent = 'کد تأیید اشتباه است. دوباره تلاش کنید.';
-        codeInput.focus();
+      const code = codeInput.value.trim();
+      if(!confirmationResult) {
+        infoText.textContent = 'ابتدا کد تأیید را ارسال کنید.';
+        return;
       }
+      infoText.textContent = 'در حال تایید کد ...';
+      verifyCodeBtn.disabled = true;
+
+      confirmationResult.confirm(code)
+        .then((result) => {
+          const user = result.user;
+          infoText.textContent = 'ورود موفقیت‌آمیز بود. در حال هدایت...';
+          setTimeout(() => {
+            if(selectedRole === 'seller') {
+              window.location.href = 'foroosh.html';
+            } else if(selectedRole === 'buyer') {
+              window.location.href = 'buyer.html';
+            }
+          }, 1500);
+        })
+        .catch((error) => {
+          infoText.textContent = 'کد تأیید اشتباه است. دوباره تلاش کنید.';
+          verifyCodeBtn.disabled = false;
+          codeInput.focus();
+        });
     });
   </script>
 
