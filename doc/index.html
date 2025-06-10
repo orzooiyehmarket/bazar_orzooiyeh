@@ -6,14 +6,6 @@
 <title>ورود - بازار ارزوئیه</title>
 
 <style>
-  @keyframes rainbowSpin {
-    0% { color: #f44336; transform: rotate(0deg); }
-    25% { color: #2196f3; transform: rotate(90deg); }
-    50% { color: #4caf50; transform: rotate(180deg); }
-    75% { color: #ff9800; transform: rotate(270deg); }
-    100% { color: #f44336; transform: rotate(360deg); }
-  }
-
   body {
     font-family: Tahoma, sans-serif;
     background: #f5f5f5;
@@ -22,17 +14,39 @@
     text-align: right;
   }
 
-  h1.title {
+  .rainbow-scroll {
+    width: 100%;
+    overflow: hidden;
+    white-space: nowrap;
+    box-sizing: border-box;
+    border-bottom: 3px solid #ccc;
+    background: #fff;
+  }
+
+  .rainbow-scroll span {
+    display: inline-block;
     font-size: 2.5rem;
     font-weight: bold;
-    margin-bottom: 30px;
-    animation: rainbowSpin 4s linear infinite;
-    display: inline-block;
+    padding: 10px 0;
+    animation: scrollLeft 15s linear infinite;
+    background: linear-gradient(90deg, 
+      #f44336, #ff9800, #ffeb3b, #4caf50, #2196f3, #9c27b0, #e91e63);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+
+  @keyframes scrollLeft {
+    0% {
+      transform: translateX(100%);
+    }
+    100% {
+      transform: translateX(-100%);
+    }
   }
 
   .container {
     max-width: 400px;
-    margin: auto;
+    margin: 30px auto 0 auto;
     background: #fff;
     padding: 30px 25px;
     border-radius: 10px;
@@ -90,7 +104,7 @@
   window.onload = function() {
     const roleSelect = document.getElementById("role");
     const formContainer = document.getElementById("form-container");
-    const phoneInput = document.getElementById("phone");
+    const emailInput = document.getElementById("email");
     const otpInput = document.getElementById("otp");
     const sendOtpBtn = document.getElementById("send-otp");
     const verifyOtpBtn = document.getElementById("verify-otp");
@@ -111,15 +125,16 @@
       sendOtpBtn.classList.remove("hidden");
       messageBox.textContent = "";
       currentRole = roleSelect.value;
-      phoneInput.value = "";
+      emailInput.value = "";
       otpInput.value = "";
     });
 
     sendOtpBtn.addEventListener("click", () => {
-      const phone = phoneInput.value.trim();
-      if(!phone.match(/^09\d{9}$/)) {
+      const email = emailInput.value.trim();
+      // بررسی ساده ایمیل
+      if(!email.match(/^[^\s@]+@[^\s@]+\.[^\s@]+$/)) {
         messageBox.style.color = "#d32f2f";
-        messageBox.textContent = "لطفاً شماره تلفن معتبر ۱۱ رقمی با پیش‌شماره 09 وارد کنید";
+        messageBox.textContent = "لطفاً ایمیل معتبر وارد کنید";
         return;
       }
 
@@ -129,7 +144,7 @@
       // ارسال ایمیل با EmailJS
       emailjs.send("service_bazar", "Template_ztidbsk", {
         otp_code: currentOtp,
-        to_phone: phone
+        to_email: email
       }).then(() => {
         messageBox.style.color = "green";
         messageBox.textContent = "کد تایید به ایمیل شما ارسال شد";
@@ -165,7 +180,9 @@
 </head>
 <body>
 
-  <h1 class="title">بازار ارزوئیه</h1>
+  <div class="rainbow-scroll">
+    <span>بازار ارزوئیه - بازار ارزوئیه - بازار ارزوئیه - بازار ارزوئیه - بازار ارزوئیه - بازار ارزوئیه</span>
+  </div>
 
   <div class="container">
     <label for="role">نوع حساب کاربری را انتخاب کنید</label>
@@ -176,8 +193,8 @@
     </select>
 
     <div id="form-container" class="hidden">
-      <label for="phone">شماره تلفن همراه</label>
-      <input type="tel" id="phone" name="phone" placeholder="مثال: 09123456789" maxlength="11" />
+      <label for="email">ایمیل</label>
+      <input type="text" id="email" name="email" placeholder="مثال: example@gmail.com" />
 
       <div id="otp-container" style="margin-bottom: 20px;">
         <label for="otp">کد تایید</label>
