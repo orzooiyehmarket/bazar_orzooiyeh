@@ -30,13 +30,22 @@
       font-size: 1.5rem;
       font-weight: bold;
       white-space: nowrap;
-      animation: snakeMove 10s linear infinite;
       color: white;
+
+      /* حرکت مارپیچ */
+      animation: spiralMove 10s linear infinite;
+      top: 50%;
+      left: 50%;
+      transform-origin: center center;
     }
 
-    @keyframes snakeMove {
-      0% { transform: translateX(-100%); }
-      100% { transform: translateX(100vw); }
+    @keyframes spiralMove {
+      0% {
+        transform: translate(-50%, -50%) rotate(0deg) translateX(0px);
+      }
+      100% {
+        transform: translate(-50%, -50%) rotate(720deg) translateX(100px);
+      }
     }
 
     .top-controls {
@@ -79,7 +88,7 @@
       color: white;
       border-radius: 8px;
       cursor: pointer;
-      min-width: 100px;
+      min-width: 160px; /* افزایش عرض */
       text-align: center;
       transition: background 0.3s;
     }
@@ -93,6 +102,9 @@
         flex-direction: column;
         gap: 15px;
         align-items: center;
+      }
+      .option {
+        min-width: 80vw; /* عرض بیشتر برای موبایل */
       }
     }
   </style>
