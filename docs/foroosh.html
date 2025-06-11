@@ -2,13 +2,13 @@
 <html lang="fa" dir="rtl">
 <head>
   <meta charset="UTF-8">
-  <title>ورود فروشنده | بازار ارزوئیه</title>
+  <title>فروشنده | بازار ارزوئیه</title>
   <style>
     body {
       font-family: sans-serif;
-      background: #fdfdfd;
       margin: 0;
       padding: 0;
+      background: #f9f9f9;
     }
     header {
       background: linear-gradient(to left, #00c6ff, #0072ff);
@@ -41,6 +41,13 @@
     #menu.show {
       display: block;
     }
+    #productPreview {
+      display: block;
+      max-width: 200px;
+      margin: 10px auto;
+      border: 2px solid #0072ff;
+      border-radius: 10px;
+    }
     main {
       padding: 20px;
     }
@@ -51,18 +58,19 @@
       display: block;
       margin-bottom: 5px;
     }
-    input, textarea {
+    input, select, textarea {
       width: 100%;
       padding: 8px;
       font-size: 16px;
     }
-    #submit-btn {
+    #submit-btn, #final-submit {
       background: #28a745;
       color: white;
       padding: 10px 20px;
       font-size: 16px;
       border: none;
       cursor: pointer;
+      margin-top: 10px;
     }
   </style>
 </head>
@@ -79,27 +87,45 @@
   </div>
 </header>
 
+<!-- نمایش تصویر انتخابی در بالا -->
+<img id="productPreview" src="" alt="پیش‌نمایش تصویر محصول" style="display:none;">
+
 <main>
   <div class="form-group">
     <label for="productImage">تصویر محصول:</label>
-    <input type="file" id="productImage">
+    <input type="file" id="productImage" accept="image/*">
   </div>
+
   <div class="form-group">
     <label for="productAmount">میزان محصول:</label>
     <input type="text" id="productAmount">
   </div>
+
+  <div class="form-group">
+    <label for="unit">واحد:</label>
+    <select id="unit">
+      <option value="کیلوگرم">کیلوگرم</option>
+      <option value="عدد">عدد</option>
+      <option value="بسته">بسته</option>
+      <option value="لیتر">لیتر</option>
+    </select>
+  </div>
+
   <div class="form-group">
     <label for="productId">شناسه محصول (خودکار):</label>
     <input type="text" id="productId" readonly>
   </div>
+
   <div class="form-group">
     <label for="contactInfo">اطلاعات تماس فروشنده:</label>
     <input type="text" id="contactInfo">
   </div>
+
+  <button id="final-submit">ثبت فروش</button>
 </main>
 
 <script>
-  // ساعت و تاریخ شمسی آنلاین
+  // تاریخ و ساعت شمسی
   function updateDateTime() {
     const now = new Date();
     const f = new Intl.DateTimeFormat('fa-IR', {
@@ -111,20 +137,30 @@
   setInterval(updateDateTime, 1000);
   updateDateTime();
 
-  // نمایش منو اطلاعات
+  // نمایش و پنهان‌سازی منوی فروشنده
   document.getElementById('menu-toggle').addEventListener('click', () => {
     document.getElementById('menu').classList.toggle('show');
   });
 
-  // تولید آی‌دی خودکار محصول
+  // تولید آی‌دی خودکار
   document.getElementById('sellerCode').addEventListener('input', () => {
     const code = document.getElementById('sellerCode').value;
     if (code.length === 10) {
       const last4 = code.slice(-4);
       const now = new Date();
       const dateStr = now.toLocaleDateString('fa-IR').replaceAll('/', '');
-      const rand = Math.floor(Math.random() * 900 + 100); // عدد ۳ رقمی
+      const rand = Math.floor(Math.random() * 900 + 100); // عدد رندوم
       document.getElementById('productId').value = `${dateStr}-${last4}-${rand}`;
+    }
+  });
+
+  // نمایش تصویر آپلودی در بالای صفحه
+  document.getElementById('productImage').addEventListener('change', function() {
+    const preview = document.getElementById('productPreview');
+    const file = this.files[0];
+    if (file) {
+      preview.style.display = 'block';
+      preview.src = URL.createObjectURL(file);
     }
   });
 </script>
