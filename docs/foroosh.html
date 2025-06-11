@@ -1,90 +1,133 @@
-<!DOCTYPE html><html lang="fa">
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>خرید از بازار ارزوئیه</title>
+  <title>ورود فروشنده | بازار ارزوئیه</title>
   <style>
     body {
       font-family: sans-serif;
-      background-color: #f0f8ff;
-      padding: 20px;
-      direction: rtl;
+      background: #fdfdfd;
+      margin: 0;
+      padding: 0;
     }
-    h1 {
-      text-align: center;
-      color: #2a9d8f;
-      animation: rainbow 3s infinite;
-    }
-    @keyframes rainbow {
-      0% { color: #e76f51; }
-      50% { color: #f4a261; }
-      100% { color: #2a9d8f; }
-    }
-    .product {
-      border: 1px solid #ccc;
-      border-radius: 10px;
-      padding: 15px;
-      margin-bottom: 10px;
-      background-color: #ffffff;
-    }
-    button {
-      background-color: #264653;
+    header {
+      background: linear-gradient(to left, #00c6ff, #0072ff);
       color: white;
-      padding: 8px;
-      border: none;
-      border-radius: 5px;
+      padding: 10px;
+      text-align: center;
+      position: relative;
+    }
+    #datetime {
+      font-size: 16px;
+    }
+    #menu-toggle {
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      font-size: 24px;
       cursor: pointer;
     }
-    button:disabled {
-      background-color: #aaa;
+    #menu {
+      display: none;
+      position: absolute;
+      top: 50px;
+      left: 10px;
+      background: white;
+      color: black;
+      border: 1px solid #ccc;
+      padding: 10px;
+      z-index: 10;
+    }
+    #menu.show {
+      display: block;
+    }
+    main {
+      padding: 20px;
+    }
+    .form-group {
+      margin-bottom: 15px;
+    }
+    label {
+      display: block;
+      margin-bottom: 5px;
+    }
+    input, textarea {
+      width: 100%;
+      padding: 8px;
+      font-size: 16px;
+    }
+    #submit-btn {
+      background: #28a745;
+      color: white;
+      padding: 10px 20px;
+      font-size: 16px;
+      border: none;
+      cursor: pointer;
     }
   </style>
 </head>
 <body>
-  <h1>بازار ارزوئیه</h1>
-  <div id="product-list">⏳ در حال بارگذاری محصولات...</div>  <script>
-    const endpoint = "https://script.google.com/macros/s/AKfycbyHUiGDSpKq6_vsC5jgc7Q0H9yX98KHDKZhT2O_gHze8-yniK_oLqOg3vwE7tQVeoMlHg/exec";
 
-    async function loadProducts() {
-      const res = await fetch(endpoint);
-      const data = await res.json();
-      const list = document.getElementById("product-list");
-      list.innerHTML = "";
+<header>
+  <div id="datetime">در حال بارگذاری...</div>
+  <div id="menu-toggle">☰</div>
+  <div id="menu">
+    <p>نام فروشنده: <input type="text" id="sellerName"></p>
+    <p>کد ملی (۱۰ رقم): <input type="text" id="sellerCode" maxlength="10"></p>
+    <p>شماره تماس: <input type="text" id="sellerPhone"></p>
+    <button id="submit-btn">ثبت نهایی</button>
+  </div>
+</header>
 
-      data.forEach((item, index) => {
-        const box = document.createElement("div");
-        box.className = "product";
-        box.innerHTML = `
-          <strong>${item.product}</strong><br>
-          قیمت: ${item.price} تومان<br>
-          موجودی: <span id="q${index}">${item.quantity}</span><br>
-          فروشنده: ${item.name}<br>
-          <button onclick="order(${index}, '${item.phone}', '${item.product}')" ${item.quantity <= 0 ? 'disabled' : ''}>سفارش</button>
-          <div>رزروها: <span id="r${index}">0</span></div>
-        `;
-        list.appendChild(box);
-      });
+<main>
+  <div class="form-group">
+    <label for="productImage">تصویر محصول:</label>
+    <input type="file" id="productImage">
+  </div>
+  <div class="form-group">
+    <label for="productAmount">میزان محصول:</label>
+    <input type="text" id="productAmount">
+  </div>
+  <div class="form-group">
+    <label for="productId">شناسه محصول (خودکار):</label>
+    <input type="text" id="productId" readonly>
+  </div>
+  <div class="form-group">
+    <label for="contactInfo">اطلاعات تماس فروشنده:</label>
+    <input type="text" id="contactInfo">
+  </div>
+</main>
+
+<script>
+  // ساعت و تاریخ شمسی آنلاین
+  function updateDateTime() {
+    const now = new Date();
+    const f = new Intl.DateTimeFormat('fa-IR', {
+      dateStyle: 'full',
+      timeStyle: 'short'
+    });
+    document.getElementById('datetime').textContent = f.format(now);
+  }
+  setInterval(updateDateTime, 1000);
+  updateDateTime();
+
+  // نمایش منو اطلاعات
+  document.getElementById('menu-toggle').addEventListener('click', () => {
+    document.getElementById('menu').classList.toggle('show');
+  });
+
+  // تولید آی‌دی خودکار محصول
+  document.getElementById('sellerCode').addEventListener('input', () => {
+    const code = document.getElementById('sellerCode').value;
+    if (code.length === 10) {
+      const last4 = code.slice(-4);
+      const now = new Date();
+      const dateStr = now.toLocaleDateString('fa-IR').replaceAll('/', '');
+      const rand = Math.floor(Math.random() * 900 + 100); // عدد ۳ رقمی
+      document.getElementById('productId').value = `${dateStr}-${last4}-${rand}`;
     }
+  });
+</script>
 
-    function order(index, phone, product) {
-      const qEl = document.getElementById(`q${index}`);
-      const rEl = document.getElementById(`r${index}`);
-      let quantity = parseInt(qEl.textContent);
-      let reserve = parseInt(rEl.textContent);
-
-      if (quantity > 0) {
-        quantity--;
-        qEl.textContent = quantity;
-      } else {
-        reserve++;
-        rEl.textContent = reserve;
-      }
-
-      const msg = `سلام، من می‌خواهم محصول «${product}» را از بازار ارزوئیه سفارش بدهم.`;
-      const url = `https://wa.me/${phone}?text=${encodeURIComponent(msg)}`;
-      window.open(url, '_blank');
-    }
-
-    loadProducts();
-  </script></body>
+</body>
 </html>
