@@ -5,16 +5,8 @@
   <title>بازار ارزوییه</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <style>
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-    }
-    body {
-      font-family: sans-serif;
-      background: #f5f5f5;
-      direction: rtl;
-    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: sans-serif; background: #f5f5f5; direction: rtl; }
 
     header {
       height: 2cm;
@@ -29,12 +21,8 @@
     }
 
     @keyframes rainbowMove {
-      0% {
-        background-position: 0% 0%;
-      }
-      100% {
-        background-position: 1400% 0%;
-      }
+      0% { background-position: 0% 0%; }
+      100% { background-position: 1400% 0%; }
     }
 
     #movingText {
@@ -42,21 +30,28 @@
       font-size: 1.5rem;
       font-weight: bold;
       white-space: nowrap;
-      color: black;
-      /* حرکت سینوسی افقی */
-      animation: sineMove 5s ease-in-out infinite;
+      color: black; /* رنگ مشکی */
+      animation: ellipseMove 6s linear infinite;
       top: 50%;
       left: 50%;
-      transform: translate(-50%, -50%);
+      transform: translate(calc(-50% + 0px), calc(-50% + 0px));
     }
 
-    @keyframes sineMove {
-      0%,
-      100% {
-        transform: translate(calc(-50% - 50px), -50%);
+    @keyframes ellipseMove {
+      0% {
+        transform: translate(calc(-50% + 0px), calc(-50% + 0px));
+      }
+      25% {
+        transform: translate(calc(-50% + 40px), calc(-50% + 15px));
       }
       50% {
-        transform: translate(calc(-50% + 50px), -50%);
+        transform: translate(calc(-50% + 0px), calc(-50% + 30px));
+      }
+      75% {
+        transform: translate(calc(-50% - 40px), calc(-50% + 15px));
+      }
+      100% {
+        transform: translate(calc(-50% + 0px), calc(-50% + 0px));
       }
     }
 
@@ -67,8 +62,7 @@
       background: #fff;
     }
 
-    #guideIcon,
-    #languageSelector {
+    #guideIcon, #languageSelector {
       cursor: pointer;
       font-size: 1rem;
       padding: 5px 10px;
@@ -84,7 +78,7 @@
       background: white;
       padding: 15px;
       border-radius: 8px;
-      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+      box-shadow: 0 2px 5px rgba(0,0,0,0.2);
       width: 250px;
       z-index: 10;
     }
@@ -101,7 +95,7 @@
       color: white;
       border-radius: 8px;
       cursor: pointer;
-      min-width: 140px;
+      min-width: 140px; /* کشیده‌تر */
       text-align: center;
       transition: background 0.3s;
     }
@@ -117,12 +111,22 @@
         align-items: center;
       }
     }
+
+    #weather {
+      text-align: center;
+      margin-top: 10px;
+      font-weight: bold;
+      color: #333;
+      font-size: 1.1rem;
+    }
   </style>
 </head>
 <body>
   <header>
     <div id="movingText">بازار ارزوییه</div>
   </header>
+
+  <div id="weather">در حال دریافت دمای هوا...</div>
 
   <div class="top-controls">
     <div id="languageSelector">🌐 زبان</div>
@@ -146,6 +150,7 @@
     const guideBox = document.getElementById("guideBox");
     const langBtn = document.getElementById("languageSelector");
     const movingText = document.getElementById("movingText");
+    const weatherDiv = document.getElementById("weather");
 
     guideIcon.addEventListener("click", (e) => {
       guideBox.style.display = guideBox.style.display === "block" ? "none" : "block";
@@ -178,6 +183,9 @@
         guideIcon.innerText = "☰ Guide";
         langBtn.innerText = "🌐 Language";
         document.body.dir = "ltr";
+        if (weatherTemp !== null) {
+          weatherDiv.innerText = `Current temperature: ${weatherTemp}°C`;
+        }
       } else {
         movingText.innerText = "بازار ارزوییه";
         document.querySelector(".option:nth-child(1)").innerText = "فروشنده";
@@ -188,50 +196,64 @@
         guideIcon.innerText = "☰ راهنمایی";
         langBtn.innerText = "🌐 زبان";
         document.body.dir = "rtl";
+        if (weatherTemp !== null) {
+          weatherDiv.innerText = `دمای فعلی: ${weatherTemp} درجه سانتی‌گراد`;
+        }
       }
     }
 
     document.addEventListener("DOMContentLoaded", () => {
       const lang = localStorage.getItem("lang") || "fa";
       applyLanguage(lang);
+      getLocationAndWeather();
     });
 
-    function showFingerprintModal(role) {
-      const modal = document.createElement("div");
-      modal.id = "fingerprintModal";
-      modal.innerHTML = `
-        <div style="
-          position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-          background: rgba(0,0,0,0.5); display: flex; align-items: center;
-          justify-content: center; z-index: 1000;">
-          <div style="
-            background: white; padding: 30px; border-radius: 10px; text-align: center;">
-            <img src="https://cdn-icons-png.flaticon.com/512/3602/3602123.png" alt="fingerprint"
-              style="width: 100px; margin-bottom: 20px;">
-            <p>${localStorage.getItem("lang") === "en" ? "Place your fingerprint to continue" : "لطفاً اثر انگشت خود را ثبت کنید"}</p>
-            <button onclick="confirmFingerprint('${role}')"
-              style="margin-top: 15px; padding: 10px 20px; background: #4CAF50; color: white; border: none; border-radius: 5px;">
-              ${localStorage.getItem("lang") === "en" ? "Confirm" : "تأیید"}
-            </button>
-          </div>
-        </div>
-      `;
-      document.body.appendChild(modal);
+    // دریافت موقعیت GPS و سپس دما از API اوپن‌ویدر
+    let weatherTemp = null;
+
+    function getLocationAndWeather() {
+      if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(
+          (position) => {
+            fetchWeather(position.coords.latitude, position.coords.longitude);
+          },
+          (error) => {
+            weatherDiv.innerText = "امکان دریافت موقعیت جغرافیایی وجود ندارد.";
+          }
+        );
+      } else {
+        weatherDiv.innerText = "مرورگر شما از موقعیت جغرافیایی پشتیبانی نمی‌کند.";
+      }
     }
 
-    function confirmFingerprint(role) {
-      const urls = {
-        foroosh: "https://orzooiyehmarket.github.io/bazar_orzooiyeh/docs/foroosh.html",
-        buyer: "https://orzooiyehmarket.github.io/bazar_orzooiyeh/docs/buyer.html",
-        peyk: "https://orzooiyehmarket.github.io/bazar_orzooiyeh/doc/peyk.html",
-      };
-      document.getElementById("fingerprintModal").remove();
-      window.location.href = urls[role];
+    function fetchWeather(lat, lon) {
+      // کلید API خود را اینجا جایگزین کنید
+      const apiKey = "YOUR_OPENWEATHERMAP_API_KEY";
+      const url = `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&units=metric&lang=fa&appid=${apiKey}`;
+
+      fetch(url)
+        .then(response => response.json())
+        .then(data => {
+          if(data && data.main && typeof data.main.temp === "number") {
+            weatherTemp = Math.round(data.main.temp);
+            updateWeatherText();
+          } else {
+            weatherDiv.innerText = "خطا در دریافت اطلاعات آب و هوا.";
+          }
+        })
+        .catch(() => {
+          weatherDiv.innerText = "خطا در دریافت اطلاعات آب و هوا.";
+        });
     }
 
-    document.querySelector(".option:nth-child(1)").onclick = () => showFingerprintModal("foroosh");
-    document.querySelector(".option:nth-child(2)").onclick = () => showFingerprintModal("buyer");
-    document.querySelector(".option:nth-child(3)").onclick = () => showFingerprintModal("peyk");
+    function updateWeatherText() {
+      const lang = localStorage.getItem("lang") || "fa";
+      if (lang === "en") {
+        weatherDiv.innerText = `Current temperature: ${weatherTemp}°C`;
+      } else {
+        weatherDiv.innerText = `دمای فعلی: ${weatherTemp} درجه سانتی‌گراد`;
+      }
+    }
   </script>
 </body>
 </html>
