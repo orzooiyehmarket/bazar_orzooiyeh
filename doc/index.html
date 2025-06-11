@@ -9,30 +9,32 @@
       margin: 0;
       font-family: sans-serif;
       direction: rtl;
-      background: #f0f0f0;
+      background-color: #f4f4f4;
     }
 
     header {
       background: linear-gradient(90deg, red, orange, yellow, green, blue, indigo, violet);
-      text-align: center;
+      color: white;
       padding: 20px;
+      position: relative;
+      text-align: center;
       overflow: hidden;
     }
 
-    .snake-text {
+    #title {
       font-size: 28px;
       font-weight: bold;
-      display: inline-block;
-      animation: moveSnake 6s linear infinite;
+      position: absolute;
+      white-space: nowrap;
+      animation: snake 15s linear infinite;
     }
 
-    @keyframes moveSnake {
-      0% { transform: translateX(-50%); }
-      50% { transform: translateX(50%); }
-      100% { transform: translateX(-50%); }
+    @keyframes snake {
+      0% { right: -100%; }
+      100% { right: 100%; }
     }
 
-    .top-bar {
+    #info-box {
       display: flex;
       justify-content: space-between;
       align-items: center;
@@ -40,101 +42,200 @@
       background-color: #fff;
     }
 
+    #help-btn {
+      cursor: pointer;
+      font-size: 20px;
+    }
+
     #lang-select {
       font-size: 16px;
-      padding: 5px;
+      padding: 4px 8px;
     }
 
-    .info-toggle {
-      font-size: 18px;
-      cursor: pointer;
-      user-select: none;
-    }
-
-    #info-box {
+    #help-box {
       display: none;
-      background-color: #fff;
-      padding: 15px;
+      background: #fff;
+      padding: 10px;
+      margin: 10px;
+      border: 1px solid #ccc;
+      border-radius: 8px;
       color: black;
-      border-top: 1px solid #ccc;
-      border-bottom: 1px solid #ccc;
+    }
+
+    .role-container {
+      display: flex;
+      justify-content: center;
+      gap: 20px;
+      padding: 30px 10px;
+      flex-wrap: wrap;
+    }
+
+    .role-box {
+      background-color: #fff;
+      border: 2px solid #ccc;
+      border-radius: 12px;
+      padding: 20px 30px;
+      cursor: pointer;
+      font-size: 18px;
+      box-shadow: 2px 2px 8px rgba(0,0,0,0.1);
+      transition: 0.3s;
+    }
+
+    .role-box:hover {
+      background-color: #f5f5f5;
+    }
+
+    #fingerprint-box {
+      display: none;
+      text-align: center;
+      margin-top: 20px;
+      background-color: #fff;
+      padding: 25px;
+      max-width: 300px;
+      margin-left: auto;
+      margin-right: auto;
+      border-radius: 12px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.2);
+    }
+
+    #go-button {
+      margin-top: 10px;
+      padding: 8px 16px;
+      font-size: 16px;
+      cursor: pointer;
+      border: none;
+      background-color: #28a745;
+      color: white;
+      border-radius: 6px;
     }
 
     @media (max-width: 600px) {
-      .top-bar {
+      .role-container {
         flex-direction: column;
-        gap: 10px;
+        align-items: center;
       }
     }
   </style>
 </head>
 <body>
-
   <header>
-    <div class="snake-text" id="market-text">بازار ارزوئیه</div>
+    <div id="title">بازار ارزوئیه</div>
   </header>
 
-  <div class="top-bar">
-    <div class="info-toggle" id="info-toggle">☰ راهنمایی</div>
-    <div>
-      🌐 زبان:
+  <div id="info-box">
+    <div id="lang-box">
       <select id="lang-select">
         <option value="fa">فارسی</option>
         <option value="en">English</option>
       </select>
     </div>
+    <div id="help-btn">☰ راهنمایی</div>
   </div>
 
-  <div id="info-box">
-    <p id="info-seller">فروشنده: اطلاعات محصولات را ثبت می‌کند.</p>
-    <p id="info-buyer">خریدار: مشاهده و خرید محصولات.</p>
-    <p id="info-delivery">پیک مجازی: تحویل محصول به خریدار.</p>
+  <div id="help-box">
+    <p id="help-text">برای ورود یکی از نقش‌ها را انتخاب کنید و اثر انگشت را ثبت نمایید.</p>
+  </div>
+
+  <div class="role-container">
+    <div class="role-box" onclick="showFingerprint('seller')">👨‍🌾 فروشنده</div>
+    <div class="role-box" onclick="showFingerprint('buyer')">🛒 خریدار</div>
+    <div class="role-box" onclick="showFingerprint('delivery')">🚚 پیک مجازی</div>
+  </div>
+
+  <div id="fingerprint-box">
+    <p id="role-label">اثر انگشت برای ورود</p>
+    <img src="https://cdn-icons-png.flaticon.com/512/1083/1083500.png" alt="Fingerprint" width="100" />
+    <button id="go-button">ورود</button>
   </div>
 
   <script>
-    // تنظیم زبان از LocalStorage
     const langSelect = document.getElementById("lang-select");
-    const savedLang = localStorage.getItem("lang") || "fa";
-    langSelect.value = savedLang;
-    applyLanguage(savedLang);
+    const title = document.getElementById("title");
+    const helpText = document.getElementById("help-text");
+    const roleLabel = document.getElementById("role-label");
+    const goButton = document.getElementById("go-button");
+    const helpBtn = document.getElementById("help-btn");
+    const helpBox = document.getElementById("help-box");
+
+    let currentRole = "";
+
+    langSelect.value = localStorage.getItem("lang") || "fa";
+    updateLanguage();
 
     langSelect.addEventListener("change", () => {
-      const lang = langSelect.value;
-      localStorage.setItem("lang", lang);
-      applyLanguage(lang);
+      localStorage.setItem("lang", langSelect.value);
+      updateLanguage();
     });
 
-    function applyLanguage(lang) {
-      const text = {
-        "market-text": { fa: "بازار ارزوئیه", en: "Orzooiyeh Market" },
-        "info-toggle": { fa: "☰ راهنمایی", en: "☰ Help" },
-        "info-seller": { fa: "فروشنده: اطلاعات محصولات را ثبت می‌کند.", en: "Seller: Registers product details." },
-        "info-buyer": { fa: "خریدار: مشاهده و خرید محصولات.", en: "Buyer: Views and purchases products." },
-        "info-delivery": { fa: "پیک مجازی: تحویل محصول به خریدار.", en: "Delivery: Delivers product to buyer." }
-      };
+    helpBtn.addEventListener("click", () => {
+      helpBox.style.display = helpBox.style.display === "block" ? "none" : "block";
+    });
 
-      for (let id in text) {
-        const el = document.getElementById(id);
-        if (el) el.textContent = text[id][lang];
+    document.addEventListener("click", (e) => {
+      if (!e.target.closest("#help-box") && !e.target.closest("#help-btn") && !e.target.closest(".role-box") && !e.target.closest("#fingerprint-box")) {
+        helpBox.style.display = "none";
+        document.getElementById("fingerprint-box").style.display = "none";
       }
+    });
 
-      document.body.dir = lang === "en" ? "ltr" : "rtl";
+    function updateLanguage() {
+      const lang = langSelect.value;
+      const translations = {
+        fa: {
+          title: "بازار ارزوئیه",
+          help: "برای ورود یکی از نقش‌ها را انتخاب کنید و اثر انگشت را ثبت نمایید.",
+          label: {
+            seller: "اثر انگشت برای ورود فروشنده",
+            buyer: "اثر انگشت برای ورود خریدار",
+            delivery: "اثر انگشت برای ورود پیک مجازی"
+          },
+          go: "ورود"
+        },
+        en: {
+          title: "Orzooiyeh Market",
+          help: "Select a role and scan fingerprint to continue.",
+          label: {
+            seller: "Fingerprint to login as Seller",
+            buyer: "Fingerprint to login as Buyer",
+            delivery: "Fingerprint to login as Delivery"
+          },
+          go: "Enter"
+        }
+      };
+      const t = translations[lang];
+      title.textContent = t.title;
+      helpText.textContent = t.help;
+      if (currentRole) roleLabel.textContent = t.label[currentRole];
+      goButton.textContent = t.go;
     }
 
-    // کنترل منوی راهنما
-    const toggleBtn = document.getElementById("info-toggle");
-    const infoBox = document.getElementById("info-box");
+    function showFingerprint(role) {
+      currentRole = role;
+      const lang = langSelect.value;
+      const labels = {
+        fa: {
+          seller: "اثر انگشت برای ورود فروشنده",
+          buyer: "اثر انگشت برای ورود خریدار",
+          delivery: "اثر انگشت برای ورود پیک مجازی"
+        },
+        en: {
+          seller: "Fingerprint to login as Seller",
+          buyer: "Fingerprint to login as Buyer",
+          delivery: "Fingerprint to login as Delivery"
+        }
+      };
+      roleLabel.textContent = labels[lang][role];
+      document.getElementById("fingerprint-box").style.display = "block";
+    }
 
-    toggleBtn.addEventListener("click", (e) => {
-      e.stopPropagation();
-      infoBox.style.display = infoBox.style.display === "block" ? "none" : "block";
-    });
-
-    // بستن منو با کلیک در خارج
-    document.body.addEventListener("click", () => {
-      infoBox.style.display = "none";
+    goButton.addEventListener("click", () => {
+      const urls = {
+        seller: "https://orzooiyehmarket.github.io/bazar_orzooiyeh/docs/foroosh.html",
+        buyer: "https://orzooiyehmarket.github.io/bazar_orzooiyeh/docs/buyer.html",
+        delivery: "https://orzooiyehmarket.github.io/bazar_orzooiyeh/doc/peyk.html"
+      };
+      if (currentRole) window.location.href = urls[currentRole];
     });
   </script>
-
 </body>
 </html>
