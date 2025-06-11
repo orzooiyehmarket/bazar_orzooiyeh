@@ -1,215 +1,182 @@
 <!DOCTYPE html>
-<html lang="fa">
+<html lang="fa" dir="rtl">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>بازار ارزوییه</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>بازار ارزوئیه</title>
   <style>
     body {
       margin: 0;
       font-family: sans-serif;
       direction: rtl;
     }
-
     header {
       height: 2cm;
       background: linear-gradient(270deg, red, orange, yellow, green, blue, indigo, violet);
-      background-size: 1400% 100%;
-      animation: rainbowMove 10s linear infinite;
+      background-size: 1400% 1400%;
+      animation: gradientShift 15s ease infinite;
+      display: flex;
+      align-items: center;
+      justify-content: center;
       position: relative;
       overflow: hidden;
     }
-
-    @keyframes rainbowMove {
-      0% { background-position: 0% 0%; }
-      100% { background-position: 1400% 0%; }
+    @keyframes gradientShift {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
     }
-
-    #movingText {
+    .moving-text {
       position: absolute;
-      font-size: 1.5rem;
+      font-size: 1.6rem;
       font-weight: bold;
       white-space: nowrap;
-      animation: waveMove 6s ease-in-out infinite alternate;
+      animation: snakeMove 6s ease-in-out infinite;
       color: white;
-      left: 0;
-      right: 0;
-      text-align: center;
     }
-
-    @keyframes waveMove {
-      0% { transform: translateX(-20%) translateY(0); }
-      25% { transform: translateX(-10%) translateY(5px); }
-      50% { transform: translateX(0%) translateY(0); }
-      75% { transform: translateX(10%) translateY(-5px); }
-      100% { transform: translateX(20%) translateY(0); }
+    @keyframes snakeMove {
+      0% { transform: translateX(0%) translateY(0); }
+      25% { transform: translateX(25%) translateY(10px); }
+      50% { transform: translateX(50%) translateY(0); }
+      75% { transform: translateX(25%) translateY(-10px); }
+      100% { transform: translateX(0%) translateY(0); }
     }
-
     .top-controls {
       display: flex;
       justify-content: space-between;
+      padding: 0.5rem 1rem;
       align-items: center;
-      padding: 0.5rem;
-      background: #f1f1f1;
+      background: #f2f2f2;
     }
-
-    #languageSelect, #guideToggle {
-      font-size: 1rem;
-      padding: 0.25rem 0.5rem;
+    .lang-select, .menu-toggle {
       cursor: pointer;
+      font-size: 1rem;
+      display: flex;
+      align-items: center;
     }
-
-    #guideBox {
+    .menu-box {
       display: none;
-      background-color: white;
+      position: absolute;
+      top: 2.5cm;
+      right: 1rem;
+      background: white;
       border: 1px solid #ccc;
       padding: 1rem;
-      margin: 1rem;
+      z-index: 100;
+      max-width: 300px;
       color: black;
     }
-
-    .role-buttons {
+    .selection-row {
       display: flex;
-      justify-content: center;
-      gap: 1rem;
-      margin: 1rem;
+      justify-content: space-around;
+      margin: 1rem 0;
       flex-wrap: wrap;
     }
-
-    .role-btn {
-      padding: 1rem 2rem;
-      background-color: #4CAF50;
+    .role-button {
+      padding: 1rem;
+      background: #28a745;
       color: white;
       border: none;
-      border-radius: 8px;
+      border-radius: 10px;
       cursor: pointer;
-      font-size: 1rem;
+      margin: 0.5rem;
     }
-
     .fingerprint-box {
       display: none;
-      text-align: center;
       margin-top: 1rem;
+      text-align: center;
     }
-
     .fingerprint-box img {
-      width: 100px;
-      height: 100px;
+      width: 80px;
+      height: 80px;
     }
-
     @media (max-width: 600px) {
-      .role-buttons {
+      .selection-row {
         flex-direction: column;
+        align-items: center;
       }
     }
   </style>
 </head>
 <body>
   <header>
-    <div id="movingText">بازار ارزوییه</div>
+    <div class="moving-text" id="headerTitle">بازار ارزوئیه</div>
   </header>
 
   <div class="top-controls">
-    <select id="languageSelect">
-      <option value="fa">فارسی</option>
-      <option value="en">English</option>
-    </select>
-    <div id="guideToggle">☰ راهنمایی</div>
+    <div class="lang-select" onclick="toggleLanguage()">
+      🌐 <span id="langLabel">زبان</span>
+    </div>
+    <div class="menu-toggle" onclick="toggleMenu()">☰ <span id="helpLabel">راهنمایی</span></div>
   </div>
 
-  <div id="guideBox">
-    <p id="sellerGuide">برای ورود فروشنده، اثر انگشت خود را ثبت کنید.</p>
-    <p id="buyerGuide">برای ورود خریدار، اثر انگشت خود را ثبت کنید.</p>
-    <p id="peykGuide">برای ورود پیک مجازی، اثر انگشت خود را ثبت کنید.</p>
+  <div class="menu-box" id="helpMenu" onclick="event.stopPropagation()">
+    <p id="guideText">با انتخاب نقش خود، وارد بخش مربوطه شوید. فروشنده برای ثبت محصول، خریدار برای مشاهده و خرید، و پیک مجازی برای تحویل سفارش‌ها وارد می‌شود.</p>
   </div>
 
-  <div class="role-buttons">
-    <button class="role-btn" onclick="showFingerprint('seller')" id="sellerBtn">فروشنده</button>
-    <button class="role-btn" onclick="showFingerprint('buyer')" id="buyerBtn">خریدار</button>
-    <button class="role-btn" onclick="showFingerprint('peyk')" id="peykBtn">پیک مجازی</button>
+  <div class="selection-row">
+    <button class="role-button" onclick="showFingerprint('seller')" id="sellerBtn">فروشنده</button>
+    <button class="role-button" onclick="showFingerprint('buyer')" id="buyerBtn">خریدار</button>
+    <button class="role-button" onclick="showFingerprint('courier')" id="courierBtn">پیک مجازی</button>
   </div>
 
   <div class="fingerprint-box" id="fingerprintBox">
-    <p id="fpText">اثر انگشت را قرار دهید...</p>
-    <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/e/e7/Fingerprint_picture.svg/512px-Fingerprint_picture.svg.png" alt="Fingerprint">
+    <p id="touchText">برای ورود، اثر انگشت خود را لمس کنید.</p>
+    <img src="https://i.imgur.com/3pXn3XW.png" alt="اثر انگشت" onclick="goToRole()">
   </div>
 
   <script>
-    const langMap = {
-      fa: {
-        title: "بازار ارزوییه",
-        seller: "فروشنده",
-        buyer: "خریدار",
-        peyk: "پیک مجازی",
-        guide: "☰ راهنمایی",
-        sellerGuide: "برای ورود فروشنده، اثر انگشت خود را ثبت کنید.",
-        buyerGuide: "برای ورود خریدار، اثر انگشت خود را ثبت کنید.",
-        peykGuide: "برای ورود پیک مجازی، اثر انگشت خود را ثبت کنید.",
-        fingerprint: "اثر انگشت را قرار دهید..."
-      },
-      en: {
-        title: "Orzooiyeh Market",
-        seller: "Seller",
-        buyer: "Buyer",
-        peyk: "Delivery",
-        guide: "☰ Guide",
-        sellerGuide: "To enter as a seller, place your fingerprint.",
-        buyerGuide: "To enter as a buyer, place your fingerprint.",
-        peykGuide: "To enter as a delivery agent, place your fingerprint.",
-        fingerprint: "Place your fingerprint..."
-      }
-    };
+    let currentRole = '';
 
-    const guideToggle = document.getElementById('guideToggle');
-    const guideBox = document.getElementById('guideBox');
-
-    guideToggle.addEventListener('click', () => {
-      guideBox.style.display = guideBox.style.display === 'block' ? 'none' : 'block';
-    });
-
-    document.addEventListener('click', (e) => {
-      if (!guideBox.contains(e.target) && e.target !== guideToggle) {
-        guideBox.style.display = 'none';
-      }
-    });
-
-    document.getElementById('languageSelect').addEventListener('change', function () {
-      const lang = this.value;
-      localStorage.setItem('lang', lang);
-      applyLanguage(lang);
-    });
-
-    function applyLanguage(lang) {
-      document.getElementById('movingText').textContent = langMap[lang].title;
-      document.getElementById('sellerBtn').textContent = langMap[lang].seller;
-      document.getElementById('buyerBtn').textContent = langMap[lang].buyer;
-      document.getElementById('peykBtn').textContent = langMap[lang].peyk;
-      document.getElementById('guideToggle').textContent = langMap[lang].guide;
-      document.getElementById('sellerGuide').textContent = langMap[lang].sellerGuide;
-      document.getElementById('buyerGuide').textContent = langMap[lang].buyerGuide;
-      document.getElementById('peykGuide').textContent = langMap[lang].peykGuide;
-      document.getElementById('fpText').textContent = langMap[lang].fingerprint;
+    function toggleMenu() {
+      const menu = document.getElementById('helpMenu');
+      menu.style.display = menu.style.display === 'block' ? 'none' : 'block';
     }
 
-    window.onload = () => {
-      const savedLang = localStorage.getItem('lang') || 'fa';
-      document.getElementById('languageSelect').value = savedLang;
-      applyLanguage(savedLang);
+    document.body.addEventListener('click', function (e) {
+      const menu = document.getElementById('helpMenu');
+      if (menu.style.display === 'block') menu.style.display = 'none';
+    });
+
+    function toggleLanguage() {
+      const current = localStorage.getItem('lang') || 'fa';
+      const nextLang = current === 'fa' ? 'en' : 'fa';
+      setLanguage(nextLang);
+    }
+
+    function setLanguage(lang) {
+      localStorage.setItem('lang', lang);
+      document.documentElement.lang = lang;
+      document.getElementById('headerTitle').textContent = lang === 'fa' ? 'بازار ارزوئیه' : 'Orzooiyeh Market';
+      document.getElementById('langLabel').textContent = lang === 'fa' ? 'زبان' : 'Language';
+      document.getElementById('helpLabel').textContent = lang === 'fa' ? 'راهنمایی' : 'Help';
+      document.getElementById('guideText').textContent = lang === 'fa'
+        ? 'با انتخاب نقش خود، وارد بخش مربوطه شوید. فروشنده برای ثبت محصول، خریدار برای مشاهده و خرید، و پیک مجازی برای تحویل سفارش‌ها وارد می‌شود.'
+        : 'Select your role to proceed. Seller for registering products, Buyer for purchasing, and Courier for deliveries.';
+      document.getElementById('sellerBtn').textContent = lang === 'fa' ? 'فروشنده' : 'Seller';
+      document.getElementById('buyerBtn').textContent = lang === 'fa' ? 'خریدار' : 'Buyer';
+      document.getElementById('courierBtn').textContent = lang === 'fa' ? 'پیک مجازی' : 'Courier';
+      document.getElementById('touchText').textContent = lang === 'fa' ? 'برای ورود، اثر انگشت خود را لمس کنید.' : 'Touch your fingerprint to proceed.';
     }
 
     function showFingerprint(role) {
+      currentRole = role;
       document.getElementById('fingerprintBox').style.display = 'block';
-      setTimeout(() => {
-        const lang = localStorage.getItem('lang') || 'fa';
-        if (role === 'seller') {
-          window.location.href = "https://orzooiyehmarket.github.io/bazar_orzooiyeh/docs/foroosh.html";
-        } else if (role === 'buyer') {
-          window.location.href = "https://orzooiyehmarket.github.io/bazar_orzooiyeh/docs/buyer.html";
-        } else {
-          window.location.href = "https://orzooiyehmarket.github.io/bazar_orzooiyeh/doc/peyk.html";
-        }
-      }, 2000);
     }
+
+    function goToRole() {
+      const lang = localStorage.getItem('lang') || 'fa';
+      const roleLinks = {
+        seller: 'https://orzooiyehmarket.github.io/bazar_orzooiyeh/docs/foroosh.html',
+        buyer: 'https://orzooiyehmarket.github.io/bazar_orzooiyeh/docs/buyer.html',
+        courier: 'https://orzooiyehmarket.github.io/bazar_orzooiyeh/doc/peyk.html'
+      };
+      window.location.href = roleLinks[currentRole];
+    }
+
+    // Initialize
+    const savedLang = localStorage.getItem('lang') || 'fa';
+    setLanguage(savedLang);
   </script>
 </body>
 </html>
