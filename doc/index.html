@@ -1,12 +1,20 @@
 <!DOCTYPE html>
 <html lang="fa">
 <head>
-  <meta charset="UTF-8">
+  <meta charset="UTF-8" />
   <title>بازار ارزوییه</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <style>
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-    body { font-family: sans-serif; background: #f5f5f5; direction: rtl; }
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+    body {
+      font-family: sans-serif;
+      background: #f5f5f5;
+      direction: rtl;
+    }
 
     header {
       height: 2cm;
@@ -21,8 +29,12 @@
     }
 
     @keyframes rainbowMove {
-      0% { background-position: 0% 0%; }
-      100% { background-position: 1400% 0%; }
+      0% {
+        background-position: 0% 0%;
+      }
+      100% {
+        background-position: 1400% 0%;
+      }
     }
 
     #movingText {
@@ -30,21 +42,21 @@
       font-size: 1.5rem;
       font-weight: bold;
       white-space: nowrap;
-      color: white;
-
-      /* حرکت مارپیچ */
-      animation: spiralMove 10s linear infinite;
+      color: black;
+      /* حرکت سینوسی افقی */
+      animation: sineMove 5s ease-in-out infinite;
       top: 50%;
       left: 50%;
-      transform-origin: center center;
+      transform: translate(-50%, -50%);
     }
 
-    @keyframes spiralMove {
-      0% {
-        transform: translate(-50%, -50%) rotate(0deg) translateX(0px);
-      }
+    @keyframes sineMove {
+      0%,
       100% {
-        transform: translate(-50%, -50%) rotate(720deg) translateX(100px);
+        transform: translate(calc(-50% - 50px), -50%);
+      }
+      50% {
+        transform: translate(calc(-50% + 50px), -50%);
       }
     }
 
@@ -55,7 +67,8 @@
       background: #fff;
     }
 
-    #guideIcon, #languageSelector {
+    #guideIcon,
+    #languageSelector {
       cursor: pointer;
       font-size: 1rem;
       padding: 5px 10px;
@@ -71,7 +84,7 @@
       background: white;
       padding: 15px;
       border-radius: 8px;
-      box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
       width: 250px;
       z-index: 10;
     }
@@ -88,7 +101,7 @@
       color: white;
       border-radius: 8px;
       cursor: pointer;
-      min-width: 160px; /* افزایش عرض */
+      min-width: 140px;
       text-align: center;
       transition: background 0.3s;
     }
@@ -102,9 +115,6 @@
         flex-direction: column;
         gap: 15px;
         align-items: center;
-      }
-      .option {
-        min-width: 80vw; /* عرض بیشتر برای موبایل */
       }
     }
   </style>
