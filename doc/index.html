@@ -1,8 +1,8 @@
 <!DOCTYPE html>
 <html lang="fa">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>بازار ارزوییه</title>
   <style>
     body {
@@ -13,23 +13,44 @@
     }
     header {
       height: 2cm;
-      background: linear-gradient(270deg, red, orange, yellow, green, blue, indigo, violet);
-      background-size: 1400% 1400%;
-      animation: rainbow 10s linear infinite;
       display: flex;
-      align-items: center;
       justify-content: center;
+      align-items: center;
       position: relative;
-      color: white;
       font-size: 1.5em;
       font-weight: bold;
+      overflow: hidden;
+      color: transparent;
+      /* متن شفاف تا گرادیان دیده شود */
+      background: linear-gradient(
+        270deg,
+        red,
+        orange,
+        yellow,
+        green,
+        blue,
+        indigo,
+        violet,
+        red
+      );
+      background-size: 1400% 1400%;
+      animation: rainbow 10s linear infinite;
+      -webkit-background-clip: text;
+      background-clip: text;
     }
     @keyframes rainbow {
-      0% {background-position: 0% 50%;}
-      50% {background-position: 100% 50%;}
-      100% {background-position: 0% 50%;}
+      0% {
+        background-position: 0% 50%;
+      }
+      50% {
+        background-position: 100% 50%;
+      }
+      100% {
+        background-position: 0% 50%;
+      }
     }
-    #languageSelector, #guideIcon {
+    #languageSelector,
+    #guideIcon {
       position: absolute;
       top: 2cm;
       padding: 0.5em 1em;
@@ -37,6 +58,7 @@
       border: 1px solid #ccc;
       cursor: pointer;
       z-index: 100;
+      user-select: none;
     }
     #languageSelector {
       left: 1em;
@@ -55,11 +77,13 @@
       box-shadow: 0 0 10px rgba(0,0,0,0.2);
       color: black;
       z-index: 101;
+      max-width: 280px;
     }
     .options {
       display: flex;
       justify-content: space-around;
       margin-top: 5cm;
+      flex-wrap: wrap;
     }
     .option {
       background: white;
@@ -70,6 +94,8 @@
       text-align: center;
       width: 30%;
       cursor: pointer;
+      margin-bottom: 1em;
+      user-select: none;
     }
     .fingerprint {
       display: none;
@@ -80,20 +106,20 @@
       width: 100px;
       height: 100px;
     }
-    @media(max-width: 768px){
+    @media (max-width: 768px) {
       .options {
         flex-direction: column;
         align-items: center;
       }
       .option {
         width: 80%;
-        margin-bottom: 1em;
       }
     }
   </style>
 </head>
 <body>
   <header>بازار ارزوییه</header>
+
   <div id="languageSelector">🌐 زبان</div>
   <div id="guideIcon">☰ راهنمایی</div>
   <div id="guideBox">
@@ -110,59 +136,62 @@
 
   <div id="fingerprint" class="fingerprint">
     <p>لطفاً اثر انگشت خود را ثبت کنید</p>
-    <img src="https://cdn-icons-png.flaticon.com/512/709/709496.png" alt="اثر انگشت">
+    <img src="https://cdn-icons-png.flaticon.com/512/709/709496.png" alt="اثر انگشت" />
   </div>
 
   <script>
-    const guideIcon = document.getElementById('guideIcon');
-    const guideBox = document.getElementById('guideBox');
-    const languageSelector = document.getElementById('languageSelector');
-    let selectedRole = '';
+    const guideIcon = document.getElementById("guideIcon");
+    const guideBox = document.getElementById("guideBox");
+    const languageSelector = document.getElementById("languageSelector");
 
-    guideIcon.addEventListener('click', (e) => {
-      guideBox.style.display = guideBox.style.display === 'block' ? 'none' : 'block';
+    guideIcon.addEventListener("click", (e) => {
+      guideBox.style.display = guideBox.style.display === "block" ? "none" : "block";
       e.stopPropagation();
     });
 
-    document.body.addEventListener('click', () => {
-      guideBox.style.display = 'none';
+    document.body.addEventListener("click", () => {
+      guideBox.style.display = "none";
     });
 
-    const showFingerprint = (role) => {
-      selectedRole = role;
-      document.getElementById('fingerprint').style.display = 'block';
+    function showFingerprint(role) {
+      document.getElementById("fingerprint").style.display = "block";
+      const lang = localStorage.getItem("lang") || "fa";
       setTimeout(() => {
-        const lang = localStorage.getItem('lang') || 'fa';
-        if (role === 'seller') window.location.href = `https://orzooiyehmarket.github.io/bazar_orzooiyeh/docs/foroosh.html?lang=${lang}`;
-        else if (role === 'buyer') window.location.href = `https://orzooiyehmarket.github.io/bazar_orzooiyeh/docs/buyer.html?lang=${lang}`;
-        else if (role === 'courier') window.location.href = `https://orzooiyehmarket.github.io/bazar_orzooiyeh/doc/peyk.html?lang=${lang}`;
+        if (role === "seller")
+          window.location.href = `https://orzooiyehmarket.github.io/bazar_orzooiyeh/docs/foroosh.html?lang=${lang}`;
+        else if (role === "buyer")
+          window.location.href = `https://orzooiyehmarket.github.io/bazar_orzooiyeh/docs/buyer.html?lang=${lang}`;
+        else if (role === "courier")
+          window.location.href = `https://orzooiyehmarket.github.io/bazar_orzooiyeh/doc/peyk.html?lang=${lang}`;
       }, 2000);
     }
 
-    languageSelector.addEventListener('click', () => {
-      const currentLang = localStorage.getItem('lang') || 'fa';
-      const newLang = currentLang === 'fa' ? 'en' : 'fa';
-      localStorage.setItem('lang', newLang);
+    languageSelector.addEventListener("click", () => {
+      const currentLang = localStorage.getItem("lang") || "fa";
+      const newLang = currentLang === "fa" ? "en" : "fa";
+      localStorage.setItem("lang", newLang);
       applyLanguage(newLang);
     });
 
     function applyLanguage(lang) {
-      if (lang === 'en') {
-        document.querySelector('header').innerText = 'Arzooiyeh Market';
-        document.querySelector('.option:nth-child(1)').innerText = 'Seller';
-        document.querySelector('.option:nth-child(2)').innerText = 'Buyer';
-        document.querySelector('.option:nth-child(3)').innerText = 'Courier';
-        guideBox.innerHTML = '<p><strong>Seller:</strong> Login to list your products.</p><p><strong>Buyer:</strong> Enter to shop the market.</p><p><strong>Courier:</strong> Responsible for product delivery.</p>';
+      if (lang === "en") {
+        document.querySelector("header").innerText = "Arzooiyeh Market";
+        document.querySelector(".option:nth-child(1)").innerText = "Seller";
+        document.querySelector(".option:nth-child(2)").innerText = "Buyer";
+        document.querySelector(".option:nth-child(3)").innerText = "Courier";
+        guideBox.innerHTML =
+          '<p><strong>Seller:</strong> Login to list your products.</p><p><strong>Buyer:</strong> Enter to shop the market.</p><p><strong>Courier:</strong> Responsible for product delivery.</p>';
       } else {
-        document.querySelector('header').innerText = 'بازار ارزوییه';
-        document.querySelector('.option:nth-child(1)').innerText = 'فروشنده';
-        document.querySelector('.option:nth-child(2)').innerText = 'خریدار';
-        document.querySelector('.option:nth-child(3)').innerText = 'پیک مجازی';
-        guideBox.innerHTML = '<p><strong>فروشنده:</strong> برای ثبت و فروش محصولات خود وارد شوید.</p><p><strong>خریدار:</strong> برای خرید از بازار وارد شوید.</p><p><strong>پیک مجازی:</strong> وظیفه تحویل محصولات به خریدار را دارد.</p>';
+        document.querySelector("header").innerText = "بازار ارزوییه";
+        document.querySelector(".option:nth-child(1)").innerText = "فروشنده";
+        document.querySelector(".option:nth-child(2)").innerText = "خریدار";
+        document.querySelector(".option:nth-child(3)").innerText = "پیک مجازی";
+        guideBox.innerHTML =
+          '<p><strong>فروشنده:</strong> برای ثبت و فروش محصولات خود وارد شوید.</p><p><strong>خریدار:</strong> برای خرید از بازار وارد شوید.</p><p><strong>پیک مجازی:</strong> وظیفه تحویل محصولات به خریدار را دارد.</p>';
       }
     }
 
-    const langInit = localStorage.getItem('lang') || 'fa';
+    const langInit = localStorage.getItem("lang") || "fa";
     applyLanguage(langInit);
   </script>
 </body>
