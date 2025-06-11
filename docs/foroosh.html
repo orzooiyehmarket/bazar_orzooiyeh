@@ -8,7 +8,7 @@
       font-family: sans-serif;
       margin: 0;
       padding: 0;
-      background: #f9f9f9;
+      background: #f0f0f0;
     }
     header {
       background: linear-gradient(to left, #00c6ff, #0072ff);
@@ -42,7 +42,7 @@
       display: block;
     }
     #productPreview {
-      display: block;
+      display: none;
       max-width: 200px;
       margin: 10px auto;
       border: 2px solid #0072ff;
@@ -58,10 +58,20 @@
       display: block;
       margin-bottom: 5px;
     }
-    input, select, textarea {
+    input, select {
       width: 100%;
       padding: 8px;
       font-size: 16px;
+    }
+    .input-group {
+      display: flex;
+      gap: 10px;
+    }
+    .input-group input {
+      flex: 2;
+    }
+    .input-group select {
+      flex: 1;
     }
     #submit-btn, #final-submit {
       background: #28a745;
@@ -77,47 +87,44 @@
 <body>
 
 <header>
-  <div id="datetime">در حال بارگذاری...</div>
+  <div id="datetime">...</div>
   <div id="menu-toggle">☰</div>
   <div id="menu">
-    <p>نام فروشنده: <input type="text" id="sellerName"></p>
-    <p>کد ملی (۱۰ رقم): <input type="text" id="sellerCode" maxlength="10"></p>
-    <p>شماره تماس: <input type="text" id="sellerPhone"></p>
+    <p><span id="sellerNameLabel">نام فروشنده:</span> <input type="text" id="sellerName"></p>
+    <p><span id="nationalCodeLabel">کد ملی:</span> <input type="text" id="sellerCode" maxlength="10"></p>
+    <p><span id="phoneLabel">شماره تماس:</span> <input type="text" id="sellerPhone"></p>
     <button id="submit-btn">ثبت نهایی</button>
   </div>
 </header>
 
-<!-- نمایش تصویر انتخابی در بالا -->
-<img id="productPreview" src="" alt="پیش‌نمایش تصویر محصول" style="display:none;">
+<img id="productPreview" src="" alt="پیش‌نمایش تصویر" style="display:none;">
 
 <main>
   <div class="form-group">
-    <label for="productImage">تصویر محصول:</label>
+    <label id="imgLabel" for="productImage">تصویر محصول:</label>
     <input type="file" id="productImage" accept="image/*">
   </div>
 
   <div class="form-group">
-    <label for="productAmount">میزان محصول:</label>
-    <input type="text" id="productAmount">
+    <label id="amountLabel" for="productAmount">میزان محصول و واحد:</label>
+    <div class="input-group">
+      <input type="text" id="productAmount" placeholder="مثلاً ۲۰">
+      <select id="unit">
+        <option value="کیلوگرم">کیلوگرم</option>
+        <option value="عدد">عدد</option>
+        <option value="بسته">بسته</option>
+        <option value="لیتر">لیتر</option>
+      </select>
+    </div>
   </div>
 
   <div class="form-group">
-    <label for="unit">واحد:</label>
-    <select id="unit">
-      <option value="کیلوگرم">کیلوگرم</option>
-      <option value="عدد">عدد</option>
-      <option value="بسته">بسته</option>
-      <option value="لیتر">لیتر</option>
-    </select>
-  </div>
-
-  <div class="form-group">
-    <label for="productId">شناسه محصول (خودکار):</label>
+    <label id="idLabel" for="productId">شناسه محصول (خودکار):</label>
     <input type="text" id="productId" readonly>
   </div>
 
   <div class="form-group">
-    <label for="contactInfo">اطلاعات تماس فروشنده:</label>
+    <label id="contactLabel" for="contactInfo">اطلاعات تماس فروشنده:</label>
     <input type="text" id="contactInfo">
   </div>
 
@@ -125,42 +132,86 @@
 </main>
 
 <script>
-  // تاریخ و ساعت شمسی
+  // زبان جاری
+  const lang = localStorage.getItem('lang') || 'fa';
+
+  const translate = {
+    fa: {
+      sellerName: 'نام فروشنده:',
+      nationalCode: 'کد ملی:',
+      phone: 'شماره تماس:',
+      image: 'تصویر محصول:',
+      amount: 'میزان محصول و واحد:',
+      id: 'شناسه محصول (خودکار):',
+      contact: 'اطلاعات تماس فروشنده:',
+      submit: 'ثبت فروش'
+    },
+    en: {
+      sellerName: 'Seller Name:',
+      nationalCode: 'National ID:',
+      phone: 'Phone:',
+      image: 'Product Image:',
+      amount: 'Amount & Unit:',
+      id: 'Product ID (Auto):',
+      contact: 'Seller Contact:',
+      submit: 'Submit Sale'
+    }
+  };
+
+  if (lang === 'en') {
+    document.documentElement.lang = 'en';
+    document.documentElement.dir = 'ltr';
+    document.getElementById('sellerNameLabel').innerText = translate.en.sellerName;
+    document.getElementById('nationalCodeLabel').innerText = translate.en.nationalCode;
+    document.getElementById('phoneLabel').innerText = translate.en.phone;
+    document.getElementById('imgLabel').innerText = translate.en.image;
+    document.getElementById('amountLabel').innerText = translate.en.amount;
+    document.getElementById('idLabel').innerText = translate.en.id;
+    document.getElementById('contactLabel').innerText = translate.en.contact;
+    document.getElementById('final-submit').innerText = translate.en.submit;
+  }
+
+  // ساعت شمسی یا میلادی
   function updateDateTime() {
     const now = new Date();
-    const f = new Intl.DateTimeFormat('fa-IR', {
-      dateStyle: 'full',
-      timeStyle: 'short'
-    });
-    document.getElementById('datetime').textContent = f.format(now);
+    if (lang === 'fa') {
+      const f = new Intl.DateTimeFormat('fa-IR', { dateStyle: 'full', timeStyle: 'short' });
+      document.getElementById('datetime').textContent = f.format(now);
+    } else {
+      document.getElementById('datetime').textContent = now.toLocaleString('en-US');
+    }
   }
   setInterval(updateDateTime, 1000);
   updateDateTime();
 
-  // نمایش و پنهان‌سازی منوی فروشنده
+  // منو باز و بسته
   document.getElementById('menu-toggle').addEventListener('click', () => {
     document.getElementById('menu').classList.toggle('show');
   });
 
-  // تولید آی‌دی خودکار
+  // شناسه خودکار محصول
   document.getElementById('sellerCode').addEventListener('input', () => {
     const code = document.getElementById('sellerCode').value;
     if (code.length === 10) {
       const last4 = code.slice(-4);
       const now = new Date();
-      const dateStr = now.toLocaleDateString('fa-IR').replaceAll('/', '');
-      const rand = Math.floor(Math.random() * 900 + 100); // عدد رندوم
+      const dateStr = lang === 'fa'
+        ? new Intl.DateTimeFormat('fa-IR').format(now).replaceAll('/', '')
+        : now.toISOString().slice(0,10).replaceAll('-', '');
+      const rand = lang === 'fa'
+        ? Math.floor(Math.random() * 900 + 100).toLocaleString('fa-IR')
+        : Math.floor(Math.random() * 900 + 100);
       document.getElementById('productId').value = `${dateStr}-${last4}-${rand}`;
     }
   });
 
-  // نمایش تصویر آپلودی در بالای صفحه
-  document.getElementById('productImage').addEventListener('change', function() {
+  // پیش‌نمایش تصویر
+  document.getElementById('productImage').addEventListener('change', function () {
     const preview = document.getElementById('productPreview');
     const file = this.files[0];
     if (file) {
-      preview.style.display = 'block';
       preview.src = URL.createObjectURL(file);
+      preview.style.display = 'block';
     }
   });
 </script>
