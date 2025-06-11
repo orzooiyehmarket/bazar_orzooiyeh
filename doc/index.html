@@ -38,33 +38,26 @@
       100% { transform: rotate(0deg) translateX(0); }
     }
 
-    #menuBtn, #langSelect {
-      position: absolute;
-      top: 1rem;
-      font-size: 1.2rem;
-      color: white;
+    .top-controls {
       display: flex;
-      align-items: center;
-      gap: 0.3rem;
-      background: rgba(0,0,0,0.3);
-      padding: 4px 8px;
-      border-radius: 8px;
-      z-index: 11;
+      justify-content: space-between;
+      padding: 0.5rem 1rem;
+      background: #ffffff;
+    }
+
+    .control-btn {
+      font-size: 1rem;
+      color: #333;
+      background: #eee;
+      padding: 6px 10px;
+      border-radius: 6px;
       cursor: pointer;
-    }
-
-    #menuBtn {
-      right: 1rem;
-    }
-
-    #langSelect {
-      left: 1rem;
     }
 
     .popup-menu {
       display: none;
       position: fixed;
-      top: 80px;
+      top: 130px;
       right: 10px;
       background: white;
       border-radius: 10px;
@@ -118,55 +111,106 @@
       width: 100px;
       cursor: pointer;
     }
-
-    select.language-selector {
-      background: rgba(255, 255, 255, 0.3);
-      border: none;
-      color: white;
-      font-size: 1rem;
-      padding: 0.2rem;
-      border-radius: 6px;
-    }
   </style>
 </head>
 <body>
 
   <header>
-    <div id="menuBtn">☰ راهنمایی</div>
-    <div class="spiral-text">بازار ارزوئیه</div>
-    <div id="langSelect">
-      🌐
-      <select class="language-selector" onchange="setLanguage(this.value)">
+    <div class="spiral-text" id="titleText">بازار ارزوئیه</div>
+  </header>
+
+  <div class="top-controls">
+    <div id="menuBtn" class="control-btn">☰ راهنمایی</div>
+    <div>
+      🌐 <select id="langSelect" class="control-btn" onchange="setLanguage(this.value)">
         <option value="fa">فارسی</option>
         <option value="en">English</option>
       </select>
     </div>
-  </header>
+  </div>
 
   <div class="popup-menu" id="popupMenu">
-    <h3>📦 فروشنده</h3>
-    <p>کسی که محصول خود را برای فروش ثبت می‌کند.</p>
-    <h3>🛒 خریدار</h3>
-    <p>کسی که از بازار محصول خرید می‌کند.</p>
-    <h3>🚚 پیک مجازی</h3>
-    <p>هماهنگ‌کننده بین فروشنده و خریدار و انتقال کالا.</p>
+    <h3 id="sellerTitle">📦 فروشنده</h3>
+    <p id="sellerDesc">کسی که محصول خود را برای فروش ثبت می‌کند.</p>
+    <h3 id="buyerTitle">🛒 خریدار</h3>
+    <p id="buyerDesc">کسی که از بازار محصول خرید می‌کند.</p>
+    <h3 id="deliveryTitle">🚚 پیک مجازی</h3>
+    <p id="deliveryDesc">هماهنگ‌کننده بین فروشنده و خریدار و انتقال کالا.</p>
   </div>
 
   <main>
-    <h2>نقش خود را انتخاب کنید</h2>
+    <h2 id="selectRoleText">نقش خود را انتخاب کنید</h2>
     <div class="roles">
-      <button onclick="selectRole('seller')">فروشنده</button>
-      <button onclick="selectRole('buyer')">خریدار</button>
-      <button onclick="selectRole('delivery')">پیک مجازی</button>
+      <button onclick="selectRole('seller')" id="sellerBtn">فروشنده</button>
+      <button onclick="selectRole('buyer')" id="buyerBtn">خریدار</button>
+      <button onclick="selectRole('delivery')" id="deliveryBtn">پیک مجازی</button>
     </div>
 
     <div class="fingerprint-box" id="fingerprintBox">
       <img src="https://cdn-icons-png.flaticon.com/512/3062/3062634.png" alt="اثر انگشت" onclick="authenticate()" />
-      <p>برای ورود، اثر انگشت را لمس کنید</p>
+      <p id="fingerText">برای ورود، اثر انگشت را لمس کنید</p>
     </div>
   </main>
 
   <script>
+    const translations = {
+      fa: {
+        title: "بازار ارزوئیه",
+        selectRole: "نقش خود را انتخاب کنید",
+        seller: "فروشنده",
+        buyer: "خریدار",
+        delivery: "پیک مجازی",
+        sellerDesc: "کسی که محصول خود را برای فروش ثبت می‌کند.",
+        buyerDesc: "کسی که از بازار محصول خرید می‌کند.",
+        deliveryDesc: "هماهنگ‌کننده بین فروشنده و خریدار و انتقال کالا.",
+        finger: "برای ورود، اثر انگشت را لمس کنید",
+        guide: "☰ راهنمایی"
+      },
+      en: {
+        title: "Orzooiyeh Market",
+        selectRole: "Select your role",
+        seller: "Seller",
+        buyer: "Buyer",
+        delivery: "Virtual Courier",
+        sellerDesc: "Someone who lists a product for sale.",
+        buyerDesc: "Someone who buys products from the market.",
+        deliveryDesc: "Coordinates between buyer and seller and delivers goods.",
+        finger: "Tap your fingerprint to enter",
+        guide: "☰ Guide"
+      }
+    };
+
+    const elements = {
+      titleText: "title",
+      selectRoleText: "selectRole",
+      sellerBtn: "seller",
+      buyerBtn: "buyer",
+      deliveryBtn: "delivery",
+      sellerTitle: "seller",
+      sellerDesc: "sellerDesc",
+      buyerTitle: "buyer",
+      buyerDesc: "buyerDesc",
+      deliveryTitle: "delivery",
+      deliveryDesc: "deliveryDesc",
+      fingerText: "finger",
+      menuBtn: "guide"
+    };
+
+    function setLanguage(lang) {
+      localStorage.setItem("lang", lang);
+      applyLanguage(lang);
+    }
+
+    function applyLanguage(lang) {
+      const tr = translations[lang];
+      for (const id in elements) {
+        document.getElementById(id).innerText = tr[elements[id]];
+      }
+      document.documentElement.lang = lang;
+      document.documentElement.dir = lang === "fa" ? "rtl" : "ltr";
+    }
+
+    // راهنما باز و بسته شود
     const menuBtn = document.getElementById("menuBtn");
     const popupMenu = document.getElementById("popupMenu");
 
@@ -181,6 +225,7 @@
       }
     });
 
+    // انتخاب نقش و اثر انگشت
     let selectedRole = "";
 
     function selectRole(role) {
@@ -200,16 +245,11 @@
       }, 1000);
     }
 
-    function setLanguage(lang) {
-      localStorage.setItem("lang", lang);
-      // در آینده: ترجمه محتوا بر اساس زبان انتخاب‌شده
-      alert(lang === "fa" ? "زبان فارسی انتخاب شد" : "English selected");
-    }
-
-    // حفظ زبان قبلی کاربر
+    // بارگزاری زبان
     window.onload = function () {
       const lang = localStorage.getItem("lang") || "fa";
-      document.querySelector('.language-selector').value = lang;
+      document.getElementById("langSelect").value = lang;
+      applyLanguage(lang);
     };
   </script>
 
