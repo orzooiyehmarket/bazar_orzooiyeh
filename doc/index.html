@@ -2,114 +2,145 @@
 <html lang="fa">
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>بازار ارزوئیه</title>
   <style>
+    * {
+      box-sizing: border-box;
+    }
     body {
       margin: 0;
       font-family: sans-serif;
       direction: rtl;
-      background: #f0f0f0;
+      background: #f5f5f5;
     }
     header {
       background: linear-gradient(90deg, #f00, #ff0, #0f0, #0ff, #00f, #f0f);
       padding: 20px;
-      position: relative;
-      overflow: hidden;
-      color: white;
       text-align: center;
+      overflow: hidden;
     }
     .snake-text {
       display: inline-block;
-      font-size: 28px;
+      font-size: 26px;
       font-weight: bold;
-      position: relative;
-      animation: snakeMove 5s infinite linear;
+      animation: snakeMove 6s infinite linear;
     }
     @keyframes snakeMove {
       0% { transform: translateX(-50%); }
       50% { transform: translateX(50%); }
       100% { transform: translateX(-50%); }
     }
-
-    #menu-icon {
-      position: absolute;
-      top: 10px;
-      left: 10px;
-      font-size: 24px;
-      cursor: pointer;
-      z-index: 10;
+    .top-controls {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px 20px;
+      background: white;
     }
-
+    #info-toggle {
+      cursor: pointer;
+      font-size: 18px;
+      margin-bottom: 5px;
+    }
     #info-menu {
       display: none;
-      position: absolute;
-      top: 50px;
-      left: 10px;
-      background: white;
-      border: 1px solid #ccc;
+      background: #fff;
       padding: 10px;
-      z-index: 9;
-      width: 200px;
-      text-align: right;
+      border: 1px solid #ccc;
+      margin: 5px 20px;
     }
-
     #lang-select {
-      margin: 15px;
       font-size: 16px;
+      padding: 5px;
     }
-
     .roles {
       display: flex;
-      flex-direction: column;
-      gap: 10px;
-      align-items: center;
-      margin-top: 30px;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 15px;
+      margin: 30px auto 15px;
+      padding: 0 10px;
     }
-
     .role-btn {
-      padding: 10px 20px;
-      background: #00aaff;
+      flex: 1 1 180px;
+      max-width: 240px;
+      padding: 15px;
+      background: #007acc;
       color: white;
       border: none;
       border-radius: 10px;
-      font-size: 18px;
-      text-decoration: none;
+      font-size: 16px;
+      cursor: pointer;
       transition: background 0.3s;
     }
-
     .role-btn:hover {
-      background: #0077aa;
+      background: #005b99;
+    }
+    .fingerprint-box {
+      display: none;
+      text-align: center;
+      margin-top: 30px;
+    }
+    .fingerprint-img {
+      width: 100px;
+      height: 100px;
+      background: url('https://cdn-icons-png.flaticon.com/512/892/892458.png') no-repeat center;
+      background-size: contain;
+      margin: 10px auto;
+      cursor: pointer;
+    }
+
+    @media (max-width: 600px) {
+      .top-controls {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+      .snake-text {
+        font-size: 20px;
+      }
+      .role-btn {
+        font-size: 15px;
+      }
     }
   </style>
 </head>
 <body>
 
-  <header onclick="hideMenu()">
-    <div id="menu-icon" onclick="toggleMenu(event)">☰ راهنمایی</div>
+  <header>
     <div class="snake-text" id="market-text">بازار ارزوئیه</div>
-    <div id="info-menu">
-      <p id="info-seller">فروشنده: اطلاعات محصولات را ثبت می‌کند.</p>
-      <p id="info-buyer">خریدار: مشاهده و خرید محصولات.</p>
-      <p id="info-delivery">پیک مجازی: تحویل محصول به خریدار.</p>
-    </div>
   </header>
 
-  <div style="text-align: center">
-    <label for="lang-select">🌐 زبان:</label>
-    <select id="lang-select">
-      <option value="fa">فارسی</option>
-      <option value="en">English</option>
-    </select>
+  <div class="top-controls">
+    <div id="info-toggle">☰ راهنمایی</div>
+    <div>
+      🌐 زبان:
+      <select id="lang-select">
+        <option value="fa">فارسی</option>
+        <option value="en">English</option>
+      </select>
+    </div>
+  </div>
+
+  <div id="info-menu">
+    <p id="info-seller">فروشنده: اطلاعات محصولات را ثبت می‌کند.</p>
+    <p id="info-buyer">خریدار: مشاهده و خرید محصولات.</p>
+    <p id="info-delivery">پیک مجازی: تحویل محصول به خریدار.</p>
   </div>
 
   <div class="roles">
-    <a class="role-btn" href="https://orzooiyehmarket.github.io/bazar_orzooiyeh/docs/foroosh.html" id="seller-btn">ورود فروشنده</a>
-    <a class="role-btn" href="https://orzooiyehmarket.github.io/bazar_orzooiyeh/docs/buyer.html" id="buyer-btn">ورود خریدار</a>
-    <a class="role-btn" href="https://orzooiyehmarket.github.io/bazar_orzooiyeh/doc/peyk.html" id="delivery-btn">ورود پیک مجازی</a>
+    <button class="role-btn" onclick="showFingerprint('seller')" id="seller-btn">ورود فروشنده</button>
+    <button class="role-btn" onclick="showFingerprint('buyer')" id="buyer-btn">ورود خریدار</button>
+    <button class="role-btn" onclick="showFingerprint('delivery')" id="delivery-btn">ورود پیک مجازی</button>
+  </div>
+
+  <div class="fingerprint-box" id="fp-box">
+    <p id="fp-text">اثر انگشت را برای ورود لمس کنید</p>
+    <div class="fingerprint-img" onclick="redirectUser()"></div>
   </div>
 
   <script>
-    // ذخیره و اعمال زبان
     const langSelect = document.getElementById('lang-select');
     const savedLang = localStorage.getItem('lang') || 'fa';
     langSelect.value = savedLang;
@@ -122,40 +153,47 @@
     });
 
     function applyLanguage(lang) {
-      if (lang === 'en') {
-        document.getElementById('market-text').textContent = 'Orzooiyeh Market';
-        document.getElementById('info-seller').textContent = 'Seller: Registers product details.';
-        document.getElementById('info-buyer').textContent = 'Buyer: Views and purchases products.';
-        document.getElementById('info-delivery').textContent = 'Delivery: Delivers product to buyer.';
-        document.getElementById('seller-btn').textContent = 'Seller Login';
-        document.getElementById('buyer-btn').textContent = 'Buyer Login';
-        document.getElementById('delivery-btn').textContent = 'Delivery Login';
-        document.body.dir = "ltr";
-      } else {
-        document.getElementById('market-text').textContent = 'بازار ارزوئیه';
-        document.getElementById('info-seller').textContent = 'فروشنده: اطلاعات محصولات را ثبت می‌کند.';
-        document.getElementById('info-buyer').textContent = 'خریدار: مشاهده و خرید محصولات.';
-        document.getElementById('info-delivery').textContent = 'پیک مجازی: تحویل محصول به خریدار.';
-        document.getElementById('seller-btn').textContent = 'ورود فروشنده';
-        document.getElementById('buyer-btn').textContent = 'ورود خریدار';
-        document.getElementById('delivery-btn').textContent = 'ورود پیک مجازی';
-        document.body.dir = "rtl";
+      const elements = {
+        'market-text': { fa: 'بازار ارزوئیه', en: 'Orzooiyeh Market' },
+        'info-toggle': { fa: '☰ راهنمایی', en: '☰ Help' },
+        'info-seller': { fa: 'فروشنده: اطلاعات محصولات را ثبت می‌کند.', en: 'Seller: Registers product details.' },
+        'info-buyer': { fa: 'خریدار: مشاهده و خرید محصولات.', en: 'Buyer: Views and purchases products.' },
+        'info-delivery': { fa: 'پیک مجازی: تحویل محصول به خریدار.', en: 'Delivery: Delivers product to buyer.' },
+        'seller-btn': { fa: 'ورود فروشنده', en: 'Seller Login' },
+        'buyer-btn': { fa: 'ورود خریدار', en: 'Buyer Login' },
+        'delivery-btn': { fa: 'ورود پیک مجازی', en: 'Delivery Login' },
+        'fp-text': { fa: 'اثر انگشت را برای ورود لمس کنید', en: 'Touch fingerprint to enter' }
+      };
+      for (const id in elements) {
+        document.getElementById(id).textContent = elements[id][lang];
       }
+      document.body.dir = lang === 'en' ? 'ltr' : 'rtl';
     }
 
-    // کنترل نمایش راهنمایی
-    function toggleMenu(event) {
-      event.stopPropagation();
+    document.getElementById('info-toggle').addEventListener('click', (e) => {
+      e.stopPropagation();
       const menu = document.getElementById('info-menu');
       menu.style.display = menu.style.display === 'block' ? 'none' : 'block';
-    }
+    });
 
-    function hideMenu() {
+    document.body.addEventListener('click', () => {
       document.getElementById('info-menu').style.display = 'none';
+    });
+
+    let currentRole = '';
+    function showFingerprint(role) {
+      currentRole = role;
+      document.getElementById('fp-box').style.display = 'block';
     }
 
-    // کلیک بیرون از منو باعث بسته‌شدنش شود
-    document.body.addEventListener('click', hideMenu);
+    function redirectUser() {
+      const urlMap = {
+        seller: 'https://orzooiyehmarket.github.io/bazar_orzooiyeh/docs/foroosh.html',
+        buyer: 'https://orzooiyehmarket.github.io/bazar_orzooiyeh/docs/buyer.html',
+        delivery: 'https://orzooiyehmarket.github.io/bazar_orzooiyeh/doc/peyk.html'
+      };
+      window.location.href = urlMap[currentRole];
+    }
   </script>
 
 </body>
