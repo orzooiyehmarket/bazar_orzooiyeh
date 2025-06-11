@@ -11,44 +11,42 @@
       direction: rtl;
       background: #f0f0f0;
     }
+
     header {
       height: 2cm;
+      position: relative;
+      overflow: hidden;
+      background: linear-gradient(90deg, red, orange, yellow, green, blue, indigo, violet, red);
+      background-size: 800% 800%;
+      animation: bgMove 20s linear infinite;
       display: flex;
       justify-content: center;
       align-items: center;
-      position: relative;
-      font-size: 1.5em;
+    }
+
+    @keyframes bgMove {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+
+    .spiralText {
+      display: inline-block;
+      font-size: 1.8em;
       font-weight: bold;
-      overflow: hidden;
-      color: transparent;
-      /* متن شفاف تا گرادیان دیده شود */
-      background: linear-gradient(
-        270deg,
-        red,
-        orange,
-        yellow,
-        green,
-        blue,
-        indigo,
-        violet,
-        red
-      );
-      background-size: 1400% 1400%;
-      animation: rainbow 10s linear infinite;
-      -webkit-background-clip: text;
-      background-clip: text;
+      white-space: nowrap;
+      color: white;
+      animation: wave 2s infinite ease-in-out;
     }
-    @keyframes rainbow {
-      0% {
-        background-position: 0% 50%;
-      }
-      50% {
-        background-position: 100% 50%;
-      }
-      100% {
-        background-position: 0% 50%;
-      }
+
+    @keyframes wave {
+      0%, 100% { transform: translateY(0); }
+      25% { transform: translateY(-5px); }
+      50% { transform: translateY(5px); }
+      75% { transform: translateY(-5px); }
     }
+
+    /* ادامه استایل‌ها مثل قبل */
     #languageSelector,
     #guideIcon {
       position: absolute;
@@ -60,12 +58,9 @@
       z-index: 100;
       user-select: none;
     }
-    #languageSelector {
-      left: 1em;
-    }
-    #guideIcon {
-      right: 1em;
-    }
+    #languageSelector { left: 1em; }
+    #guideIcon { right: 1em; }
+
     #guideBox {
       display: none;
       position: absolute;
@@ -79,6 +74,7 @@
       z-index: 101;
       max-width: 280px;
     }
+
     .options {
       display: flex;
       justify-content: space-around;
@@ -97,15 +93,18 @@
       margin-bottom: 1em;
       user-select: none;
     }
+
     .fingerprint {
       display: none;
       text-align: center;
       margin-top: 1em;
     }
+
     .fingerprint img {
       width: 100px;
       height: 100px;
     }
+
     @media (max-width: 768px) {
       .options {
         flex-direction: column;
@@ -118,7 +117,10 @@
   </style>
 </head>
 <body>
-  <header>بازار ارزوییه</header>
+
+  <header>
+    <div class="spiralText">بازار ارزوییه</div>
+  </header>
 
   <div id="languageSelector">🌐 زبان</div>
   <div id="guideIcon">☰ راهنمایی</div>
@@ -175,14 +177,14 @@
 
     function applyLanguage(lang) {
       if (lang === "en") {
-        document.querySelector("header").innerText = "Arzooiyeh Market";
+        document.querySelector(".spiralText").innerText = "Arzooiyeh Market";
         document.querySelector(".option:nth-child(1)").innerText = "Seller";
         document.querySelector(".option:nth-child(2)").innerText = "Buyer";
         document.querySelector(".option:nth-child(3)").innerText = "Courier";
         guideBox.innerHTML =
           '<p><strong>Seller:</strong> Login to list your products.</p><p><strong>Buyer:</strong> Enter to shop the market.</p><p><strong>Courier:</strong> Responsible for product delivery.</p>';
       } else {
-        document.querySelector("header").innerText = "بازار ارزوییه";
+        document.querySelector(".spiralText").innerText = "بازار ارزوییه";
         document.querySelector(".option:nth-child(1)").innerText = "فروشنده";
         document.querySelector(".option:nth-child(2)").innerText = "خریدار";
         document.querySelector(".option:nth-child(3)").innerText = "پیک مجازی";
@@ -194,5 +196,6 @@
     const langInit = localStorage.getItem("lang") || "fa";
     applyLanguage(langInit);
   </script>
+
 </body>
 </html>
