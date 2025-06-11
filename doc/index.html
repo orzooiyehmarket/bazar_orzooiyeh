@@ -12,50 +12,54 @@
       font-family: "Vazirmatn", sans-serif;
       background: #f3f4f6;
       overflow-x: hidden;
-      touch-action: pan-y;
-    }
-
-    /* مارپیچ متن */
-    header {
-      background: #000;
-      height: 120px;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      overflow: hidden;
       position: relative;
     }
 
-    .spiral-text {
-      font-size: 2.2rem;
-      font-weight: bold;
+    header {
       background: linear-gradient(90deg, red, orange, yellow, green, blue, indigo, violet);
-      -webkit-background-clip: text;
-      color: transparent;
-      animation: spiral 5s infinite linear;
-      white-space: nowrap;
-      display: inline-block;
+      height: 100px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      position: relative;
+      color: white;
+    }
+
+    .spiral-text {
+      font-size: 2rem;
+      font-weight: bold;
+      animation: spiral 4s infinite ease-in-out;
     }
 
     @keyframes spiral {
       0% { transform: rotate(0deg) translateX(0); }
-      25% { transform: rotate(15deg) translateX(10px); }
+      25% { transform: rotate(10deg) translateX(10px); }
       50% { transform: rotate(0deg) translateX(0); }
-      75% { transform: rotate(-15deg) translateX(-10px); }
+      75% { transform: rotate(-10deg) translateX(-10px); }
       100% { transform: rotate(0deg) translateX(0); }
+    }
+
+    #menuBtn {
+      position: absolute;
+      right: 1rem;
+      top: 1rem;
+      font-size: 2rem;
+      cursor: pointer;
+      color: white;
+      z-index: 20;
     }
 
     .side-menu {
       position: fixed;
       top: 0;
-      right: -250px;
+      right: -260px;
       width: 250px;
       height: 100%;
       background: white;
       box-shadow: -2px 0 10px rgba(0,0,0,0.2);
       transition: right 0.3s ease-in-out;
       padding: 1rem;
-      z-index: 10;
+      z-index: 15;
     }
 
     .side-menu.active {
@@ -63,36 +67,29 @@
     }
 
     .side-menu h3 {
-      color: #111;
       margin-top: 1rem;
+      color: #222;
+    }
+
+    .side-menu p {
+      color: #444;
+      font-size: 0.9rem;
     }
 
     main {
+      padding: 2rem;
       text-align: center;
-      padding: 2rem 1rem;
-    }
-
-    .roles {
-      display: flex;
-      justify-content: center;
-      gap: 1rem;
-      margin-bottom: 2rem;
-      flex-wrap: wrap;
     }
 
     .roles button {
+      margin: 0.5rem;
       padding: 1rem 2rem;
+      font-size: 1.2rem;
+      background: #06b6d4;
+      color: white;
       border: none;
       border-radius: 10px;
       cursor: pointer;
-      background: #38bdf8;
-      color: white;
-      font-size: 1.2rem;
-      transition: background 0.3s;
-    }
-
-    .roles button:hover {
-      background: #0ea5e9;
     }
 
     .fingerprint-box {
@@ -105,18 +102,13 @@
     .fingerprint-box img {
       width: 100px;
       cursor: pointer;
-      margin-bottom: 1rem;
-    }
-
-    .msg {
-      color: #555;
-      font-size: 1rem;
     }
   </style>
 </head>
 <body>
 
   <header>
+    <div id="menuBtn">☰</div>
     <div class="spiral-text">بازار ارزوئیه</div>
   </header>
 
@@ -126,7 +118,7 @@
     <h3>🛒 خریدار</h3>
     <p>کسانی که از محصولات موجود خرید می‌کنند.</p>
     <h3>🚚 پیک مجازی</h3>
-    <p>نقشی برای مدیریت ارسال کالا و هماهنگی با فروشنده‌ها و خریداران.</p>
+    <p>نقشی برای هماهنگی بین فروشنده و خریدار و انتقال کالا.</p>
   </div>
 
   <main>
@@ -139,11 +131,25 @@
 
     <div class="fingerprint-box" id="fingerprintBox">
       <img src="https://cdn-icons-png.flaticon.com/512/3062/3062634.png" alt="اثر انگشت" onclick="authenticate()" />
-      <div class="msg">برای ورود، اثر انگشت را لمس کنید</div>
+      <p>برای ورود، اثر انگشت را لمس کنید</p>
     </div>
   </main>
 
   <script>
+    const menuBtn = document.getElementById("menuBtn");
+    const sideMenu = document.getElementById("sideMenu");
+
+    menuBtn.addEventListener("click", e => {
+      e.stopPropagation();
+      sideMenu.classList.add("active");
+    });
+
+    document.body.addEventListener("click", e => {
+      if (!sideMenu.contains(e.target) && !menuBtn.contains(e.target)) {
+        sideMenu.classList.remove("active");
+      }
+    });
+
     let selectedRole = "";
 
     function selectRole(role) {
@@ -162,26 +168,6 @@
         }
       }, 1000);
     }
-
-    // gesture swipe to open/close menu
-    let touchStartX = 0;
-
-    document.body.addEventListener("touchstart", e => {
-      touchStartX = e.changedTouches[0].clientX;
-    });
-
-    document.body.addEventListener("touchend", e => {
-      const touchEndX = e.changedTouches[0].clientX;
-      const deltaX = touchEndX - touchStartX;
-
-      if (deltaX > 100) {
-        // swipe right to open menu
-        document.getElementById("sideMenu").classList.add("active");
-      } else if (deltaX < -100) {
-        // swipe left to close
-        document.getElementById("sideMenu").classList.remove("active");
-      }
-    });
   </script>
 
 </body>
