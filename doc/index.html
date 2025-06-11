@@ -1,8 +1,8 @@
 <!DOCTYPE html>
 <html lang="fa" dir="rtl">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>ورود به بازار ارزوئیه</title>
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Vazirmatn&display=swap');
@@ -10,41 +10,39 @@
     body {
       margin: 0;
       font-family: "Vazirmatn", sans-serif;
-      background: #f0f4f8;
+      background: #f3f4f6;
       overflow-x: hidden;
+      touch-action: pan-y;
     }
 
+    /* مارپیچ متن */
     header {
+      background: #000;
+      height: 120px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      overflow: hidden;
       position: relative;
-      padding: 2rem 1rem;
-      background: linear-gradient(90deg, red, orange, yellow, green, blue, indigo, violet);
-      color: white;
-      text-align: center;
-      font-size: 2rem;
+    }
+
+    .spiral-text {
+      font-size: 2.2rem;
       font-weight: bold;
-      animation: wave 5s infinite linear;
-      background-size: 400% 100%;
+      background: linear-gradient(90deg, red, orange, yellow, green, blue, indigo, violet);
+      -webkit-background-clip: text;
+      color: transparent;
+      animation: spiral 5s infinite linear;
+      white-space: nowrap;
+      display: inline-block;
     }
 
-    @keyframes wave {
-      0% { background-position: 0% 50%; }
-      100% { background-position: 100% 50%; }
-    }
-
-    .menu-toggle {
-      position: absolute;
-      top: 1rem;
-      right: 1rem;
-      cursor: pointer;
-      width: 30px;
-    }
-
-    .menu-toggle div {
-      width: 100%;
-      height: 4px;
-      background: white;
-      margin: 5px 0;
-      border-radius: 2px;
+    @keyframes spiral {
+      0% { transform: rotate(0deg) translateX(0); }
+      25% { transform: rotate(15deg) translateX(10px); }
+      50% { transform: rotate(0deg) translateX(0); }
+      75% { transform: rotate(-15deg) translateX(-10px); }
+      100% { transform: rotate(0deg) translateX(0); }
     }
 
     .side-menu {
@@ -69,11 +67,17 @@
       margin-top: 1rem;
     }
 
+    main {
+      text-align: center;
+      padding: 2rem 1rem;
+    }
+
     .roles {
       display: flex;
       justify-content: center;
       gap: 1rem;
-      margin: 3rem auto 2rem;
+      margin-bottom: 2rem;
+      flex-wrap: wrap;
     }
 
     .roles button {
@@ -113,12 +117,7 @@
 <body>
 
   <header>
-    <div class="menu-toggle" onclick="toggleMenu()">
-      <div></div>
-      <div></div>
-      <div></div>
-    </div>
-    بازار ارزوئیه
+    <div class="spiral-text">بازار ارزوئیه</div>
   </header>
 
   <div class="side-menu" id="sideMenu">
@@ -130,7 +129,7 @@
     <p>نقشی برای مدیریت ارسال کالا و هماهنگی با فروشنده‌ها و خریداران.</p>
   </div>
 
-  <main style="text-align:center;">
+  <main>
     <h2>نقش خود را انتخاب کنید</h2>
     <div class="roles">
       <button onclick="selectRole('seller')">فروشنده</button>
@@ -164,10 +163,25 @@
       }, 1000);
     }
 
-    function toggleMenu() {
-      const menu = document.getElementById("sideMenu");
-      menu.classList.toggle("active");
-    }
+    // gesture swipe to open/close menu
+    let touchStartX = 0;
+
+    document.body.addEventListener("touchstart", e => {
+      touchStartX = e.changedTouches[0].clientX;
+    });
+
+    document.body.addEventListener("touchend", e => {
+      const touchEndX = e.changedTouches[0].clientX;
+      const deltaX = touchEndX - touchStartX;
+
+      if (deltaX > 100) {
+        // swipe right to open menu
+        document.getElementById("sideMenu").classList.add("active");
+      } else if (deltaX < -100) {
+        // swipe left to close
+        document.getElementById("sideMenu").classList.remove("active");
+      }
+    });
   </script>
 
 </body>
