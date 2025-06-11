@@ -12,7 +12,6 @@
       font-family: "Vazirmatn", sans-serif;
       background: #f3f4f6;
       overflow-x: hidden;
-      position: relative;
     }
 
     header {
@@ -43,17 +42,22 @@
       position: absolute;
       right: 1rem;
       top: 1rem;
-      font-size: 2rem;
+      font-size: 1.5rem;
       cursor: pointer;
       color: white;
-      z-index: 20;
+      display: flex;
+      align-items: center;
+      gap: 0.3rem;
+      background: rgba(0,0,0,0.2);
+      padding: 4px 8px;
+      border-radius: 8px;
     }
 
     .side-menu {
       position: fixed;
       top: 0;
-      right: -260px;
-      width: 250px;
+      right: -270px;
+      width: 260px;
       height: 100%;
       background: white;
       box-shadow: -2px 0 10px rgba(0,0,0,0.2);
@@ -108,7 +112,9 @@
 <body>
 
   <header>
-    <div id="menuBtn">☰</div>
+    <div id="menuBtn">
+      ☰ <span>راهنمایی</span>
+    </div>
     <div class="spiral-text">بازار ارزوئیه</div>
   </header>
 
