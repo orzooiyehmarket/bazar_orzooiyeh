@@ -1,365 +1,174 @@
 <!DOCTYPE html>
 <html lang="fa" dir="rtl">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>ورود - بازار ارزوئیه</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ورود به بازار ارزوئیه</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Vazirmatn&display=swap');
 
-<style>
-  @import url('https://fonts.googleapis.com/css2?family=Vazirmatn&display=swap');
+    body {
+      margin: 0;
+      font-family: "Vazirmatn", sans-serif;
+      background: #f0f4f8;
+      overflow-x: hidden;
+    }
 
-  body {
-    margin: 0; padding: 0;
-    font-family: 'Vazirmatn', Tahoma, sans-serif;
-    background: #f9f9f9;
-    direction: rtl;
-    color: #333;
-  }
+    header {
+      position: relative;
+      padding: 2rem 1rem;
+      background: linear-gradient(90deg, red, orange, yellow, green, blue, indigo, violet);
+      color: white;
+      text-align: center;
+      font-size: 2rem;
+      font-weight: bold;
+      animation: wave 5s infinite linear;
+      background-size: 400% 100%;
+    }
 
-  /* هدر رنگارنگ مارپیچ */
-  header {
-    width: 100%;
-    min-height: 75px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    margin-top: 20px;
-    position: relative;
-    background: linear-gradient(90deg, #ff0057, #ffb700, #00c6ff, #ff0057);
-  }
+    @keyframes wave {
+      0% { background-position: 0% 50%; }
+      100% { background-position: 100% 50%; }
+    }
 
-  .spiral-text {
-    font-size: 3rem;
-    font-weight: 900;
-    padding: 10px 25px;
-    border-radius: 50%;
-    display: inline-block;
-    animation: spin 8s linear infinite, colorchange 10s linear infinite;
-    background: linear-gradient(45deg, #ff0057, #ffb700, #00c6ff, #ff0057);
-    background-size: 400% 400%;
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    width: 150px;
-    height: 150px;
-    line-height: 150px;
-    text-align: center;
-    box-sizing: border-box;
-  }
+    .menu-toggle {
+      position: absolute;
+      top: 1rem;
+      right: 1rem;
+      cursor: pointer;
+      width: 30px;
+    }
 
-  @keyframes spin {
-    0%   { transform: rotate(0deg) scale(1); }
-    50%  { transform: rotate(180deg) scale(0.8); }
-    100% { transform: rotate(360deg) scale(1); }
-  }
+    .menu-toggle div {
+      width: 100%;
+      height: 4px;
+      background: white;
+      margin: 5px 0;
+      border-radius: 2px;
+    }
 
-  @keyframes colorchange {
-    0%   { background-position: 0% 50%; }
-    50%  { background-position: 100% 50%; }
-    100% { background-position: 0% 50%; }
-  }
+    .side-menu {
+      position: fixed;
+      top: 0;
+      right: -250px;
+      width: 250px;
+      height: 100%;
+      background: white;
+      box-shadow: -2px 0 10px rgba(0,0,0,0.2);
+      transition: right 0.3s ease-in-out;
+      padding: 1rem;
+      z-index: 10;
+    }
 
-  /* ناوبری کشویی */
-  nav {
-    position: fixed;
-    top: 15px;
-    right: 15px;
-    font-size: 1rem;
-    z-index: 1000;
-  }
+    .side-menu.active {
+      right: 0;
+    }
 
-  .nav-toggle {
-    background-color: transparent;
-    border: none;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    font-weight: 700;
-    color: #ff5c5c;
-    user-select: none;
-    padding: 6px 12px;
-    border-radius: 6px;
-    transition: background-color 0.3s;
-  }
+    .side-menu h3 {
+      color: #111;
+      margin-top: 1rem;
+    }
 
-  .nav-toggle:hover {
-    background-color: #ffe6e6;
-  }
+    .roles {
+      display: flex;
+      justify-content: center;
+      gap: 1rem;
+      margin: 3rem auto 2rem;
+    }
 
-  /* سه خط همبرگر */
-  .hamburger {
-    width: 22px;
-    height: 16px;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-  }
+    .roles button {
+      padding: 1rem 2rem;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      background: #38bdf8;
+      color: white;
+      font-size: 1.2rem;
+      transition: background 0.3s;
+    }
 
-  .hamburger span {
-    display: block;
-    height: 3px;
-    background-color: #ff5c5c;
-    border-radius: 3px;
-  }
+    .roles button:hover {
+      background: #0ea5e9;
+    }
 
-  .nav-menu {
-    background: #fff;
-    border: 1px solid #ddd;
-    border-radius: 6px;
-    margin-top: 8px;
-    width: 220px;
-    box-shadow: 0 3px 10px rgba(0,0,0,0.2);
-    display: none;
-  }
+    .fingerprint-box {
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      margin-top: 1rem;
+    }
 
-  .nav-menu.show {
-    display: block;
-  }
+    .fingerprint-box img {
+      width: 100px;
+      cursor: pointer;
+      margin-bottom: 1rem;
+    }
 
-  .nav-menu button {
-    width: 100%;
-    padding: 8px 12px;
-    border: none;
-    background: none;
-    text-align: right;
-    cursor: pointer;
-    font-weight: 600;
-    border-bottom: 1px solid #eee;
-    transition: background-color 0.2s;
-  }
-
-  .nav-menu button:last-child {
-    border-bottom: none;
-  }
-
-  .nav-menu button:hover {
-    background-color: #ffefef;
-  }
-
-  .description-box {
-    background: #ffe8e8;
-    margin-top: 8px;
-    padding: 10px;
-    border-radius: 6px;
-    font-size: 0.9rem;
-    color: #a33;
-    min-height: 70px;
-    text-align: justify;
-  }
-
-  /* فرم اصلی */
-  main {
-    max-width: 400px;
-    margin: 30px auto 60px;
-    background: #fff;
-    padding: 25px 30px;
-    box-shadow: 0 0 15px rgba(0,0,0,0.1);
-    border-radius: 12px;
-  }
-
-  label {
-    display: block;
-    margin-bottom: 8px;
-    font-weight: 700;
-  }
-
-  select, input[type="text"], input[type="tel"], input[type="number"] {
-    width: 100%;
-    padding: 10px 12px;
-    font-size: 1rem;
-    margin-bottom: 18px;
-    border-radius: 6px;
-    border: 1px solid #ccc;
-    box-sizing: border-box;
-  }
-
-  button[type="submit"] {
-    background-color: #ff5c5c;
-    color: white;
-    border: none;
-    font-size: 1.1rem;
-    font-weight: 700;
-    padding: 12px;
-    border-radius: 8px;
-    width: 100%;
-    cursor: pointer;
-    transition: background-color 0.3s;
-  }
-
-  button[type="submit"]:hover {
-    background-color: #ff3737;
-  }
-
-  .hidden {
-    display: none;
-  }
-
-  .error-msg {
-    color: #c00;
-    margin-bottom: 12px;
-    font-weight: 600;
-  }
-
-  /* شمارش معکوس */
-  .countdown {
-    font-weight: 600;
-    margin-bottom: 12px;
-    font-size: 1rem;
-    color: #555;
-    text-align: center;
-  }
-
-</style>
+    .msg {
+      color: #555;
+      font-size: 1rem;
+    }
+  </style>
 </head>
 <body>
 
-<header>
-  <div class="spiral-text">بازار ارزوئیه</div>
-</header>
-
-<nav>
-  <button class="nav-toggle" aria-expanded="false" aria-controls="nav-menu" aria-label="باز کردن منوی راهنمایی">
-    <div class="hamburger" aria-hidden="true">
-      <span></span>
-      <span></span>
-      <span></span>
+  <header>
+    <div class="menu-toggle" onclick="toggleMenu()">
+      <div></div>
+      <div></div>
+      <div></div>
     </div>
-    راهنمایی
-  </button>
-  <div id="nav-menu" class="nav-menu" role="menu" aria-hidden="true">
-    <button type="button" data-role="foroosh" role="menuitem">فروشنده</button>
-    <button type="button" data-role="kharidar" role="menuitem">خریدار</button>
-    <button type="button" data-role="peyk" role="menuitem">پیک مجازی</button>
-    <div id="desc-box" class="description-box">برای مشاهده توضیحات روی هر گزینه کلیک کنید.</div>
-  </div>
-</nav>
+    بازار ارزوئیه
+  </header>
 
-<main>
-  <!-- انتخاب نقش -->
-  <div id="role-selection">
-    <label for="role">نقش خود را انتخاب کنید</label>
-    <select id="role" name="role" required>
-      <option value="" disabled selected>انتخاب کنید</option>
-      <option value="foroosh">فروشنده</option>
-      <option value="kharidar">خریدار</option>
-      <option value="peyk">پیک مجازی</option>
-    </select>
+  <div class="side-menu" id="sideMenu">
+    <h3>📦 فروشنده</h3>
+    <p>افرادی که محصولات خود را برای فروش ثبت می‌کنند.</p>
+    <h3>🛒 خریدار</h3>
+    <p>کسانی که از محصولات موجود خرید می‌کنند.</p>
+    <h3>🚚 پیک مجازی</h3>
+    <p>نقشی برای مدیریت ارسال کالا و هماهنگی با فروشنده‌ها و خریداران.</p>
   </div>
 
-  <!-- فرم شماره موبایل -->
-  <form id="phone-form" autocomplete="off">
-    <label for="phone-input">شماره موبایل خود را وارد کنید</label>
-    <input type="tel" id="phone-input" name="phone" placeholder="مثال: 09123456789" pattern="09\d{9}" required />
-    <div class="error-msg" id="phone-error"></div>
-    <button type="submit" id="send-code-btn">ارسال کد تایید</button>
-  </form>
+  <main style="text-align:center;">
+    <h2>نقش خود را انتخاب کنید</h2>
+    <div class="roles">
+      <button onclick="selectRole('seller')">فروشنده</button>
+      <button onclick="selectRole('buyer')">خریدار</button>
+      <button onclick="selectRole('delivery')">پیک مجازی</button>
+    </div>
 
-  <!-- فرم تایید کد -->
-  <form id="code-form" class="hidden" autocomplete="off">
-    <label for="code-input">کد تایید را وارد کنید</label>
-    <input type="number" id="code-input" name="code" placeholder="کد ۵ رقمی" minlength="5" maxlength="5" required />
-    <div class="countdown" id="countdown">60 ثانیه باقی مانده</div>
-    <div class="error-msg" id="code-error"></div>
-    <button type="submit" id="verify-code-btn">تایید و ورود</button>
-  </form>
-</main>
+    <div class="fingerprint-box" id="fingerprintBox">
+      <img src="https://cdn-icons-png.flaticon.com/512/3062/3062634.png" alt="اثر انگشت" onclick="authenticate()" />
+      <div class="msg">برای ورود، اثر انگشت را لمس کنید</div>
+    </div>
+  </main>
 
-<script>
-  // کنترل ناوبری کشویی
-  const navToggle = document.querySelector('.nav-toggle');
-  const navMenu = document.getElementById('nav-menu');
-  const descBox = document.getElementById('desc-box');
+  <script>
+    let selectedRole = "";
 
-  navToggle.addEventListener('click', () => {
-    const expanded = navToggle.getAttribute('aria-expanded') === 'true';
-    navToggle.setAttribute('aria-expanded', String(!expanded));
-    navMenu.classList.toggle('show');
-    navMenu.setAttribute('aria-hidden', String(expanded));
-  });
-
-  // توضیحات برای هر نقش
-  const roleDescriptions = {
-    foroosh: `فروشنده: کاربرانی که محصولات خود را برای فروش در بازار ارزوئیه عرضه می‌کنند.`,
-    kharidar: `خریدار: کاربرانی که محصولات را مشاهده و خریداری می‌کنند.`,
-    peyk: `پیک مجازی: نماینده قانونی که مسئول ارسال و تحویل محصولات است.`
-  };
-
-  navMenu.querySelectorAll('button[data-role]').forEach(btn => {
-    btn.addEventListener('click', () => {
-      const role = btn.getAttribute('data-role');
-      descBox.textContent = roleDescriptions[role] || 'برای مشاهده توضیحات روی هر گزینه کلیک کنید.';
-    });
-  });
-
-  // فرم ها و کنترل ها
-  const phoneForm = document.getElementById('phone-form');
-  const codeForm = document.getElementById('code-form');
-  const phoneInput = document.getElementById('phone-input');
-  const codeInput = document.getElementById('code-input');
-  const phoneError = document.getElementById('phone-error');
-  const codeError = document.getElementById('code-error');
-  const countdownElem = document.getElementById('countdown');
-
-  let countdownInterval;
-  let timeLeft = 60;
-
-  function startCountdown() {
-    timeLeft = 60;
-    countdownElem.textContent = `${timeLeft} ثانیه باقی مانده`;
-    countdownInterval = setInterval(() => {
-      timeLeft--;
-      if (timeLeft <= 0) {
-        clearInterval(countdownInterval);
-        countdownElem.textContent = 'کد منقضی شده است.';
-      } else {
-        countdownElem.textContent = `${timeLeft} ثانیه باقی مانده`;
-      }
-    }, 1000);
-  }
-
-  phoneForm.addEventListener('submit', e => {
-    e.preventDefault();
-    phoneError.textContent = '';
-
-    const phoneValue = phoneInput.value.trim();
-    const phonePattern = /^09\d{9}$/;
-
-    if (!phonePattern.test(phoneValue)) {
-      phoneError.textContent = 'شماره موبایل معتبر نیست.';
-      return;
+    function selectRole(role) {
+      selectedRole = role;
+      document.getElementById("fingerprintBox").style.display = "flex";
     }
 
-    // اگر شماره درست بود:
-    // فرم شماره موبایل مخفی شود و فرم ورود کد نمایش داده شود
-    phoneForm.classList.add('hidden');
-    codeForm.classList.remove('hidden');
-
-    // شروع شمارش معکوس
-    startCountdown();
-
-    // در اینجا می‌توان کد ارسال پیامک را صدا زد (سمولیته یا api)
-    // alert('کد تایید ارسال شد!');
-  });
-
-  codeForm.addEventListener('submit', e => {
-    e.preventDefault();
-    codeError.textContent = '';
-
-    const codeValue = codeInput.value.trim();
-    if (codeValue.length !== 5 || isNaN(codeValue)) {
-      codeError.textContent = 'کد تایید باید ۵ رقم عددی باشد.';
-      return;
+    function authenticate() {
+      setTimeout(() => {
+        if (selectedRole === "seller") {
+          window.location.href = "seller.html";
+        } else if (selectedRole === "buyer") {
+          window.location.href = "buyer.html";
+        } else if (selectedRole === "delivery") {
+          window.location.href = "delivery.html";
+        }
+      }, 1000);
     }
 
-    // شبیه‌سازی اعتبارسنجی کد
-    if (codeValue === '12345') {  // برای تست کد 12345 معتبر است
-      alert('ورود موفقیت‌آمیز بود!');
-      // اینجا می‌توان ریدایرکت کرد یا فرم‌ها را مخفی کرد
-    } else {
-      codeError.textContent = 'کد تایید اشتباه است.';
+    function toggleMenu() {
+      const menu = document.getElementById("sideMenu");
+      menu.classList.toggle("active");
     }
-  });
-</script>
+  </script>
 
 </body>
 </html>
