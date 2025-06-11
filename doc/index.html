@@ -1,241 +1,169 @@
 <!DOCTYPE html>
 <html lang="fa">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>بازار ارزوئیه</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>بازار ارزوییه</title>
   <style>
     body {
       margin: 0;
       font-family: sans-serif;
       direction: rtl;
-      background-color: #f4f4f4;
+      background: #f0f0f0;
     }
-
     header {
-      background: linear-gradient(90deg, red, orange, yellow, green, blue, indigo, violet);
-      color: white;
-      padding: 20px;
-      position: relative;
-      text-align: center;
-      overflow: hidden;
-    }
-
-    #title {
-      font-size: 28px;
-      font-weight: bold;
-      position: absolute;
-      white-space: nowrap;
-      animation: snake 15s linear infinite;
-    }
-
-    @keyframes snake {
-      0% { right: -100%; }
-      100% { right: 100%; }
-    }
-
-    #info-box {
+      height: 2cm;
+      background: linear-gradient(270deg, red, orange, yellow, green, blue, indigo, violet);
+      background-size: 1400% 1400%;
+      animation: rainbow 10s linear infinite;
       display: flex;
-      justify-content: space-between;
       align-items: center;
-      padding: 10px 20px;
-      background-color: #fff;
+      justify-content: center;
+      position: relative;
+      color: white;
+      font-size: 1.5em;
+      font-weight: bold;
     }
-
-    #help-btn {
+    @keyframes rainbow {
+      0% {background-position: 0% 50%;}
+      50% {background-position: 100% 50%;}
+      100% {background-position: 0% 50%;}
+    }
+    #languageSelector, #guideIcon {
+      position: absolute;
+      top: 2cm;
+      padding: 0.5em 1em;
+      background: white;
+      border: 1px solid #ccc;
       cursor: pointer;
-      font-size: 20px;
+      z-index: 100;
     }
-
-    #lang-select {
-      font-size: 16px;
-      padding: 4px 8px;
+    #languageSelector {
+      left: 1em;
     }
-
-    #help-box {
+    #guideIcon {
+      right: 1em;
+    }
+    #guideBox {
       display: none;
-      background: #fff;
-      padding: 10px;
-      margin: 10px;
+      position: absolute;
+      top: 3.2cm;
+      right: 1em;
+      background: white;
+      padding: 1em;
+      border: 1px solid #ccc;
+      box-shadow: 0 0 10px rgba(0,0,0,0.2);
+      color: black;
+      z-index: 101;
+    }
+    .options {
+      display: flex;
+      justify-content: space-around;
+      margin-top: 5cm;
+    }
+    .option {
+      background: white;
+      padding: 1em;
       border: 1px solid #ccc;
       border-radius: 8px;
-      color: black;
-    }
-
-    .role-container {
-      display: flex;
-      justify-content: center;
-      gap: 20px;
-      padding: 30px 10px;
-      flex-wrap: wrap;
-    }
-
-    .role-box {
-      background-color: #fff;
-      border: 2px solid #ccc;
-      border-radius: 12px;
-      padding: 20px 30px;
+      box-shadow: 0 0 5px rgba(0,0,0,0.1);
+      text-align: center;
+      width: 30%;
       cursor: pointer;
-      font-size: 18px;
-      box-shadow: 2px 2px 8px rgba(0,0,0,0.1);
-      transition: 0.3s;
     }
-
-    .role-box:hover {
-      background-color: #f5f5f5;
-    }
-
-    #fingerprint-box {
+    .fingerprint {
       display: none;
       text-align: center;
-      margin-top: 20px;
-      background-color: #fff;
-      padding: 25px;
-      max-width: 300px;
-      margin-left: auto;
-      margin-right: auto;
-      border-radius: 12px;
-      box-shadow: 0 0 10px rgba(0,0,0,0.2);
+      margin-top: 1em;
     }
-
-    #go-button {
-      margin-top: 10px;
-      padding: 8px 16px;
-      font-size: 16px;
-      cursor: pointer;
-      border: none;
-      background-color: #28a745;
-      color: white;
-      border-radius: 6px;
+    .fingerprint img {
+      width: 100px;
+      height: 100px;
     }
-
-    @media (max-width: 600px) {
-      .role-container {
+    @media(max-width: 768px){
+      .options {
         flex-direction: column;
         align-items: center;
+      }
+      .option {
+        width: 80%;
+        margin-bottom: 1em;
       }
     }
   </style>
 </head>
 <body>
-  <header>
-    <div id="title">بازار ارزوئیه</div>
-  </header>
-
-  <div id="info-box">
-    <div id="lang-box">
-      <select id="lang-select">
-        <option value="fa">فارسی</option>
-        <option value="en">English</option>
-      </select>
-    </div>
-    <div id="help-btn">☰ راهنمایی</div>
+  <header>بازار ارزوییه</header>
+  <div id="languageSelector">🌐 زبان</div>
+  <div id="guideIcon">☰ راهنمایی</div>
+  <div id="guideBox">
+    <p><strong>فروشنده:</strong> برای ثبت و فروش محصولات خود وارد شوید.</p>
+    <p><strong>خریدار:</strong> برای خرید از بازار وارد شوید.</p>
+    <p><strong>پیک مجازی:</strong> وظیفه تحویل محصولات به خریدار را دارد.</p>
   </div>
 
-  <div id="help-box">
-    <p id="help-text">برای ورود یکی از نقش‌ها را انتخاب کنید و اثر انگشت را ثبت نمایید.</p>
+  <div class="options">
+    <div class="option" onclick="showFingerprint('seller')">فروشنده</div>
+    <div class="option" onclick="showFingerprint('buyer')">خریدار</div>
+    <div class="option" onclick="showFingerprint('courier')">پیک مجازی</div>
   </div>
 
-  <div class="role-container">
-    <div class="role-box" onclick="showFingerprint('seller')">👨‍🌾 فروشنده</div>
-    <div class="role-box" onclick="showFingerprint('buyer')">🛒 خریدار</div>
-    <div class="role-box" onclick="showFingerprint('delivery')">🚚 پیک مجازی</div>
-  </div>
-
-  <div id="fingerprint-box">
-    <p id="role-label">اثر انگشت برای ورود</p>
-    <img src="https://cdn-icons-png.flaticon.com/512/1083/1083500.png" alt="Fingerprint" width="100" />
-    <button id="go-button">ورود</button>
+  <div id="fingerprint" class="fingerprint">
+    <p>لطفاً اثر انگشت خود را ثبت کنید</p>
+    <img src="https://cdn-icons-png.flaticon.com/512/709/709496.png" alt="اثر انگشت">
   </div>
 
   <script>
-    const langSelect = document.getElementById("lang-select");
-    const title = document.getElementById("title");
-    const helpText = document.getElementById("help-text");
-    const roleLabel = document.getElementById("role-label");
-    const goButton = document.getElementById("go-button");
-    const helpBtn = document.getElementById("help-btn");
-    const helpBox = document.getElementById("help-box");
+    const guideIcon = document.getElementById('guideIcon');
+    const guideBox = document.getElementById('guideBox');
+    const languageSelector = document.getElementById('languageSelector');
+    let selectedRole = '';
 
-    let currentRole = "";
-
-    langSelect.value = localStorage.getItem("lang") || "fa";
-    updateLanguage();
-
-    langSelect.addEventListener("change", () => {
-      localStorage.setItem("lang", langSelect.value);
-      updateLanguage();
+    guideIcon.addEventListener('click', (e) => {
+      guideBox.style.display = guideBox.style.display === 'block' ? 'none' : 'block';
+      e.stopPropagation();
     });
 
-    helpBtn.addEventListener("click", () => {
-      helpBox.style.display = helpBox.style.display === "block" ? "none" : "block";
+    document.body.addEventListener('click', () => {
+      guideBox.style.display = 'none';
     });
 
-    document.addEventListener("click", (e) => {
-      if (!e.target.closest("#help-box") && !e.target.closest("#help-btn") && !e.target.closest(".role-box") && !e.target.closest("#fingerprint-box")) {
-        helpBox.style.display = "none";
-        document.getElementById("fingerprint-box").style.display = "none";
+    const showFingerprint = (role) => {
+      selectedRole = role;
+      document.getElementById('fingerprint').style.display = 'block';
+      setTimeout(() => {
+        const lang = localStorage.getItem('lang') || 'fa';
+        if (role === 'seller') window.location.href = `https://orzooiyehmarket.github.io/bazar_orzooiyeh/docs/foroosh.html?lang=${lang}`;
+        else if (role === 'buyer') window.location.href = `https://orzooiyehmarket.github.io/bazar_orzooiyeh/docs/buyer.html?lang=${lang}`;
+        else if (role === 'courier') window.location.href = `https://orzooiyehmarket.github.io/bazar_orzooiyeh/doc/peyk.html?lang=${lang}`;
+      }, 2000);
+    }
+
+    languageSelector.addEventListener('click', () => {
+      const currentLang = localStorage.getItem('lang') || 'fa';
+      const newLang = currentLang === 'fa' ? 'en' : 'fa';
+      localStorage.setItem('lang', newLang);
+      applyLanguage(newLang);
+    });
+
+    function applyLanguage(lang) {
+      if (lang === 'en') {
+        document.querySelector('header').innerText = 'Arzooiyeh Market';
+        document.querySelector('.option:nth-child(1)').innerText = 'Seller';
+        document.querySelector('.option:nth-child(2)').innerText = 'Buyer';
+        document.querySelector('.option:nth-child(3)').innerText = 'Courier';
+        guideBox.innerHTML = '<p><strong>Seller:</strong> Login to list your products.</p><p><strong>Buyer:</strong> Enter to shop the market.</p><p><strong>Courier:</strong> Responsible for product delivery.</p>';
+      } else {
+        document.querySelector('header').innerText = 'بازار ارزوییه';
+        document.querySelector('.option:nth-child(1)').innerText = 'فروشنده';
+        document.querySelector('.option:nth-child(2)').innerText = 'خریدار';
+        document.querySelector('.option:nth-child(3)').innerText = 'پیک مجازی';
+        guideBox.innerHTML = '<p><strong>فروشنده:</strong> برای ثبت و فروش محصولات خود وارد شوید.</p><p><strong>خریدار:</strong> برای خرید از بازار وارد شوید.</p><p><strong>پیک مجازی:</strong> وظیفه تحویل محصولات به خریدار را دارد.</p>';
       }
-    });
-
-    function updateLanguage() {
-      const lang = langSelect.value;
-      const translations = {
-        fa: {
-          title: "بازار ارزوئیه",
-          help: "برای ورود یکی از نقش‌ها را انتخاب کنید و اثر انگشت را ثبت نمایید.",
-          label: {
-            seller: "اثر انگشت برای ورود فروشنده",
-            buyer: "اثر انگشت برای ورود خریدار",
-            delivery: "اثر انگشت برای ورود پیک مجازی"
-          },
-          go: "ورود"
-        },
-        en: {
-          title: "Orzooiyeh Market",
-          help: "Select a role and scan fingerprint to continue.",
-          label: {
-            seller: "Fingerprint to login as Seller",
-            buyer: "Fingerprint to login as Buyer",
-            delivery: "Fingerprint to login as Delivery"
-          },
-          go: "Enter"
-        }
-      };
-      const t = translations[lang];
-      title.textContent = t.title;
-      helpText.textContent = t.help;
-      if (currentRole) roleLabel.textContent = t.label[currentRole];
-      goButton.textContent = t.go;
     }
 
-    function showFingerprint(role) {
-      currentRole = role;
-      const lang = langSelect.value;
-      const labels = {
-        fa: {
-          seller: "اثر انگشت برای ورود فروشنده",
-          buyer: "اثر انگشت برای ورود خریدار",
-          delivery: "اثر انگشت برای ورود پیک مجازی"
-        },
-        en: {
-          seller: "Fingerprint to login as Seller",
-          buyer: "Fingerprint to login as Buyer",
-          delivery: "Fingerprint to login as Delivery"
-        }
-      };
-      roleLabel.textContent = labels[lang][role];
-      document.getElementById("fingerprint-box").style.display = "block";
-    }
-
-    goButton.addEventListener("click", () => {
-      const urls = {
-        seller: "https://orzooiyehmarket.github.io/bazar_orzooiyeh/docs/foroosh.html",
-        buyer: "https://orzooiyehmarket.github.io/bazar_orzooiyeh/docs/buyer.html",
-        delivery: "https://orzooiyehmarket.github.io/bazar_orzooiyeh/doc/peyk.html"
-      };
-      if (currentRole) window.location.href = urls[currentRole];
-    });
+    const langInit = localStorage.getItem('lang') || 'fa';
+    applyLanguage(langInit);
   </script>
 </body>
 </html>
