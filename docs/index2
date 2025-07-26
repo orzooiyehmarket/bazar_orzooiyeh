@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="fa">
+<head>
+  <meta charset="UTF-8">
+  <title>بازار ارزوئیه</title>
+  <style>
+    body {
+      font-family: Tahoma;
+      background: #f0f0f0;
+      text-align: center;
+      overflow-x: hidden;
+    }
+
+    h1 {
+      margin-top: 30px;
+    }
+
+    .oval-container {
+      width: 400px;
+      height: 250px;
+      position: relative;
+      margin: 80px auto;
+      border: 2px dashed #999;
+      border-radius: 50% / 30%;
+    }
+
+    .product {
+      width: 80px;
+      height: 80px;
+      position: absolute;
+      border-radius: 50%;
+      background-color: #fff;
+      box-shadow: 0 0 8px rgba(0,0,0,0.2);
+      text-align: center;
+      line-height: 80px;
+      font-size: 14px;
+      transition: transform 0.3s;
+    }
+
+    .product:hover {
+      transform: scale(1.2);
+      background-color: #ffe;
+    }
+  </style>
+</head>
+<body>
+  <h1>نمونه محصولات بازار ارزوئیه</h1>
+  <div class="oval-container" id="oval">
+    <!-- محصولات به صورت داینامیک با JS اضافه می‌شن -->
+  </div>
+
+  <script>
+    const products = [
+      "خرما", "گیاه دارویی", "پنیر محلی", "روغن حیوانی", "کرم آلوئه‌ورا", "قالیچه", "دوغ شتر"
+    ];
+
+    const oval = document.getElementById("oval");
+    const radiusX = 160;
+    const radiusY = 100;
+    const centerX = 160;
+    const centerY = 90;
+
+    products.forEach((name, i) => {
+      const div = document.createElement("div");
+      div.className = "product";
+      div.innerText = name;
+      oval.appendChild(div);
+    });
+
+    const productDivs = document.querySelectorAll(".product");
+    let angle = 0;
+
+    function animate() {
+      angle += 0.01;
+      productDivs.forEach((div, i) => {
+        const theta = angle + (i * (2 * Math.PI / products.length));
+        const x = centerX + radiusX * Math.cos(theta);
+        const y = centerY + radiusY * Math.sin(theta);
+        div.style.left = `${x}px`;
+        div.style.top = `${y}px`;
+      });
+      requestAnimationFrame(animate);
+    }
+
+    animate();
+  </script>
+</body>
+</html>
