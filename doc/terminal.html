@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>چینش برگ‌های پاستور</title>
+<title>چینش برگ‌های پاستور با تکرار</title>
 <style>
   body {
     margin: 0; 
@@ -61,7 +61,6 @@
 <script>
   const deck = document.getElementById('deck');
 
-  // اطلاعات نمونه محصول‌ها (می‌تونی جایگزین کنی با داده واقعی)
   const products = Array.from({length: 20}, (_, i) => ({
     id: i + 1,
     name: `محصول شماره ${i+1}`,
@@ -77,21 +76,18 @@
     leaf.className = 'leaf';
     leaf.style.zIndex = index;
 
-    // چینش مورب با چرخش و انتقال برای اثر لایه‌ای
-    const angle = (index % 5) * 6 - 12;  // زاویه بین -12 تا +12 درجه
+    const angle = (index % 5) * 6 - 12;
     const offsetY = index * 8;
     const offsetX = (index % 2 === 0 ? -1 : 1) * (index * 5);
 
     leaf.style.transform = `translate(${offsetX}px, ${-offsetY}px) rotate(${angle}deg)`;
 
-    // محتوای برگ شامل تصویر و متن
     leaf.innerHTML = `
       <img src="${product.img}" alt="${product.name}">
       <div>${product.name}</div>
       <small>${product.desc}</small>
     `;
 
-    // رویداد کلیک برای انتخاب برگ
     leaf.addEventListener('click', (e) => {
       e.stopPropagation();
       selectLeaf(index);
@@ -110,11 +106,9 @@
     }
   }
 
-  // با هر کلیک روی صفحه یک برگ جدید اضافه کن
   document.body.addEventListener('click', () => {
-    if(leaves.length >= products.length) return;
-
-    const product = products[leaves.length];
+    const productIndex = leaves.length % products.length;
+    const product = products[productIndex];
     const leaf = createLeaf(product, leaves.length);
     deck.appendChild(leaf);
     leaves.push(leaf);
