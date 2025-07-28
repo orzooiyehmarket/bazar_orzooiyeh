@@ -1,50 +1,163 @@
+<!DOCTYPE html>
+<html lang="fa">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>برگ‌های عمودی چرخه‌ای با ۱۰ برگ ثابت</title>
+<style>
+  body {
+    margin: 0; 
+    background: #222; 
+    display: flex; 
+    justify-content: center; 
+    align-items: center; 
+    height: 100vh;
+    user-select: none;
+  }
+  #deck {
+    position: relative;
+    width: 280px;
+    height: 420px;
+    perspective: 800px;
+    overflow: hidden;
+  }
+  .leaf {
+    position: absolute;
+    width: 260px;
+    height: 160px;
+    background: linear-gradient(135deg, #4CAF50 0%, #81C784 100%);
+    border-radius: 16px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.5);
+    color: white;
+    font-weight: bold;
+    font-size: 18px;
+    padding: 15px;
+    cursor: pointer;
+    user-select: none;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+  }
+  .leaf img {
+    width: 70px;
+    height: 70px;
+    border-radius: 12px;
+    margin-bottom: 10px;
+    object-fit: cover;
+    box-shadow: 0 3px 6px rgba(0,0,0,0.3);
+  }
+  .leaf.selected {
+    box-shadow: 0 0 20px 6px #A5D6A7;
+    transform: scale(1.1);
+    z-index: 100 !important;
+  }
+</style>
+</head>
+<body>
+
+<div id="deck"></div>
+
+<audio id="shpSound" src="https://actions.google.com/sounds/v1/cartoon/wood_plank_flicks.ogg"></audio>
+
 <script>
-const data = [
-  {
-    id: "20250728_1234",
-    title: "خرمای کبکاب",
-    price: "250,000",
-    image: "https://i.imgur.com/abc123.jpg",
-    contact: "09121234567"
-  },
-  {
-    id: "20250728_5678",
-    title: "ماست محلی",
-    price: "50,000",
-    image: "https://i.imgur.com/xyz456.jpg",
-    contact: "09387654321"
+  const deck = document.getElementById('deck');
+  const shpSound = document.getElementById('shpSound');
+
+  const totalProducts = 20;
+  const visibleCount = 10;
+
+  const products = Array.from({length: totalProducts}, (_, i) => ({
+    id: i + 1,
+    name: `محصول شماره ${i+1}`,
+    img: `https://picsum.photos/seed/${i+1}/80/80`,
+    desc: `توضیح کوتاه برای محصول شماره ${i+1}`
+  }));
+
+  let leaves = [];
+  let currentStartIndex = 0;  // شروع شاخص محصول در نمایش ۱۰ برگ
+  let selectedIndex = -1;
+
+  function playShpSound() {
+    shpSound.currentTime = 0;
+    shpSound.play();
   }
-];
 
-// حداقل 10 کارت با تکرار داده‌ها
-const repeatToTen = (arr) => {
-  const result = [];
-  while (result.length < 10) {
-    result.push(...arr);
-  }
-  return result.slice(0, 10);
-};
+  function createLeaf(product, positionIndex) {
+    const leaf = document.createElement('div');
+    leaf.className = 'leaf';
+    leaf.style.zIndex = positionIndex;
 
-const renderCards = () => {
-  const container = document.getElementById("cards-container");
-  const products = repeatToTen(data);
+    // چینش عمودی
+    const offsetY = positionIndex * 25;
+    leaf.style.transform = `translateY(${offsetY}px)`;
 
-  products.forEach(product => {
-    const card = document.createElement("div");
-    card.className = "card";
-    card.innerHTML = `
-      <img src="${product.image}" alt="${product.title}">
-      <div class="card-body">
-        <div class="card-title">${product.title}</div>
-        <div class="card-price">${product.price} تومان</div>
-      </div>
+    leaf.innerHTML = `
+      <img src="${product.img}" alt="${product.name}">
+      <div>${product.name}</div>
+      <small>${product.desc}</small>
     `;
-    card.onclick = () => {
-      window.open(`https://wa.me/98${product.contact.slice(1)}?text=سلام، درباره ${product.title} سوال دارم`, '_blank');
-    };
-    container.appendChild(card);
-  });
-};
 
-renderCards();
+    leaf.addEventListener('click', (e) => {
+      e.stopPropagation();
+      selectLeaf(positionIndex);
+      playShpSound();
+    });
+
+    return leaf;
+  }
+
+  function updateLeaves() {
+    for(let i=0; i < visibleCount; i++){
+      const productIndex = (currentStartIndex + i) % totalProducts;
+      const leaf = leaves[i];
+      const product = products[productIndex];
+
+      // آپدیت محتوا
+      leaf.innerHTML = `
+        <img src="${product.img}" alt="${product.name}">
+        <div>${product.name}</div>
+        <small>${product.desc}</small>
+      `;
+
+      // موقعیت عمودی و z-index
+      const offsetY = i * 25;
+      leaf.style.transform = `translateY(${offsetY}px)`;
+      leaf.style.zIndex = i;
+
+      // آپدیت انتخاب
+      if(i === selectedIndex){
+        leaf.classList.add('selected');
+      } else {
+        leaf.classList.remove('selected');
+      }
+    }
+  }
+
+  function selectLeaf(positionIndex) {
+    selectedIndex = positionIndex;
+    updateLeaves();
+  }
+
+  // ساخت برگ‌ها به تعداد ثابت ۱۰ تا
+  for(let i=0; i < visibleCount; i++){
+    const productIndex = (currentStartIndex + i) % totalProducts;
+    const leaf = createLeaf(products[productIndex], i);
+    deck.appendChild(leaf);
+    leaves.push(leaf);
+  }
+
+  selectLeaf(visibleCount - 1);
+
+  // کلیک روی صفحه برای جابجایی برگ‌ها به بالا (صفحه شبیه ورق خوردن)
+  document.body.addEventListener('click', () => {
+    currentStartIndex = (currentStartIndex + 1) % totalProducts;
+    selectLeaf(visibleCount - 1);
+    updateLeaves();
+    playShpSound();
+  });
 </script>
+
+</body>
+</html>
