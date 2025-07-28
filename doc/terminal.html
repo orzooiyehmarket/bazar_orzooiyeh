@@ -1,68 +1,163 @@
 <!DOCTYPE html>
 <html lang="fa">
 <head>
-  <meta charset="UTF-8" />
-  <title>لیست محصولات</title>
-  <style>
-    body {
-      background: #f2f2f2;
-      overflow-x: hidden;
-      margin: 0;
-      padding: 0;
-      font-family: sans-serif;
-    }
-
-    .container {
-      position: relative;
-      width: 100%;
-      height: 100vh;
-      overflow: hidden;
-      cursor: pointer;
-    }
-
-    .leaf {
-      width: 250px;
-      height: 150px;
-      background: #fff;
-      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
-      border-radius: 16px;
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%) scale(0.1);
-      opacity: 0;
-      transition: all 0.5s ease;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      font-size: 20px;
-      direction: rtl;
-    }
-
-    .leaf.visible {
-      transform: translate(-50%, -50%) scale(1);
-      opacity: 1;
-    }
-  </style>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>برگ‌های عمودی چرخه‌ای با ۱۰ برگ ثابت</title>
+<style>
+  body {
+    margin: 0; 
+    background: #222; 
+    display: flex; 
+    justify-content: center; 
+    align-items: center; 
+    height: 100vh;
+    user-select: none;
+  }
+  #deck {
+    position: relative;
+    width: 280px;
+    height: 420px;
+    perspective: 800px;
+    overflow: hidden;
+  }
+  .leaf {
+    position: absolute;
+    width: 260px;
+    height: 160px;
+    background: linear-gradient(135deg, #4CAF50 0%, #81C784 100%);
+    border-radius: 16px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.5);
+    color: white;
+    font-weight: bold;
+    font-size: 18px;
+    padding: 15px;
+    cursor: pointer;
+    user-select: none;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+  }
+  .leaf img {
+    width: 70px;
+    height: 70px;
+    border-radius: 12px;
+    margin-bottom: 10px;
+    object-fit: cover;
+    box-shadow: 0 3px 6px rgba(0,0,0,0.3);
+  }
+  .leaf.selected {
+    box-shadow: 0 0 20px 6px #A5D6A7;
+    transform: scale(1.1);
+    z-index: 100 !important;
+  }
+</style>
 </head>
 <body>
-  <div class="container" onclick="showNextLeaf()">
-    <div class="leaf">محصول ۱</div>
-    <div class="leaf">محصول ۲</div>
-    <div class="leaf">محصول ۳</div>
-    <div class="leaf">محصول ۴</div>
-  </div>
 
-  <script>
-    let currentLeaf = 0;
-    const leaves = document.querySelectorAll('.leaf');
+<div id="deck"></div>
 
-    function showNextLeaf() {
-      if (currentLeaf < leaves.length) {
-        leaves[currentLeaf].classList.add('visible');
-        currentLeaf++;
+<audio id="shpSound" src="https://actions.google.com/sounds/v1/cartoon/wood_plank_flicks.ogg"></audio>
+
+<script>
+  const deck = document.getElementById('deck');
+  const shpSound = document.getElementById('shpSound');
+
+  const totalProducts = 20;
+  const visibleCount = 10;
+
+  const products = Array.from({length: totalProducts}, (_, i) => ({
+    id: i + 1,
+    name: `محصول شماره ${i+1}`,
+    img: `https://picsum.photos/seed/${i+1}/80/80`,
+    desc: `توضیح کوتاه برای محصول شماره ${i+1}`
+  }));
+
+  let leaves = [];
+  let currentStartIndex = 0;  // شروع شاخص محصول در نمایش ۱۰ برگ
+  let selectedIndex = -1;
+
+  function playShpSound() {
+    shpSound.currentTime = 0;
+    shpSound.play();
+  }
+
+  function createLeaf(product, positionIndex) {
+    const leaf = document.createElement('div');
+    leaf.className = 'leaf';
+    leaf.style.zIndex = positionIndex;
+
+    // چینش عمودی
+    const offsetY = positionIndex * 25;
+    leaf.style.transform = `translateY(${offsetY}px)`;
+
+    leaf.innerHTML = `
+      <img src="${product.img}" alt="${product.name}">
+      <div>${product.name}</div>
+      <small>${product.desc}</small>
+    `;
+
+    leaf.addEventListener('click', (e) => {
+      e.stopPropagation();
+      selectLeaf(positionIndex);
+      playShpSound();
+    });
+
+    return leaf;
+  }
+
+  function updateLeaves() {
+    for(let i=0; i < visibleCount; i++){
+      const productIndex = (currentStartIndex + i) % totalProducts;
+      const leaf = leaves[i];
+      const product = products[productIndex];
+
+      // آپدیت محتوا
+      leaf.innerHTML = `
+        <img src="${product.img}" alt="${product.name}">
+        <div>${product.name}</div>
+        <small>${product.desc}</small>
+      `;
+
+      // موقعیت عمودی و z-index
+      const offsetY = i * 25;
+      leaf.style.transform = `translateY(${offsetY}px)`;
+      leaf.style.zIndex = i;
+
+      // آپدیت انتخاب
+      if(i === selectedIndex){
+        leaf.classList.add('selected');
+      } else {
+        leaf.classList.remove('selected');
       }
     }
-  </script>
+  }
+
+  function selectLeaf(positionIndex) {
+    selectedIndex = positionIndex;
+    updateLeaves();
+  }
+
+  // ساخت برگ‌ها به تعداد ثابت ۱۰ تا
+  for(let i=0; i < visibleCount; i++){
+    const productIndex = (currentStartIndex + i) % totalProducts;
+    const leaf = createLeaf(products[productIndex], i);
+    deck.appendChild(leaf);
+    leaves.push(leaf);
+  }
+
+  selectLeaf(visibleCount - 1);
+
+  // کلیک روی صفحه برای جابجایی برگ‌ها به بالا (صفحه شبیه ورق خوردن)
+  document.body.addEventListener('click', () => {
+    currentStartIndex = (currentStartIndex + 1) % totalProducts;
+    selectLeaf(visibleCount - 1);
+    updateLeaves();
+    playShpSound();
+  });
+</script>
+
 </body>
 </html>
