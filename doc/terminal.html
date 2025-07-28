@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>برگ‌های عمودی مثل کتاب با صدا</title>
+<title>برگ‌های عمودی چرخه‌ای با ۱۰ برگ ثابت</title>
 <style>
   body {
     margin: 0; 
@@ -19,6 +19,7 @@
     width: 280px;
     height: 420px;
     perspective: 800px;
+    overflow: hidden;
   }
   .leaf {
     position: absolute;
@@ -64,7 +65,10 @@
   const deck = document.getElementById('deck');
   const shpSound = document.getElementById('shpSound');
 
-  const products = Array.from({length: 20}, (_, i) => ({
+  const totalProducts = 20;
+  const visibleCount = 10;
+
+  const products = Array.from({length: totalProducts}, (_, i) => ({
     id: i + 1,
     name: `محصول شماره ${i+1}`,
     img: `https://picsum.photos/seed/${i+1}/80/80`,
@@ -72,6 +76,7 @@
   }));
 
   let leaves = [];
+  let currentStartIndex = 0;  // شروع شاخص محصول در نمایش ۱۰ برگ
   let selectedIndex = -1;
 
   function playShpSound() {
@@ -79,13 +84,13 @@
     shpSound.play();
   }
 
-  function createLeaf(product, index) {
+  function createLeaf(product, positionIndex) {
     const leaf = document.createElement('div');
     leaf.className = 'leaf';
-    leaf.style.zIndex = index;
+    leaf.style.zIndex = positionIndex;
 
-    // چینش عمودی: هر برگ 25 پیکسل پایین‌تر از قبلی
-    const offsetY = index * 25;
+    // چینش عمودی
+    const offsetY = positionIndex * 25;
     leaf.style.transform = `translateY(${offsetY}px)`;
 
     leaf.innerHTML = `
@@ -96,33 +101,62 @@
 
     leaf.addEventListener('click', (e) => {
       e.stopPropagation();
-      selectLeaf(index);
+      selectLeaf(positionIndex);
       playShpSound();
     });
 
     return leaf;
   }
 
-  function selectLeaf(index) {
-    if(selectedIndex >= 0 && leaves[selectedIndex]) {
-      leaves[selectedIndex].classList.remove('selected');
-    }
-    selectedIndex = index;
-    if(leaves[selectedIndex]) {
-      leaves[selectedIndex].classList.add('selected');
+  function updateLeaves() {
+    for(let i=0; i < visibleCount; i++){
+      const productIndex = (currentStartIndex + i) % totalProducts;
+      const leaf = leaves[i];
+      const product = products[productIndex];
+
+      // آپدیت محتوا
+      leaf.innerHTML = `
+        <img src="${product.img}" alt="${product.name}">
+        <div>${product.name}</div>
+        <small>${product.desc}</small>
+      `;
+
+      // موقعیت عمودی و z-index
+      const offsetY = i * 25;
+      leaf.style.transform = `translateY(${offsetY}px)`;
+      leaf.style.zIndex = i;
+
+      // آپدیت انتخاب
+      if(i === selectedIndex){
+        leaf.classList.add('selected');
+      } else {
+        leaf.classList.remove('selected');
+      }
     }
   }
 
-  document.body.addEventListener('click', () => {
-    const productIndex = leaves.length % products.length;
-    const product = products[productIndex];
-    const leaf = createLeaf(product, leaves.length);
+  function selectLeaf(positionIndex) {
+    selectedIndex = positionIndex;
+    updateLeaves();
+  }
+
+  // ساخت برگ‌ها به تعداد ثابت ۱۰ تا
+  for(let i=0; i < visibleCount; i++){
+    const productIndex = (currentStartIndex + i) % totalProducts;
+    const leaf = createLeaf(products[productIndex], i);
     deck.appendChild(leaf);
     leaves.push(leaf);
-    selectLeaf(leaves.length - 1);
+  }
+
+  selectLeaf(visibleCount - 1);
+
+  // کلیک روی صفحه برای جابجایی برگ‌ها به بالا (صفحه شبیه ورق خوردن)
+  document.body.addEventListener('click', () => {
+    currentStartIndex = (currentStartIndex + 1) % totalProducts;
+    selectLeaf(visibleCount - 1);
+    updateLeaves();
     playShpSound();
   });
-
 </script>
 
 </body>
