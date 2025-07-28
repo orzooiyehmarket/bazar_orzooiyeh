@@ -1,112 +1,101 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="fa">
 <head>
   <meta charset="UTF-8">
-  <title>Arc Icon Carousel</title>
+  <title>نیم‌دایره اسکرولی</title>
   <style>
     body {
       background: #111;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      height: 100vh;
-      overflow: hidden;
-    }
-
-    .arc-container {
-      position: relative;
-      width: 300px;
-      height: 150px;
-      perspective: 800px;
-    }
-
-    .icon-wrapper {
-      position: absolute;
-      left: 50%;
-      bottom: 0;
-      transform: translateX(-50%);
-    }
-
-    .icon {
-      position: absolute;
-      width: 60px;
-      height: 60px;
-      border-radius: 50%;
-      background: #39f;
-      display: flex;
-      justify-content: center;
-      align-items: center;
+      text-align: center;
       color: white;
-      font-size: 20px;
-      transition: transform 0.4s ease, opacity 0.4s;
+      font-family: sans-serif;
     }
-
+    canvas {
+      border: 1px solid #444;
+      background: #222;
+      touch-action: pan-x;
+    }
     button {
-      position: absolute;
-      top: 50%;
-      transform: translateY(-50%);
-      font-size: 24px;
-      padding: 10px;
-      z-index: 99;
+      margin: 10px;
+      padding: 10px 20px;
+      font-size: 18px;
     }
-
-    #prevBtn { left: -70px; }
-    #nextBtn { right: -70px; }
   </style>
 </head>
 <body>
 
-<div class="arc-container">
-  <button id="prevBtn">&#8592;</button>
-  <div class="icon-wrapper" id="arcIcons"></div>
-  <button id="nextBtn">&#8594;</button>
-</div>
+<h2>چرخش آیکون‌ها روی نیم‌دایره</h2>
+<canvas id="myCanvas" width="400" height="300"></canvas>
+<br>
+<button onclick="prev()">قبلی</button>
+<button onclick="next()">بعدی</button>
 
 <script>
-  const iconWrapper = document.getElementById("arcIcons");
-  const iconsData = Array.from({ length: 20 }, (_, i) => `🔷${i + 1}`);
+  const canvas = document.getElementById("myCanvas");
+  const ctx = canvas.getContext("2d");
 
-  let centerIndex = 2;
+  const allIcons = Array.from({ length: 10 }, (_, i) => `🔸${i + 1}`);
+  const visibleCount = 5;
+  let startIndex = 0;
 
-  function renderIcons() {
-    iconWrapper.innerHTML = "";
+  function drawArcIcons() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-    const visibleIcons = iconsData.slice(centerIndex - 2, centerIndex + 3);
+    // رسم نیم‌دایره
+    ctx.beginPath();
+    ctx.arc(canvas.width / 2, canvas.height, 100, Math.PI, 0, false);
+    ctx.strokeStyle = "#999";
+    ctx.lineWidth = 2;
+    ctx.stroke();
+
+    const visibleIcons = allIcons.slice(startIndex, startIndex + visibleCount);
+    const angleStep = Math.PI / (visibleCount - 1);
+
     visibleIcons.forEach((icon, i) => {
-      const el = document.createElement("div");
-      el.className = "icon";
-      el.innerText = icon;
+      const angle = Math.PI - i * angleStep;
+      const x = canvas.width / 2 + 100 * Math.cos(angle);
+      const y = canvas.height + -100 * Math.sin(angle);
 
-      // موقعیت قوسی (زاویه بین -60 تا +60 درجه)
-      const angle = (i - 2) * 30;
-      const radius = 100;
+      ctx.beginPath();
+      ctx.arc(x, y, 20, 0, 2 * Math.PI);
+      ctx.fillStyle = "#39f";
+      ctx.fill();
 
-      const rad = angle * (Math.PI / 180);
-      const x = radius * Math.cos(rad);
-      const y = -radius * Math.sin(rad);
-
-      el.style.transform = `translate(${x}px, ${y}px) scale(${i === 2 ? 1.2 : 1})`;
-      el.style.opacity = i === 2 ? 1 : 0.6;
-
-      iconWrapper.appendChild(el);
+      ctx.fillStyle = "#fff";
+      ctx.font = "16px sans-serif";
+      ctx.textAlign = "center";
+      ctx.textBaseline = "middle";
+      ctx.fillText(icon, x, y);
     });
   }
 
-  document.getElementById("prevBtn").onclick = () => {
-    if (centerIndex > 2) {
-      centerIndex--;
-      renderIcons();
+  function next() {
+    if (startIndex + visibleCount < allIcons.length) {
+      startIndex++;
+      drawArcIcons();
     }
-  };
+  }
 
-  document.getElementById("nextBtn").onclick = () => {
-    if (centerIndex < iconsData.length - 3) {
-      centerIndex++;
-      renderIcons();
+  function prev() {
+    if (startIndex > 0) {
+      startIndex--;
+      drawArcIcons();
     }
-  };
+  }
 
-  renderIcons();
+  // لمس برای موبایل
+  let touchStartX = 0;
+  canvas.addEventListener("touchstart", (e) => {
+    touchStartX = e.touches[0].clientX;
+  });
+
+  canvas.addEventListener("touchend", (e) => {
+    const dx = e.changedTouches[0].clientX - touchStartX;
+    if (dx > 30) prev();
+    else if (dx < -30) next();
+  });
+
+  drawArcIcons();
 </script>
 
 </body>
