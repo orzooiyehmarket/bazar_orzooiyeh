@@ -2,273 +2,122 @@
 <html lang="fa" dir="rtl">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>بازار ارزوئیه</title>
+  <title>صفحه برگ پاستور</title>
   <style>
-    /* --- فونت و پایه --- */
-    @font-face {
-      font-family: "Vazir";
-      src: url("https://cdn.jsdelivr.net/gh/rastikerdar/vazir-font@v30.1.0/dist/Vazir.woff2") format("woff2");
-    }
     body {
       margin: 0;
-      font-family: "Vazir", sans-serif;
-      background: #f5f9fc;
-      overflow-x: hidden;
-      display: flex;
-      flex-direction: column;
-      height: 100vh;
+      background: #174;
+      overflow: hidden;
+      font-family: sans-serif;
+      color: white;
     }
-    /* --- هدر --- */
-    header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 10px 20px;
-      background: #fff;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
-      position: relative;
-      user-select: none;
-    }
-    /* لیبل رنگارنگ ارزوئیه */
-    #label-orzooiyeh {
-      font-size: 30px;
-      font-weight: bold;
-      background: linear-gradient(90deg, #ff0000, #ff7f00, #ffff00, #00ff00, #0000ff, #8b00ff);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      animation: rainbow 3s linear infinite;
+
+    .clock {
       position: absolute;
-      left: 50%;
-      transform: translateX(-50%);
-      white-space: nowrap;
-    }
-    @keyframes rainbow {
-      0% { background-position: 0% }
-      100% { background-position: 100% }
-    }
-    /* ساعت و تاریخ سمت چپ */
-    #date-time {
-      font-size: 14px;
-      color: #444;
-      white-space: nowrap;
-    }
-    /* آیکون کره زمین سمت راست */
-    #lang-select {
-      cursor: pointer;
-      font-size: 22px;
-      user-select: none;
-      position: relative;
-    }
-    #lang-options {
-      position: absolute;
-      top: 30px;
-      right: 0;
-      background: white;
-      border: 1px solid #ddd;
-      border-radius: 6px;
-      box-shadow: 0 2px 5px rgba(0,0,0,0.15);
-      display: none;
-      z-index: 100;
-    }
-    #lang-options div {
-      padding: 6px 12px;
-      cursor: pointer;
-      white-space: nowrap;
-    }
-    #lang-options div:hover {
-      background-color: #eee;
-    }
-    /* --- راهنمای شروع --- */
-    #guide {
-      text-align: center;
+      top: 10px;
+      left: 10px;
       font-size: 18px;
-      margin: 10px 0 5px 0;
-      color: #555;
     }
-    /* --- بخش کارت‌ها --- */
-    #stack {
-      flex: 1;
-      max-width: 320px;
-      margin: 0 auto;
-      position: relative;
-      perspective: 1000px;
-      user-select: none;
-    }
-    .card {
+
+    .lang-toggle {
       position: absolute;
-      width: 300px;
-      height: 180px;
-      background: white;
-      border-radius: 16px;
-      box-shadow: 0 8px 16px rgba(0,0,0,0.15);
-      display: flex;
-      flex-direction: row;
-      align-items: center;
-      padding: 12px 20px;
+      top: 10px;
+      right: 10px;
+      background: #fff;
+      color: #000;
+      padding: 5px 10px;
+      border-radius: 8px;
       cursor: pointer;
-      transition: transform 0.5s ease, opacity 0.5s ease;
-      backface-visibility: hidden;
-    }
-    .card img {
-      width: 110px;
-      height: 110px;
-      border-radius: 12px;
-      object-fit: cover;
-      margin-left: 15px;
-      flex-shrink: 0;
-    }
-    .card-info {
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      gap: 6px;
-    }
-    .card-title {
-      font-size: 20px;
-      font-weight: 700;
-      color: #222;
-    }
-    .card-price {
-      font-size: 16px;
-      color: #555;
-    }
-    /* کارت بولد وسط */
-    .card.active {
-      transform: translateY(-20px) scale(1.05);
-      box-shadow: 0 12px 24px rgba(0,0,0,0.3);
-      z-index: 100;
-    }
-    /* --- بخش جستجو --- */
-    footer {
-      padding: 12px 20px;
-      background: white;
-      box-shadow: 0 -2px 6px rgba(0,0,0,0.1);
-    }
-    #search-input {
-      width: 100%;
-      padding: 10px 14px;
-      font-size: 16px;
-      border: 1.5px solid #ccc;
-      border-radius: 10px;
-      outline: none;
-      transition: border-color 0.3s ease;
-    }
-    #search-input:focus {
-      border-color: #2196f3;
-    }
-    /* فیلتر تاریخ ساده */
-    #date-filter {
-      margin-top: 8px;
-      display: flex;
-      gap: 12px;
-      justify-content: center;
-    }
-    #date-filter input[type="date"] {
-      padding: 6px 10px;
       font-size: 14px;
-      border: 1px solid #ccc;
-      border-radius: 6px;
+    }
+
+    .search-box {
+      position: absolute;
+      top: 50px;
+      right: 10px;
+      display: flex;
+      align-items: center;
+    }
+
+    .search-box input {
+      padding: 5px 10px;
+      font-size: 14px;
+      border-radius: 10px;
+      border: none;
+    }
+
+    .search-box .icon {
+      margin-right: 5px;
+      font-size: 18px;
+      cursor: pointer;
+    }
+
+    .leaf {
+      width: 60px;
+      height: 80px;
+      background: url('https://i.imgur.com/fN5n3gA.png') no-repeat center center;
+      background-size: contain;
+      position: absolute;
+      animation: fall 3s linear forwards;
+    }
+
+    @keyframes fall {
+      0% {
+        top: -100px;
+        transform: rotate(0deg);
+        opacity: 1;
+      }
+      100% {
+        top: 100%;
+        transform: rotate(360deg);
+        opacity: 0;
+      }
     }
   </style>
 </head>
 <body>
 
-<header>
-  <div id="date-time">--/--/--  --:--:--</div>
-  <div id="label-orzooiyeh">ارزوئیه</div>
-  <div id="lang-select" tabindex="0" aria-haspopup="listbox" aria-expanded="false" aria-label="تغییر زبان">
-    🌐
-    <div id="lang-options" role="listbox" aria-label="انتخاب زبان">
-      <div role="option" data-lang="fa" tabindex="0">فارسی</div>
-      <div role="option" data-lang="ar" tabindex="0">عربی</div>
-      <div role="option" data-lang="en" tabindex="0">English</div>
-    </div>
+  <div class="clock" id="clock">...</div>
+  <div class="lang-toggle" onclick="toggleLang()">EN</div>
+
+  <div class="search-box">
+    <div class="icon">🔍</div>
+    <input type="text" placeholder="جستجو..." />
   </div>
-</header>
 
-<div id="guide">برای شروع صفحه را لمس کنید</div>
+  <script>
+    // ساعت و تاریخ شمسی
+    function updateClock() {
+      const now = new Date();
+      const fa = new Intl.DateTimeFormat('fa-IR', {
+        dateStyle: 'full',
+        timeStyle: 'short'
+      });
+      document.getElementById('clock').innerText = fa.format(now);
+    }
+    setInterval(updateClock, 1000);
+    updateClock();
 
-<main id="stack" aria-live="polite" aria-label="لیست محصولات">
-  <!-- کارت‌ها با جاوااسکریپت اضافه می‌شوند -->
-</main>
+    // تغییر زبان
+    let isPersian = true;
+    function toggleLang() {
+      isPersian = !isPersian;
+      document.documentElement.lang = isPersian ? 'fa' : 'en';
+      document.documentElement.dir = isPersian ? 'rtl' : 'ltr';
+      document.querySelector('.lang-toggle').innerText = isPersian ? 'EN' : 'فا';
+      document.querySelector('.search-box input').placeholder = isPersian ? 'جستجو...' : 'Search...';
+    }
 
-<footer>
-  <input id="search-input" type="search" placeholder="جستجوی محصول..." aria-label="جستجوی محصول" />
-  <div id="date-filter" aria-label="فیلتر تاریخ">
-    <input type="date" id="date-from" aria-label="تاریخ از" />
-    <input type="date" id="date-to" aria-label="تاریخ تا" />
-  </div>
-</footer>
-
-<audio id="cardSound" src="https://cdn.pixabay.com/audio/2023/03/16/audio_49ad00c3e4.mp3" preload="auto"></audio>
-
-<script>
-  // مدیریت ساعت و تاریخ شمسی
-  function toPersianDigits(str) {
-    const persianDigits = "۰۱۲۳۴۵۶۷۸۹";
-    return str.replace(/\d/g, d => persianDigits[d]);
-  }
-
-  function updateDateTime() {
-    const now = new Date();
-    // شمسی سازی ساده با Intl.DateTimeFormat فارسی
-    const options = { year: 'numeric', month: '2-digit', day: '2-digit', 
-                      hour: '2-digit', minute: '2-digit', second: '2-digit' };
-    const formatter = new Intl.DateTimeFormat('fa-IR-u-nu-latn', options);
-    const parts = formatter.formatToParts(now);
-    let dateStr = "", timeStr = "";
-    parts.forEach(p => {
-      if (p.type === "year" || p.type === "month" || p.type === "day") dateStr += p.value;
-      if (p.type === "hour" || p.type === "minute" || p.type === "second") timeStr += p.value;
-      if (p.type === "literal") {
-        if (timeStr.length === 0) dateStr += p.value;
-        else timeStr += p.value;
-      }
+    // ایجاد برگ پاستور با کلیک
+    document.addEventListener('click', function (e) {
+      const leaf = document.createElement('div');
+      leaf.className = 'leaf';
+      leaf.style.left = (e.clientX - 30) + 'px';
+      leaf.style.top = (e.clientY - 40) + 'px';
+      document.body.appendChild(leaf);
+      setTimeout(() => leaf.remove(), 3000);
     });
-    dateStr = toPersianDigits(dateStr);
-    timeStr = toPersianDigits(timeStr);
-    document.getElementById("date-time").textContent = dateStr + "  " + timeStr;
-  }
-  setInterval(updateDateTime, 1000);
-  updateDateTime();
+  </script>
 
-  // داده‌های نمونه محصولات (عنوان، تصویر، تاریخ)
-  const products = [
-    { id:1, title: "خرمای کبکاب", img: "https://via.placeholder.com/110x110?text=خرما", date: "2025-07-01", phone: "09120000001" },
-    { id:2, title: "عرق نعناع", img: "https://via.placeholder.com/110x110?text=عرق+نعناع", date: "2025-07-05", phone: "09120000002" },
-    { id:3, title: "کرم گیاهی", img: "https://via.placeholder.com/110x110?text=کرم", date: "2025-07-03", phone: "09120000003" },
-    { id:4, title: "پنیر محلی", img: "https://via.placeholder.com/110x110?text=پنیر", date: "2025-07-02", phone: "09120000004" },
-    { id:5, title: "قالی دستباف", img: "https://via.placeholder.com/110x110?text=قالی", date: "2025-07-06", phone: "09120000005" },
-    { id:6, title: "لبنیات بومی", img: "https://via.placeholder.com/110x110?text=لبنیات", date: "2025-07-04", phone: "09120000006" },
-    { id:7, title: "زیتون طبیعی", img: "https://via.placeholder.com/110x110?text=زیتون", date: "2025-07-01", phone: "09120000007" },
-    { id:8, title: "عسل ارگانیک", img: "https://via.placeholder.com/110x110?text=عسل", date: "2025-07-05", phone: "09120000008" },
-    { id:9, title: "نان محلی", img: "https://via.placeholder.com/110x110?text=نان", date: "2025-07-03", phone: "09120000009" },
-    { id:10, title: "گلاب سنتی", img: "https://via.placeholder.com/110x110?text=گلاب", date: "2025-07-02", phone: "09120000010" },
-    { id:11, title: "چای بهاره", img: "https://via.placeholder.com/110x110?text=چای", date: "2025-07-06", phone: "09120000011" }
-  ];
-
-  const maxVisibleCards = 10;
-  let startIndex = 0;
-  let firstTouch = true;
-
-  const stack = document.getElementById("stack");
-  const guide = document.getElementById("guide");
-  const cardSound = document.getElementById("cardSound");
-
-  // ساخت کارت‌ها و چینش اولیه
-  function renderCards() {
-    stack.innerHTML = "";
-    // نمایش حداکثر 10 کارت، باقی به صورت حلقه
-    for (let i = 0; i < maxVisibleCards; i++) {
-      let idx = (startIndex + i) % products.length;
-      const p = products[idx];
-      const card = document.createElement("div");
-      card.classList.add("card");
-      if (i === 0) card.classList.add("active"); // کارت وسط بولد
-      card.style.zIndex = maxVisibleCards - i;
-      card.style.top = `${i * 6}px`;
-      card.style.left = `${i * 3}px`;
-      card.style.transform = `rotate(${(i - 2) * 3}deg)`;
-      card.innerHTML =
+</body>
+</html>
