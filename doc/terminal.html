@@ -1,107 +1,146 @@
 <!DOCTYPE html>
 <html lang="fa">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>کارت‌های بازار ارزوئیه</title>
-  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet" />
+  <meta charset="UTF-8">
+  <title>بازار ارزوئیه</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    @font-face {
+      font-family: "Vazir";
+      src: url("https://cdn.jsdelivr.net/gh/rastikerdar/vazir-font@v30.1.0/dist/Vazir.woff2") format("woff2");
+    }
+    body {
+      font-family: "Vazir", sans-serif;
+      margin: 0;
+      padding: 0;
+      background: linear-gradient(to bottom, #d1f4f9, #fff);
+      overflow-x: hidden;
+    }
+    #welcome {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: rgba(255,255,255,0.95);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+    }
+    #welcome p {
+      font-size: 24px;
+      color: #444;
+      text-align: center;
+    }
+    #orzooiyeh-label {
+      font-size: 40px;
+      font-weight: bold;
+      text-align: center;
+      margin: 20px 0;
+      background: linear-gradient(90deg, red, orange, yellow, green, cyan, blue, purple);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      animation: rainbow 4s linear infinite;
+    }
+
+    @keyframes rainbow {
+      0% { background-position: 0% }
+      100% { background-position: 100% }
+    }
+
+    .cards-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 16px;
+      margin-bottom: 50px;
+      perspective: 1000px;
+    }
+
+    .card {
+      width: 250px;
+      height: 160px;
+      background-color: #fff;
+      border-radius: 16px;
+      box-shadow: 0 6px 12px rgba(0,0,0,0.1);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      transition: transform 0.6s ease, box-shadow 0.3s ease;
+      transform-style: preserve-3d;
+      cursor: pointer;
+    }
+
+    .card:hover {
+      transform: rotateY(10deg) scale(1.02);
+      box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+    }
+
+    .card img {
+      width: 90px;
+      height: 90px;
+      object-fit: cover;
+      border-radius: 12px;
+      margin-bottom: 10px;
+    }
+
+    .card-title {
+      font-size: 16px;
+      font-weight: bold;
+    }
+  </style>
 </head>
-<body class="bg-green-50 font-sans p-4">
+<body>
 
-  <h1 class="text-2xl font-bold mb-6 text-center text-green-700">کارت‌های محصولات بازار ارزوئیه</h1>
+<div id="welcome">
+  <p>👋 برای شروع، صفحه را لمس کن</p>
+</div>
 
-  <div id="cardContainer" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-    <!-- کارت‌ها اینجا ساخته می‌شن -->
-  </div>
+<div id="orzooiyeh-label">ارزوئیه</div>
 
-  <script>
-    const products = [
-      {
-        name: "خرما مضافتی",
-        price: "150,000 تومان",
-        seller: "حسن از ارزوئیه",
-        image: "https://via.placeholder.com/300x200?text=خرما",
-        whatsapp: "https://wa.me/989123456789?text=سلام، درباره خرما می‌خوام صحبت کنم"
-      },
-      {
-        name: "عسل طبیعی",
-        price: "320,000 تومان",
-        seller: "زهرا از قنات سفید",
-        image: "https://via.placeholder.com/300x200?text=عسل",
-        whatsapp: "https://wa.me/989198765432?text=سلام، درباره عسل شما پرسشی دارم"
-      },
-      {
-        name: "ماست محلی",
-        price: "70,000 تومان",
-        seller: "حسین از چیل‌آوایی",
-        image: "https://via.placeholder.com/300x200?text=ماست",
-        whatsapp: "https://wa.me/989124567890?text=سلام، درباره ماست شما صحبت کنیم؟"
-      },
-      // تکرار برای رسیدن به حداقل ۱۰ کارت:
-      {
-        name: "ماست محلی",
-        price: "70,000 تومان",
-        seller: "حسین از چیل‌آوایی",
-        image: "https://via.placeholder.com/300x200?text=ماست",
-        whatsapp: "https://wa.me/989124567890"
-      },
-      {
-        name: "ماست محلی",
-        price: "70,000 تومان",
-        seller: "حسین از چیل‌آوایی",
-        image: "https://via.placeholder.com/300x200?text=ماست",
-        whatsapp: "https://wa.me/989124567890"
-      },
-      {
-        name: "خرما مضافتی",
-        price: "150,000 تومان",
-        seller: "حسن از ارزوئیه",
-        image: "https://via.placeholder.com/300x200?text=خرما",
-        whatsapp: "https://wa.me/989123456789"
-      },
-      {
-        name: "خرما مضافتی",
-        price: "150,000 تومان",
-        seller: "حسن از ارزوئیه",
-        image: "https://via.placeholder.com/300x200?text=خرما",
-        whatsapp: "https://wa.me/989123456789"
-      },
-      {
-        name: "عسل طبیعی",
-        price: "320,000 تومان",
-        seller: "زهرا از قنات سفید",
-        image: "https://via.placeholder.com/300x200?text=عسل",
-        whatsapp: "https://wa.me/989198765432"
-      },
-      {
-        name: "عسل طبیعی",
-        price: "320,000 تومان",
-        seller: "زهرا از قنات سفید",
-        image: "https://via.placeholder.com/300x200?text=عسل",
-        whatsapp: "https://wa.me/989198765432"
-      }
-    ];
+<div class="cards-container" id="cards">
+  <!-- کارت‌ها به صورت نمونه -->
+</div>
 
-    const container = document.getElementById("cardContainer");
+<audio id="pop-sound" src="https://cdn.pixabay.com/download/audio/2023/03/16/audio_eb9f9ff5c7.mp3?filename=pop-1-181186.mp3" preload="auto"></audio>
 
-    products.forEach(product => {
-      const card = document.createElement("a");
-      card.href = product.whatsapp;
-      card.target = "_blank";
-      card.className = "bg-white rounded-2xl shadow-lg overflow-hidden hover:scale-105 transform transition duration-300";
+<script>
+  const welcome = document.getElementById('welcome');
+  const cardsContainer = document.getElementById('cards');
+  const pop = document.getElementById('pop-sound');
+  const cards = [
+    { title: 'خرما مضافتی', img: 'https://cdn.discordapp.com/attachments/123/img1.jpg' },
+    { title: 'زعفران ممتاز', img: 'https://cdn.discordapp.com/attachments/123/img2.jpg' },
+    { title: 'لبنیات محلی', img: 'https://cdn.discordapp.com/attachments/123/img3.jpg' },
+    { title: 'قالی دستباف', img: 'https://cdn.discordapp.com/attachments/123/img4.jpg' }
+  ];
 
-      card.innerHTML = `
-        <img src="${product.image}" alt="${product.name}" class="w-full h-48 object-cover" />
-        <div class="p-4 space-y-2">
-          <h2 class="text-xl font-bold text-green-700">${product.name}</h2>
-          <p class="text-gray-600">${product.price}</p>
-          <p class="text-sm text-gray-500">فروشنده: ${product.seller}</p>
-        </div>
-      `;
+  function addCard(cardData) {
+    const card = document.createElement('div');
+    card.className = 'card';
+    const img = document.createElement('img');
+    img.src = cardData.img;
+    const title = document.createElement('div');
+    title.className = 'card-title';
+    title.textContent = cardData.title;
+    card.appendChild(img);
+    card.appendChild(title);
+    cardsContainer.appendChild(card);
+    pop.currentTime = 0;
+    pop.play();
+  }
 
-      container.appendChild(card);
+  function initCards() {
+    cards.forEach((card, i) => {
+      setTimeout(() => addCard(card), i * 600);
     });
-  </script>
+  }
 
+  welcome.addEventListener('click', () => {
+    welcome.style.display = 'none';
+    initCards();
+  });
+</script>
 </body>
 </html>
