@@ -1,123 +1,153 @@
 <!DOCTYPE html>
-<html lang="fa" dir="rtl">
+<html lang="fa">
 <head>
-  <meta charset="UTF-8" />
-  <title>صفحه برگ پاستور</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>بازار ارزوئیه</title>
   <style>
     body {
       margin: 0;
-      background: #174;
-      overflow: hidden;
       font-family: sans-serif;
+      background: #f0f5f1;
+      overflow-x: hidden;
+      direction: rtl;
+    }
+    header {
+      background: #1e7e34;
       color: white;
-    }
-
-    .clock {
-      position: absolute;
-      top: 10px;
-      left: 10px;
-      font-size: 18px;
-    }
-
-    .lang-toggle {
-      position: absolute;
-      top: 10px;
-      right: 10px;
-      background: #fff;
-      color: #000;
-      padding: 5px 10px;
-      border-radius: 8px;
-      cursor: pointer;
-      font-size: 14px;
-    }
-
-    .search-box {
-      position: absolute;
-      top: 50px;
-      right: 10px;
+      padding: 12px 20px;
+      font-size: 22px;
       display: flex;
       align-items: center;
+      justify-content: space-between;
     }
-
-    .search-box input {
-      padding: 5px 10px;
-      font-size: 14px;
-      border-radius: 10px;
-      border: none;
-    }
-
-    .search-box .icon {
-      margin-right: 5px;
-      font-size: 18px;
+    .lang-toggle {
       cursor: pointer;
     }
-
-    .leaf {
-      width: 60px;
-      height: 80px;
-      background: url('https://i.imgur.com/fN5n3gA.png') no-repeat center center;
-      background-size: contain;
-      position: absolute;
-      animation: fall 3s linear forwards;
+    .clock-date {
+      font-size: 14px;
+      text-align: center;
+      margin-top: 10px;
     }
-
-    @keyframes fall {
-      0% {
-        top: -100px;
-        transform: rotate(0deg);
-        opacity: 1;
-      }
-      100% {
-        top: 100%;
-        transform: rotate(360deg);
-        opacity: 0;
-      }
+    .leaf-container {
+      position: relative;
+      width: 100%;
+      height: 75vh;
+      margin-top: 15px;
+      perspective: 1000px;
+    }
+    .leaf {
+      width: 180px;
+      height: 260px;
+      background: #fff;
+      border-radius: 16px;
+      box-shadow: 0 8px 16px rgba(0,0,0,0.2);
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%) rotate(0deg);
+      transition: transform 0.4s ease;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 10px;
+    }
+    .leaf h3 { margin: 0 0 5px 0; font-size: 18px; }
+    .leaf p { margin: 2px 0; font-size: 14px; color: #444; }
+    .search-bar {
+      position: fixed;
+      bottom: 0;
+      width: 100%;
+      background: white;
+      padding: 10px 15px;
+      box-shadow: 0 -2px 6px rgba(0,0,0,0.1);
+    }
+    .search-bar input, .search-bar select {
+      width: 49%;
+      padding: 8px;
+      margin: 2px;
+      font-size: 14px;
     }
   </style>
 </head>
 <body>
+  <header>
+    <span>بازار ارزوئیه</span>
+    <span class="lang-toggle">🌐</span>
+  </header>
 
-  <div class="clock" id="clock">...</div>
-  <div class="lang-toggle" onclick="toggleLang()">EN</div>
+  <div class="clock-date">
+    <div id="date"></div>
+    <div id="time"></div>
+  </div>
 
-  <div class="search-box">
-    <div class="icon">🔍</div>
-    <input type="text" placeholder="جستجو..." />
+  <div class="leaf-container" id="leafContainer">
+    <!-- برگ‌ها اینجا لود می‌شوند -->
+  </div>
+
+  <div class="search-bar">
+    <input type="text" placeholder="جستجوی محصول..." oninput="filterLeaves(this.value)">
+    <select onchange="filterLeaves(this.value)">
+      <option value="">همه دسته‌ها</option>
+      <option value="میوه">میوه</option>
+      <option value="گیاه دارویی">گیاه دارویی</option>
+      <option value="لبنیات">لبنیات</option>
+    </select>
   </div>
 
   <script>
-    // ساعت و تاریخ شمسی
+    // داده‌ی تستی محصولات
+    const products = Array.from({ length: 20 }, (_, i) => ({
+      name: `محصول شماره ${i + 1}`,
+      category: i % 2 === 0 ? 'میوه' : 'لبنیات',
+      price: `${(i + 1) * 1000} تومان`,
+      contact: `0912${i}12345`
+    }));
+
+    const container = document.getElementById("leafContainer");
+
+    function renderLeaves(filtered = products) {
+      container.innerHTML = "";
+      const maxLeaves = 10;
+      filtered.slice(0, maxLeaves).forEach((p, index) => {
+        const leaf = document.createElement("div");
+        leaf.className = "leaf";
+        leaf.style.zIndex = 100 - index;
+        leaf.style.transform = `translate(-50%, -50%) rotate(${index * 3}deg)`;
+        leaf.onclick = () => alert(`تماس: ${p.contact}`);
+        leaf.innerHTML = `
+          <h3>${p.name}</h3>
+          <p>دسته: ${p.category}</p>
+          <p>قیمت: ${p.price}</p>
+        `;
+        container.appendChild(leaf);
+      });
+    }
+
+    function filterLeaves(value) {
+      const val = value.toLowerCase();
+      const filtered = products.filter(p =>
+        p.name.toLowerCase().includes(val) ||
+        p.category.toLowerCase().includes(val)
+      );
+      renderLeaves(filtered);
+    }
+
     function updateClock() {
       const now = new Date();
-      const fa = new Intl.DateTimeFormat('fa-IR', {
-        dateStyle: 'full',
-        timeStyle: 'short'
-      });
-      document.getElementById('clock').innerText = fa.format(now);
+      const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+      document.getElementById("date").textContent = now.toLocaleDateString('fa-IR', options);
+      document.getElementById("time").textContent = now.toLocaleTimeString('fa-IR');
     }
+
     setInterval(updateClock, 1000);
     updateClock();
-
-    // تغییر زبان
-    let isPersian = true;
-    function toggleLang() {
-      isPersian = !isPersian;
-      document.documentElement.lang = isPersian ? 'fa' : 'en';
-      document.documentElement.dir = isPersian ? 'rtl' : 'ltr';
-      document.querySelector('.lang-toggle').innerText = isPersian ? 'EN' : 'فا';
-      document.querySelector('.search-box input').placeholder = isPersian ? 'جستجو...' : 'Search...';
-    }
-
-    // ایجاد برگ پاستور با کلیک
-    document.addEventListener('click', function (e) {
-      const leaf = document.createElement('div');
-      leaf.className = 'leaf';
-      leaf.style.left = (e.clientX - 30) + 'px';
-      leaf.style.top = (e.clientY - 40) + 'px';
-      document.body.appendChild(leaf);
-      setTimeout(() => leaf.remove(), 3000);
-    });
+    renderLeaves();
   </script>
-
 </body>
 </html>
+
+
+شروع کردم. این کد HTML و CSS ابتدایی را برای ساختن یک لیست از محصولات در قالب "برگ‌هایی که با کلیک روی صفحه یکی‌یکی روی هم می‌افتند و قابل کلیک هستند" آماده کرده‌ام. در ادامه JavaScript برای انیمیشن
+
