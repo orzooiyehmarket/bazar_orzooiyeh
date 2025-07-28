@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>چینش برگ‌های پاستور با تکرار</title>
+<title>برگ‌های عمودی مثل کتاب با صدا</title>
 <style>
   body {
     margin: 0; 
@@ -16,7 +16,7 @@
   }
   #deck {
     position: relative;
-    width: 320px;
+    width: 280px;
     height: 420px;
     perspective: 800px;
   }
@@ -25,31 +25,31 @@
     width: 260px;
     height: 160px;
     background: linear-gradient(135deg, #4CAF50 0%, #81C784 100%);
-    border-radius: 20px;
-    box-shadow: 0 6px 12px rgba(0,0,0,0.5);
+    border-radius: 16px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.5);
     color: white;
     font-weight: bold;
-    font-size: 20px;
+    font-size: 18px;
     padding: 15px;
     cursor: pointer;
     user-select: none;
-    transition: transform 0.5s ease, box-shadow 0.5s ease;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
   }
   .leaf img {
-    width: 80px;
-    height: 80px;
+    width: 70px;
+    height: 70px;
     border-radius: 12px;
     margin-bottom: 10px;
     object-fit: cover;
-    box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+    box-shadow: 0 3px 6px rgba(0,0,0,0.3);
   }
   .leaf.selected {
-    box-shadow: 0 0 25px 8px #A5D6A7;
-    transform: scale(1.15) rotate(0deg);
+    box-shadow: 0 0 20px 6px #A5D6A7;
+    transform: scale(1.1);
     z-index: 100 !important;
   }
 </style>
@@ -58,8 +58,11 @@
 
 <div id="deck"></div>
 
+<audio id="shpSound" src="https://actions.google.com/sounds/v1/cartoon/wood_plank_flicks.ogg"></audio>
+
 <script>
   const deck = document.getElementById('deck');
+  const shpSound = document.getElementById('shpSound');
 
   const products = Array.from({length: 20}, (_, i) => ({
     id: i + 1,
@@ -71,16 +74,19 @@
   let leaves = [];
   let selectedIndex = -1;
 
+  function playShpSound() {
+    shpSound.currentTime = 0;
+    shpSound.play();
+  }
+
   function createLeaf(product, index) {
     const leaf = document.createElement('div');
     leaf.className = 'leaf';
     leaf.style.zIndex = index;
 
-    const angle = (index % 5) * 6 - 12;
-    const offsetY = index * 8;
-    const offsetX = (index % 2 === 0 ? -1 : 1) * (index * 5);
-
-    leaf.style.transform = `translate(${offsetX}px, ${-offsetY}px) rotate(${angle}deg)`;
+    // چینش عمودی: هر برگ 25 پیکسل پایین‌تر از قبلی
+    const offsetY = index * 25;
+    leaf.style.transform = `translateY(${offsetY}px)`;
 
     leaf.innerHTML = `
       <img src="${product.img}" alt="${product.name}">
@@ -91,6 +97,7 @@
     leaf.addEventListener('click', (e) => {
       e.stopPropagation();
       selectLeaf(index);
+      playShpSound();
     });
 
     return leaf;
@@ -113,6 +120,7 @@
     deck.appendChild(leaf);
     leaves.push(leaf);
     selectLeaf(leaves.length - 1);
+    playShpSound();
   });
 
 </script>
