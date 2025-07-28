@@ -1,97 +1,112 @@
 <!DOCTYPE html>
-<html lang="fa">
+<html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>اسکرول روی قوس</title>
+  <meta charset="UTF-8">
+  <title>Arc Icon Carousel</title>
   <style>
     body {
       background: #111;
-      overflow-x: hidden;
-      margin: 0;
-      padding: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      overflow: hidden;
     }
 
-    #arc-container {
+    .arc-container {
       position: relative;
-      width: 100%;
-      height: 400px;
-      overflow-x: scroll;
-      overflow-y: hidden;
-      white-space: nowrap;
-      scroll-behavior: smooth;
+      width: 300px;
+      height: 150px;
+      perspective: 800px;
     }
 
-    canvas {
+    .icon-wrapper {
       position: absolute;
-      top: 0;
-      left: 0;
-      pointer-events: none;
+      left: 50%;
+      bottom: 0;
+      transform: translateX(-50%);
     }
 
     .icon {
       position: absolute;
-      width: 50px;
-      height: 50px;
-      background: #ff0;
+      width: 60px;
+      height: 60px;
       border-radius: 50%;
-      text-align: center;
-      line-height: 50px;
-      font-weight: bold;
+      background: #39f;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      color: white;
+      font-size: 20px;
+      transition: transform 0.4s ease, opacity 0.4s;
     }
+
+    button {
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      font-size: 24px;
+      padding: 10px;
+      z-index: 99;
+    }
+
+    #prevBtn { left: -70px; }
+    #nextBtn { right: -70px; }
   </style>
 </head>
 <body>
 
-<div id="arc-container">
-  <canvas id="arc-canvas"></canvas>
+<div class="arc-container">
+  <button id="prevBtn">&#8592;</button>
+  <div class="icon-wrapper" id="arcIcons"></div>
+  <button id="nextBtn">&#8594;</button>
 </div>
 
 <script>
-  const container = document.getElementById('arc-container');
-  const canvas = document.getElementById('arc-canvas');
-  const ctx = canvas.getContext('2d');
+  const iconWrapper = document.getElementById("arcIcons");
+  const iconsData = Array.from({ length: 20 }, (_, i) => `🔷${i + 1}`);
 
-  const iconCount = 100;
-  const radius = 300;
-  const centerX = 500;
-  const centerY = 350;
-  const spacing = 80; // فاصله آیکون‌ها روی مسیر
+  let centerIndex = 2;
 
-  // تنظیم اندازه canvas
-  canvas.width = iconCount * spacing;
-  canvas.height = 400;
+  function renderIcons() {
+    iconWrapper.innerHTML = "";
 
-  const icons = [];
+    const visibleIcons = iconsData.slice(centerIndex - 2, centerIndex + 3);
+    visibleIcons.forEach((icon, i) => {
+      const el = document.createElement("div");
+      el.className = "icon";
+      el.innerText = icon;
 
-  for (let i = 0; i < iconCount; i++) {
-    const angle = Math.PI - (i * 0.05); // از چپ به راست
-    const x = centerX + radius * Math.cos(angle) + i * spacing * 0.2;
-    const y = centerY - radius * Math.sin(angle);
+      // موقعیت قوسی (زاویه بین -60 تا +60 درجه)
+      const angle = (i - 2) * 30;
+      const radius = 100;
 
-    const icon = document.createElement('div');
-    icon.className = 'icon';
-    icon.innerText = i + 1;
-    icon.style.left = `${x}px`;
-    icon.style.top = `${y}px`;
-    container.appendChild(icon);
+      const rad = angle * (Math.PI / 180);
+      const x = radius * Math.cos(rad);
+      const y = -radius * Math.sin(rad);
 
-    icons.push({ icon, angleOffset: i * 0.05 });
+      el.style.transform = `translate(${x}px, ${y}px) scale(${i === 2 ? 1.2 : 1})`;
+      el.style.opacity = i === 2 ? 1 : 0.6;
+
+      iconWrapper.appendChild(el);
+    });
   }
 
-  // با اسکرول، مکان آیکون‌ها به‌روزرسانی شود
-  container.addEventListener('scroll', () => {
-    const scrollX = container.scrollLeft;
+  document.getElementById("prevBtn").onclick = () => {
+    if (centerIndex > 2) {
+      centerIndex--;
+      renderIcons();
+    }
+  };
 
-    icons.forEach((item, i) => {
-      const angle = Math.PI - item.angleOffset + scrollX * 0.002;
-      const x = centerX + radius * Math.cos(angle) + i * spacing * 0.2;
-      const y = centerY - radius * Math.sin(angle);
+  document.getElementById("nextBtn").onclick = () => {
+    if (centerIndex < iconsData.length - 3) {
+      centerIndex++;
+      renderIcons();
+    }
+  };
 
-      item.icon.style.left = `${x}px`;
-      item.icon.style.top = `${y}px`;
-    });
-  });
+  renderIcons();
 </script>
 
 </body>
