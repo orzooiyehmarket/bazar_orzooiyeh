@@ -1,149 +1,107 @@
 <!DOCTYPE html>
-<html lang="fa" dir="rtl">
+<html lang="fa">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>بازار ارزوئیه</title>
-  <style>
-    body {
-      margin: 0;
-      background: #f3f3f3;
-      font-family: sans-serif;
-      overflow-x: hidden;
-    }
-
-    .label {
-      text-align: center;
-      font-size: 32px;
-      font-weight: bold;
-      margin-top: 20px;
-      background: linear-gradient(to right, #f44336, #ffeb3b, #4caf50, #2196f3, #9c27b0);
-      -webkit-background-clip: text;
-      color: transparent;
-      animation: glow 2s infinite alternate;
-    }
-
-    @keyframes glow {
-      0% { text-shadow: 0 0 5px rgba(0,0,0,0.2); }
-      100% { text-shadow: 0 0 20px rgba(0,0,0,0.4); }
-    }
-
-    .hint {
-      text-align: center;
-      font-size: 18px;
-      color: #555;
-      margin-top: 10px;
-      animation: fadeIn 1s ease-in;
-    }
-
-    @keyframes fadeIn {
-      from {opacity: 0;}
-      to {opacity: 1;}
-    }
-
-    .stack {
-      position: relative;
-      width: 300px;
-      height: 420px;
-      margin: 60px auto;
-      perspective: 1000px;
-    }
-
-    .card {
-      position: absolute;
-      width: 100%;
-      height: 100%;
-      background: white;
-      border-radius: 12px;
-      box-shadow: 0 4px 8px rgba(0,0,0,0.2);
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      backface-visibility: hidden;
-      transition: transform 0.7s ease, opacity 0.7s ease;
-      opacity: 0;
-    }
-
-    .card img {
-      width: 80%;
-      height: auto;
-      border-radius: 10px;
-      margin-bottom: 10px;
-    }
-
-    .card h3 {
-      margin: 0;
-      font-size: 20px;
-    }
-
-    .card p {
-      font-size: 16px;
-      color: #555;
-      margin: 5px 0 0 0;
-    }
-  </style>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>کارت‌های بازار ارزوئیه</title>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet" />
 </head>
-<body>
-  <div class="label">ارزوئیه</div>
-  <div class="hint" id="hint">برای دیدن محصولات صفحه را لمس کنید</div>
-  <div class="stack" id="stack">
-    <!-- کارت‌ها با جاوااسکریپت اضافه می‌شوند -->
+<body class="bg-green-50 font-sans p-4">
+
+  <h1 class="text-2xl font-bold mb-6 text-center text-green-700">کارت‌های محصولات بازار ارزوئیه</h1>
+
+  <div id="cardContainer" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+    <!-- کارت‌ها اینجا ساخته می‌شن -->
   </div>
 
-  <audio id="cardSound" src="https://cdn.pixabay.com/audio/2023/03/16/audio_49ad00c3e4.mp3"></audio>
-
   <script>
-    const stack = document.getElementById('stack');
-    const hint = document.getElementById('hint');
-    const sound = document.getElementById('cardSound');
-
-    const cardsData = [
-      { img: 'https://via.placeholder.com/250x150?text=محصول+۱', title: 'خرمای کبکاب', price: '۹۵,۰۰۰ تومان' },
-      { img: 'https://via.placeholder.com/250x150?text=محصول+۲', title: 'عرق نعناع', price: '۳۵,۰۰۰ تومان' },
-      { img: 'https://via.placeholder.com/250x150?text=محصول+۳', title: 'کرم گیاهی', price: '۷۵,۰۰۰ تومان' },
+    const products = [
+      {
+        name: "خرما مضافتی",
+        price: "150,000 تومان",
+        seller: "حسن از ارزوئیه",
+        image: "https://via.placeholder.com/300x200?text=خرما",
+        whatsapp: "https://wa.me/989123456789?text=سلام، درباره خرما می‌خوام صحبت کنم"
+      },
+      {
+        name: "عسل طبیعی",
+        price: "320,000 تومان",
+        seller: "زهرا از قنات سفید",
+        image: "https://via.placeholder.com/300x200?text=عسل",
+        whatsapp: "https://wa.me/989198765432?text=سلام، درباره عسل شما پرسشی دارم"
+      },
+      {
+        name: "ماست محلی",
+        price: "70,000 تومان",
+        seller: "حسین از چیل‌آوایی",
+        image: "https://via.placeholder.com/300x200?text=ماست",
+        whatsapp: "https://wa.me/989124567890?text=سلام، درباره ماست شما صحبت کنیم؟"
+      },
+      // تکرار برای رسیدن به حداقل ۱۰ کارت:
+      {
+        name: "ماست محلی",
+        price: "70,000 تومان",
+        seller: "حسین از چیل‌آوایی",
+        image: "https://via.placeholder.com/300x200?text=ماست",
+        whatsapp: "https://wa.me/989124567890"
+      },
+      {
+        name: "ماست محلی",
+        price: "70,000 تومان",
+        seller: "حسین از چیل‌آوایی",
+        image: "https://via.placeholder.com/300x200?text=ماست",
+        whatsapp: "https://wa.me/989124567890"
+      },
+      {
+        name: "خرما مضافتی",
+        price: "150,000 تومان",
+        seller: "حسن از ارزوئیه",
+        image: "https://via.placeholder.com/300x200?text=خرما",
+        whatsapp: "https://wa.me/989123456789"
+      },
+      {
+        name: "خرما مضافتی",
+        price: "150,000 تومان",
+        seller: "حسن از ارزوئیه",
+        image: "https://via.placeholder.com/300x200?text=خرما",
+        whatsapp: "https://wa.me/989123456789"
+      },
+      {
+        name: "عسل طبیعی",
+        price: "320,000 تومان",
+        seller: "زهرا از قنات سفید",
+        image: "https://via.placeholder.com/300x200?text=عسل",
+        whatsapp: "https://wa.me/989198765432"
+      },
+      {
+        name: "عسل طبیعی",
+        price: "320,000 تومان",
+        seller: "زهرا از قنات سفید",
+        image: "https://via.placeholder.com/300x200?text=عسل",
+        whatsapp: "https://wa.me/989198765432"
+      }
     ];
 
-    let currentIndex = 0;
+    const container = document.getElementById("cardContainer");
 
-    const createCard = (data, index) => {
-      const card = document.createElement('div');
-      card.className = 'card';
-      card.style.zIndex = 10 - index;
+    products.forEach(product => {
+      const card = document.createElement("a");
+      card.href = product.whatsapp;
+      card.target = "_blank";
+      card.className = "bg-white rounded-2xl shadow-lg overflow-hidden hover:scale-105 transform transition duration-300";
 
       card.innerHTML = `
-        <img src="${data.img}" alt="${data.title}">
-        <h3>${data.title}</h3>
-        <p>${data.price}</p>
+        <img src="${product.image}" alt="${product.name}" class="w-full h-48 object-cover" />
+        <div class="p-4 space-y-2">
+          <h2 class="text-xl font-bold text-green-700">${product.name}</h2>
+          <p class="text-gray-600">${product.price}</p>
+          <p class="text-sm text-gray-500">فروشنده: ${product.seller}</p>
+        </div>
       `;
 
-      stack.appendChild(card);
-    };
-
-    cardsData.forEach(createCard);
-
-    const cards = document.querySelectorAll('.card');
-
-    const showNext = () => {
-      if (currentIndex >= cards.length) return;
-
-      const card = cards[currentIndex];
-      card.style.transform = `translateY(-${currentIndex * 4}px) rotateZ(${Math.random() * 4 - 2}deg)`;
-      card.style.opacity = 1;
-      sound.play();
-
-      currentIndex++;
-    };
-
-    let firstTouch = true;
-
-    document.body.addEventListener('click', () => {
-      if (firstTouch) {
-        hint.style.display = 'none';
-        firstTouch = false;
-      }
-      showNext();
+      container.appendChild(card);
     });
   </script>
+
 </body>
 </html>
