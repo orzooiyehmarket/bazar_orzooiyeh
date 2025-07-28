@@ -1,102 +1,41 @@
 <!DOCTYPE html>
-<html lang="fa">
+<html>
 <head>
-  <meta charset="UTF-8">
-  <title>نیم‌دایره اسکرولی</title>
-  <style>
-    body {
-      background: #111;
-      text-align: center;
-      color: white;
-      font-family: sans-serif;
-    }
-    canvas {
-      border: 1px solid #444;
-      background: #222;
-      touch-action: pan-x;
-    }
-    button {
-      margin: 10px;
-      padding: 10px 20px;
-      font-size: 18px;
-    }
-  </style>
+<title>نیم‌دایره چرخان</title>
 </head>
 <body>
-
-<h2>چرخش آیکون‌ها روی نیم‌دایره</h2>
-<canvas id="myCanvas" width="400" height="300"></canvas>
-<br>
-<button onclick="prev()">قبلی</button>
-<button onclick="next()">بعدی</button>
-
+<canvas id="myCanvas" width="400" height="400"></canvas>
 <script>
   const canvas = document.getElementById("myCanvas");
   const ctx = canvas.getContext("2d");
+  let angle = 0;
 
-  const allIcons = Array.from({ length: 10 }, (_, i) => `🔸${i + 1}`);
-  const visibleCount = 5;
-  let startIndex = 0;
-
-  function drawArcIcons() {
+  function draw() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
     // رسم نیم‌دایره
     ctx.beginPath();
-    ctx.arc(canvas.width / 2, canvas.height, 100, Math.PI, 0, false);
-    ctx.strokeStyle = "#999";
-    ctx.lineWidth = 2;
+    ctx.arc(canvas.width / 2, canvas.height / 2, 100, 0, Math.PI, false);
     ctx.stroke();
 
-    const visibleIcons = allIcons.slice(startIndex, startIndex + visibleCount);
-    const angleStep = Math.PI / (visibleCount - 1);
-
-    visibleIcons.forEach((icon, i) => {
-      const angle = Math.PI - i * angleStep;
-      const x = canvas.width / 2 + 100 * Math.cos(angle);
-      const y = canvas.height + -100 * Math.sin(angle);
-
-      ctx.beginPath();
-      ctx.arc(x, y, 20, 0, 2 * Math.PI);
-      ctx.fillStyle = "#39f";
-      ctx.fill();
-
-      ctx.fillStyle = "#fff";
-      ctx.font = "16px sans-serif";
-      ctx.textAlign = "center";
-      ctx.textBaseline = "middle";
-      ctx.fillText(icon, x, y);
-    });
-  }
-
-  function next() {
-    if (startIndex + visibleCount < allIcons.length) {
-      startIndex++;
-      drawArcIcons();
+    // رسم آیکون‌ها
+    const numIcons = 5;
+    for (let i = 0; i < numIcons; i++) {
+      const iconAngle = angle + (i * (Math.PI / numIcons));
+      const x = canvas.width / 2 + 100 * Math.cos(iconAngle);
+      const y = canvas.height / 2 + 100 * Math.sin(iconAngle);
+      ctx.fillRect(x - 10, y - 10, 20, 20); // به جای آیکون، یک مربع کوچک رسم می‌کنیم
     }
+
+    angle += 0.01; // تغییر زاویه برای چرخش
+    requestAnimationFrame(draw); // تکرار نقاشی
   }
 
-  function prev() {
-    if (startIndex > 0) {
-      startIndex--;
-      drawArcIcons();
-    }
-  }
-
-  // لمس برای موبایل
-  let touchStartX = 0;
-  canvas.addEventListener("touchstart", (e) => {
-    touchStartX = e.touches[0].clientX;
+  canvas.addEventListener('click', () => {
+      angle += Math.PI/4; // چرخش 45 درجه با هر کلیک
   });
 
-  canvas.addEventListener("touchend", (e) => {
-    const dx = e.changedTouches[0].clientX - touchStartX;
-    if (dx > 30) prev();
-    else if (dx < -30) next();
-  });
-
-  drawArcIcons();
+  draw();
 </script>
-
 </body>
 </html>
