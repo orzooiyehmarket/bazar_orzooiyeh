@@ -1,146 +1,149 @@
 <!DOCTYPE html>
-<html lang="fa">
+<html lang="fa" dir="rtl">
 <head>
-  <meta charset="UTF-8">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>بازار ارزوئیه</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <style>
-    @font-face {
-      font-family: "Vazir";
-      src: url("https://cdn.jsdelivr.net/gh/rastikerdar/vazir-font@v30.1.0/dist/Vazir.woff2") format("woff2");
-    }
     body {
-      font-family: "Vazir", sans-serif;
       margin: 0;
-      padding: 0;
-      background: linear-gradient(to bottom, #d1f4f9, #fff);
+      background: #f3f3f3;
+      font-family: sans-serif;
       overflow-x: hidden;
     }
-    #welcome {
-      position: fixed;
-      top: 0; left: 0;
-      width: 100%; height: 100%;
-      background: rgba(255,255,255,0.95);
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      z-index: 1000;
-    }
-    #welcome p {
-      font-size: 24px;
-      color: #444;
+
+    .label {
       text-align: center;
-    }
-    #orzooiyeh-label {
-      font-size: 40px;
+      font-size: 32px;
       font-weight: bold;
-      text-align: center;
-      margin: 20px 0;
-      background: linear-gradient(90deg, red, orange, yellow, green, cyan, blue, purple);
+      margin-top: 20px;
+      background: linear-gradient(to right, #f44336, #ffeb3b, #4caf50, #2196f3, #9c27b0);
       -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      animation: rainbow 4s linear infinite;
+      color: transparent;
+      animation: glow 2s infinite alternate;
     }
 
-    @keyframes rainbow {
-      0% { background-position: 0% }
-      100% { background-position: 100% }
+    @keyframes glow {
+      0% { text-shadow: 0 0 5px rgba(0,0,0,0.2); }
+      100% { text-shadow: 0 0 20px rgba(0,0,0,0.4); }
     }
 
-    .cards-container {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 16px;
-      margin-bottom: 50px;
+    .hint {
+      text-align: center;
+      font-size: 18px;
+      color: #555;
+      margin-top: 10px;
+      animation: fadeIn 1s ease-in;
+    }
+
+    @keyframes fadeIn {
+      from {opacity: 0;}
+      to {opacity: 1;}
+    }
+
+    .stack {
+      position: relative;
+      width: 300px;
+      height: 420px;
+      margin: 60px auto;
       perspective: 1000px;
     }
 
     .card {
-      width: 250px;
-      height: 160px;
-      background-color: #fff;
-      border-radius: 16px;
-      box-shadow: 0 6px 12px rgba(0,0,0,0.1);
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      background: white;
+      border-radius: 12px;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.2);
       display: flex;
       flex-direction: column;
-      justify-content: center;
       align-items: center;
-      transition: transform 0.6s ease, box-shadow 0.3s ease;
-      transform-style: preserve-3d;
-      cursor: pointer;
-    }
-
-    .card:hover {
-      transform: rotateY(10deg) scale(1.02);
-      box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+      justify-content: center;
+      backface-visibility: hidden;
+      transition: transform 0.7s ease, opacity 0.7s ease;
+      opacity: 0;
     }
 
     .card img {
-      width: 90px;
-      height: 90px;
-      object-fit: cover;
-      border-radius: 12px;
+      width: 80%;
+      height: auto;
+      border-radius: 10px;
       margin-bottom: 10px;
     }
 
-    .card-title {
+    .card h3 {
+      margin: 0;
+      font-size: 20px;
+    }
+
+    .card p {
       font-size: 16px;
-      font-weight: bold;
+      color: #555;
+      margin: 5px 0 0 0;
     }
   </style>
 </head>
 <body>
+  <div class="label">ارزوئیه</div>
+  <div class="hint" id="hint">برای دیدن محصولات صفحه را لمس کنید</div>
+  <div class="stack" id="stack">
+    <!-- کارت‌ها با جاوااسکریپت اضافه می‌شوند -->
+  </div>
 
-<div id="welcome">
-  <p>👋 برای شروع، صفحه را لمس کن</p>
-</div>
+  <audio id="cardSound" src="https://cdn.pixabay.com/audio/2023/03/16/audio_49ad00c3e4.mp3"></audio>
 
-<div id="orzooiyeh-label">ارزوئیه</div>
+  <script>
+    const stack = document.getElementById('stack');
+    const hint = document.getElementById('hint');
+    const sound = document.getElementById('cardSound');
 
-<div class="cards-container" id="cards">
-  <!-- کارت‌ها به صورت نمونه -->
-</div>
+    const cardsData = [
+      { img: 'https://via.placeholder.com/250x150?text=محصول+۱', title: 'خرمای کبکاب', price: '۹۵,۰۰۰ تومان' },
+      { img: 'https://via.placeholder.com/250x150?text=محصول+۲', title: 'عرق نعناع', price: '۳۵,۰۰۰ تومان' },
+      { img: 'https://via.placeholder.com/250x150?text=محصول+۳', title: 'کرم گیاهی', price: '۷۵,۰۰۰ تومان' },
+    ];
 
-<audio id="pop-sound" src="https://cdn.pixabay.com/download/audio/2023/03/16/audio_eb9f9ff5c7.mp3?filename=pop-1-181186.mp3" preload="auto"></audio>
+    let currentIndex = 0;
 
-<script>
-  const welcome = document.getElementById('welcome');
-  const cardsContainer = document.getElementById('cards');
-  const pop = document.getElementById('pop-sound');
-  const cards = [
-    { title: 'خرما مضافتی', img: 'https://cdn.discordapp.com/attachments/123/img1.jpg' },
-    { title: 'زعفران ممتاز', img: 'https://cdn.discordapp.com/attachments/123/img2.jpg' },
-    { title: 'لبنیات محلی', img: 'https://cdn.discordapp.com/attachments/123/img3.jpg' },
-    { title: 'قالی دستباف', img: 'https://cdn.discordapp.com/attachments/123/img4.jpg' }
-  ];
+    const createCard = (data, index) => {
+      const card = document.createElement('div');
+      card.className = 'card';
+      card.style.zIndex = 10 - index;
 
-  function addCard(cardData) {
-    const card = document.createElement('div');
-    card.className = 'card';
-    const img = document.createElement('img');
-    img.src = cardData.img;
-    const title = document.createElement('div');
-    title.className = 'card-title';
-    title.textContent = cardData.title;
-    card.appendChild(img);
-    card.appendChild(title);
-    cardsContainer.appendChild(card);
-    pop.currentTime = 0;
-    pop.play();
-  }
+      card.innerHTML = `
+        <img src="${data.img}" alt="${data.title}">
+        <h3>${data.title}</h3>
+        <p>${data.price}</p>
+      `;
 
-  function initCards() {
-    cards.forEach((card, i) => {
-      setTimeout(() => addCard(card), i * 600);
+      stack.appendChild(card);
+    };
+
+    cardsData.forEach(createCard);
+
+    const cards = document.querySelectorAll('.card');
+
+    const showNext = () => {
+      if (currentIndex >= cards.length) return;
+
+      const card = cards[currentIndex];
+      card.style.transform = `translateY(-${currentIndex * 4}px) rotateZ(${Math.random() * 4 - 2}deg)`;
+      card.style.opacity = 1;
+      sound.play();
+
+      currentIndex++;
+    };
+
+    let firstTouch = true;
+
+    document.body.addEventListener('click', () => {
+      if (firstTouch) {
+        hint.style.display = 'none';
+        firstTouch = false;
+      }
+      showNext();
     });
-  }
-
-  welcome.addEventListener('click', () => {
-    welcome.style.display = 'none';
-    initCards();
-  });
-</script>
+  </script>
 </body>
 </html>
