@@ -1,163 +1,132 @@
 <!DOCTYPE html>
-<html lang="fa">
+<html lang="fa" dir="rtl">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>برگ‌های عمودی چرخه‌ای با ۱۰ برگ ثابت</title>
-<style>
-  body {
-    margin: 0; 
-    background: #222; 
-    display: flex; 
-    justify-content: center; 
-    align-items: center; 
-    height: 100vh;
-    user-select: none;
-  }
-  #deck {
-    position: relative;
-    width: 280px;
-    height: 420px;
-    perspective: 800px;
-    overflow: hidden;
-  }
-  .leaf {
-    position: absolute;
-    width: 260px;
-    height: 160px;
-    background: linear-gradient(135deg, #4CAF50 0%, #81C784 100%);
-    border-radius: 16px;
-    box-shadow: 0 4px 8px rgba(0,0,0,0.5);
-    color: white;
-    font-weight: bold;
-    font-size: 18px;
-    padding: 15px;
-    cursor: pointer;
-    user-select: none;
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-  }
-  .leaf img {
-    width: 70px;
-    height: 70px;
-    border-radius: 12px;
-    margin-bottom: 10px;
-    object-fit: cover;
-    box-shadow: 0 3px 6px rgba(0,0,0,0.3);
-  }
-  .leaf.selected {
-    box-shadow: 0 0 20px 6px #A5D6A7;
-    transform: scale(1.1);
-    z-index: 100 !important;
-  }
-</style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>بازار ارزوئیه</title>
+  <style>
+    @font-face {
+      font-family: 'Vazir';
+      src: url('https://cdn.fontcdn.ir/Font/Persian/Vazir/Vazir-Regular.woff2') format('woff2');
+    }
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: 'Vazir', sans-serif;
+      background: #fefcf6;
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+    }
+    header {
+      background: linear-gradient(to right, #ff7f50, #ffcc00, #00cc99, #66ccff, #9966cc);
+      padding: 10px;
+      color: white;
+      text-align: center;
+      position: relative;
+    }
+    .top-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 14px;
+      padding: 5px 10px;
+      color: #fff;
+    }
+    .language-toggle {
+      cursor: pointer;
+      font-size: 18px;
+    }
+    #time {
+      font-weight: bold;
+    }
+    main {
+      flex: 1;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 10px;
+    }
+    .leaf {
+      background: #fff8e1;
+      border-radius: 20px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+      padding: 20px;
+      width: 80%;
+      cursor: pointer;
+      transition: transform 0.2s ease;
+    }
+    .leaf:hover {
+      transform: scale(1.03);
+      background: #fff4d6;
+    }
+    footer {
+      background: #eee;
+      padding: 10px;
+      display: flex;
+      justify-content: center;
+      flex-direction: column;
+      align-items: center;
+      gap: 10px;
+    }
+    .search-box, .date-filter {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+    input[type="text"], input[type="date"] {
+      padding: 5px 10px;
+      border-radius: 10px;
+      border: 1px solid #ccc;
+      font-family: inherit;
+    }
+    .search-icon {
+      font-size: 18px;
+    }
+  </style>
 </head>
 <body>
 
-<div id="deck"></div>
+  <header>
+    <div class="top-bar">
+      <div class="language-toggle">🌐</div>
+      <div id="time">در حال بارگذاری...</div>
+    </div>
+    <h1>ارزوئیه</h1>
+  </header>
 
-<audio id="shpSound" src="https://actions.google.com/sounds/v1/cartoon/wood_plank_flicks.ogg"></audio>
+  <main id="leaves-container">
+    <div class="leaf" onclick="alert('محصول اول')">🍃 محصول اول</div>
+    <div class="leaf" onclick="alert('محصول دوم')">🍃 محصول دوم</div>
+    <div class="leaf" onclick="alert('محصول سوم')">🍃 محصول سوم</div>
+    <!-- می‌توان با جاوااسکریپت، برگ‌ها را دینامیک ساخت -->
+  </main>
 
-<script>
-  const deck = document.getElementById('deck');
-  const shpSound = document.getElementById('shpSound');
+  <footer>
+    <div class="search-box">
+      <span class="search-icon">🔍</span>
+      <input type="text" placeholder="جستجو..." />
+    </div>
+    <div class="date-filter">
+      <label for="date">فیلتر تاریخ:</label>
+      <input type="date" id="date" />
+    </div>
+  </footer>
 
-  const totalProducts = 20;
-  const visibleCount = 10;
-
-  const products = Array.from({length: totalProducts}, (_, i) => ({
-    id: i + 1,
-    name: `محصول شماره ${i+1}`,
-    img: `https://picsum.photos/seed/${i+1}/80/80`,
-    desc: `توضیح کوتاه برای محصول شماره ${i+1}`
-  }));
-
-  let leaves = [];
-  let currentStartIndex = 0;  // شروع شاخص محصول در نمایش ۱۰ برگ
-  let selectedIndex = -1;
-
-  function playShpSound() {
-    shpSound.currentTime = 0;
-    shpSound.play();
-  }
-
-  function createLeaf(product, positionIndex) {
-    const leaf = document.createElement('div');
-    leaf.className = 'leaf';
-    leaf.style.zIndex = positionIndex;
-
-    // چینش عمودی
-    const offsetY = positionIndex * 25;
-    leaf.style.transform = `translateY(${offsetY}px)`;
-
-    leaf.innerHTML = `
-      <img src="${product.img}" alt="${product.name}">
-      <div>${product.name}</div>
-      <small>${product.desc}</small>
-    `;
-
-    leaf.addEventListener('click', (e) => {
-      e.stopPropagation();
-      selectLeaf(positionIndex);
-      playShpSound();
-    });
-
-    return leaf;
-  }
-
-  function updateLeaves() {
-    for(let i=0; i < visibleCount; i++){
-      const productIndex = (currentStartIndex + i) % totalProducts;
-      const leaf = leaves[i];
-      const product = products[productIndex];
-
-      // آپدیت محتوا
-      leaf.innerHTML = `
-        <img src="${product.img}" alt="${product.name}">
-        <div>${product.name}</div>
-        <small>${product.desc}</small>
-      `;
-
-      // موقعیت عمودی و z-index
-      const offsetY = i * 25;
-      leaf.style.transform = `translateY(${offsetY}px)`;
-      leaf.style.zIndex = i;
-
-      // آپدیت انتخاب
-      if(i === selectedIndex){
-        leaf.classList.add('selected');
-      } else {
-        leaf.classList.remove('selected');
-      }
+  <script>
+    // ساعت و تاریخ شمسی به‌صورت زنده
+    function updateTime() {
+      const now = new Date();
+      const fa = new Intl.DateTimeFormat('fa-IR', {
+        weekday: 'long', year: 'numeric', month: 'long', day: 'numeric',
+        hour: '2-digit', minute: '2-digit', second: '2-digit'
+      });
+      document.getElementById('time').textContent = fa.format(now);
     }
-  }
-
-  function selectLeaf(positionIndex) {
-    selectedIndex = positionIndex;
-    updateLeaves();
-  }
-
-  // ساخت برگ‌ها به تعداد ثابت ۱۰ تا
-  for(let i=0; i < visibleCount; i++){
-    const productIndex = (currentStartIndex + i) % totalProducts;
-    const leaf = createLeaf(products[productIndex], i);
-    deck.appendChild(leaf);
-    leaves.push(leaf);
-  }
-
-  selectLeaf(visibleCount - 1);
-
-  // کلیک روی صفحه برای جابجایی برگ‌ها به بالا (صفحه شبیه ورق خوردن)
-  document.body.addEventListener('click', () => {
-    currentStartIndex = (currentStartIndex + 1) % totalProducts;
-    selectLeaf(visibleCount - 1);
-    updateLeaves();
-    playShpSound();
-  });
-</script>
+    setInterval(updateTime, 1000);
+    updateTime();
+  </script>
 
 </body>
 </html>
