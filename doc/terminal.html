@@ -3,30 +3,34 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>نیم‌دایره ثابت با آیکون‌های متحرک</title>
+<title>نیم‌دایره ثابت با آیکون‌های قابل اسکرول</title>
 <style>
   body {
-    margin: 0; 
-    background: #222;
-    display: flex; 
-    justify-content: center; 
-    align-items: center; 
+    margin: 0;
+    background: #121212;
+    display: flex;
+    justify-content: center;
+    align-items: center;
     height: 100vh;
     user-select: none;
     overflow: hidden;
   }
   #container {
     position: relative;
-    width: 360px;
-    height: 200px;
+    width: 100vw;
+    max-width: 600px;
+    height: 220px;
   }
   canvas {
     position: absolute;
     top: 0; left: 0;
+    width: 100%;
+    height: 220px;
   }
   .icon {
     position: absolute;
-    width: 60px; height: 60px;
+    width: 60px;
+    height: 60px;
     border-radius: 50%;
     background: linear-gradient(135deg, #2196F3 0%, #21CBF3 100%);
     box-shadow: 0 4px 12px rgba(33,203,243,0.7);
@@ -39,6 +43,7 @@
     cursor: pointer;
     user-select: none;
     transition: transform 0.3s ease, box-shadow 0.3s ease;
+    will-change: transform, opacity;
   }
   .icon.selected {
     box-shadow: 0 0 20px 5px #21CBF3;
@@ -50,7 +55,7 @@
 <body>
 
 <div id="container">
-  <canvas id="arcCanvas" width="360" height="200"></canvas>
+  <canvas id="arcCanvas"></canvas>
 </div>
 
 <script>
@@ -58,14 +63,26 @@
   const canvas = document.getElementById('arcCanvas');
   const ctx = canvas.getContext('2d');
 
+  // تنظیم اندازه کانواس بر اساس عرض container
+  function resizeCanvas() {
+    canvas.width = container.clientWidth;
+    canvas.height = 220;
+  }
+  resizeCanvas();
+  window.addEventListener('resize', () => {
+    resizeCanvas();
+    drawArc();
+    updatePositions();
+  });
+
   const totalIcons = 100;   // تعداد کل آیکون‌ها
   const visibleCount = 5;   // تعداد آیکون‌های روی قوس قابل نمایش
 
-  const radius = 140;
+  const radius = canvas.width / 2 - 40;  // شعاع نیم دایره با کمی فاصله از حاشیه
   const centerX = canvas.width / 2;
-  const centerY = 50; // بالا گذاشتیم چون نیم دایره رو به پایین داریم
+  const centerY = 60; // بالاتر برای فضای کافی پایین قوس
 
-  let baseAngle = Math.PI;  // شروع از 180 درجه (پایین سمت چپ قوس)
+  let baseAngle = Math.PI;  // شروع از 180 درجه (سمت چپ قوس)
   const arcLength = Math.PI; // نیم دایره (180 درجه)
 
   const icons = [];
@@ -78,12 +95,13 @@
     icons.push(div);
   }
 
-  // رسم نیم دایره ثابت
   function drawArc(){
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     ctx.beginPath();
-    ctx.lineWidth = 3;
-    ctx.strokeStyle = '#2196F3';
+    ctx.lineWidth = 4;
+    ctx.strokeStyle = '#21CBF3';
+    ctx.shadowColor = '#21CBF3';
+    ctx.shadowBlur = 15;
     ctx.arc(centerX, centerY, radius, Math.PI, 2 * Math.PI);
     ctx.stroke();
   }
@@ -91,25 +109,30 @@
   function updatePositions(){
     const angleStep = arcLength / (visibleCount - 1);
 
-    // تعیین ایندکس مرکزی (آیکون وسطی)
-    let centerIndex = Math.round( (baseAngle - Math.PI) / angleStep );
-    // محدود کردن مرکز به بازه آیکون‌ها
-    if(centerIndex < 0) centerIndex = 0;
-    if(centerIndex > totalIcons - visibleCount) centerIndex = totalIcons - visibleCount;
+    // مرکز آیتم وسطی روی کل مجموعه، محاسبه به صورت پیوسته
+    // baseAngle از π تا 2π میچرخه، ما باید ایندکس وسطی را تعیین کنیم:
+    let centerIndexFloat = (baseAngle - Math.PI) / angleStep; // 0 تا (visibleCount-1)
+    // با این عدد تعیین میکنیم آیکون وسط دقیقاً کدام است روی کل 100 آیکون:
+    let centerIndex = Math.round(centerIndexFloat);
+
+    // محدود کردن برای حلقه‌ای شدن ایندکس وسطی
+    centerIndex = ((centerIndex % totalIcons) + totalIcons) % totalIcons;
+
+    // ایندکس شروع آیکون‌ها (نمایش ۵ آیکون: وسطی + ۲ چپ و ۲ راست)
+    let startIndex = centerIndex - Math.floor(visibleCount / 2);
 
     for(let i=0; i<visibleCount; i++){
-      let itemIndex = (centerIndex + i) % totalIcons;
+      let itemIndex = ((startIndex + i) % totalIcons + totalIcons) % totalIcons;
 
-      // زاویه هر آیکون روی قوس
-      let angle = baseAngle + (i - Math.floor(visibleCount/2)) * angleStep;
+      // زاویه هر آیکون روی قوس (از π تا 2π)
+      let angle = Math.PI + i * angleStep;
 
       // مختصات روی نیم دایره
       const x = centerX + radius * Math.cos(angle);
       const y = centerY + radius * Math.sin(angle);
 
-      // انتقال آیکون
       const el = icons[i];
-      el.style.left = (x - 30) + 'px';  // 30 نصف عرض آیکون
+      el.style.left = (x - 30) + 'px';
       el.style.top = (y - 30) + 'px';
 
       // بزرگ‌نمایی وسطی
@@ -125,13 +148,13 @@
     }
   }
 
-  // متغیرهای لمس و درگ
+  // حرکت پایه برای کنترل اسکرول افقی آیکون‌ها
   let isDragging = false;
   let startX = 0;
   let lastBaseAngle = baseAngle;
 
   container.addEventListener('pointerdown', e => {
-    // اگر روی آیکون کلیک شد، نچرخون (برای انتخاب)
+    // اگر روی آیکون کلیک شد، درگ قوس فعال نشه
     if(e.target.classList.contains('icon')) return;
 
     isDragging = true;
@@ -144,10 +167,10 @@
     if(!isDragging) return;
 
     const dx = e.clientX - startX;
-    const sensitivity = 0.007;
+    const sensitivity = 0.006;
     baseAngle = lastBaseAngle + dx * sensitivity;
 
-    // محدود کردن حرکت بین π و 2π (نیم دایره)
+    // محدود کردن زاویه بین π و 2π برای نیم دایره
     if(baseAngle < Math.PI) baseAngle = Math.PI;
     if(baseAngle > 2 * Math.PI) baseAngle = 2 * Math.PI;
 
@@ -170,8 +193,10 @@
     });
   });
 
+  // رسم اولیه و موقعیت آیکون‌ها
   drawArc();
   updatePositions();
+
 </script>
 
 </body>
