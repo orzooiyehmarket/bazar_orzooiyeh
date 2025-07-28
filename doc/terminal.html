@@ -1,41 +1,171 @@
 <!DOCTYPE html>
-<html>
+<html lang="fa">
 <head>
-<title>نیم‌دایره چرخان</title>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>حرکت سینوسی آیکون‌ها روی نیم‌دایره</title>
+<style>
+  body {
+    margin: 0;
+    background: #121212;
+    color: #fff;
+    font-family: sans-serif;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    overflow: hidden;
+    user-select: none;
+  }
+  #carousel {
+    position: relative;
+    width: 320px;
+    height: 160px;
+    overflow: visible;
+    touch-action: pan-y;
+  }
+  .icon {
+    position: absolute;
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #2196F3 0%, #21CBF3 100%);
+    box-shadow: 0 4px 12px rgba(33,203,243,0.7);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 24px;
+    color: white;
+    cursor: pointer;
+    transition: transform 0.3s ease, opacity 0.3s ease;
+  }
+</style>
 </head>
 <body>
-<canvas id="myCanvas" width="400" height="400"></canvas>
+
+<div id="carousel"></div>
+
 <script>
-  const canvas = document.getElementById("myCanvas");
-  const ctx = canvas.getContext("2d");
-  let angle = 0;
+  const carousel = document.getElementById('carousel');
 
-  function draw() {
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
+  // تعداد کل آیکون‌ها (برای نمونه 15)
+  const totalIcons = 15;
 
-    // رسم نیم‌دایره
-    ctx.beginPath();
-    ctx.arc(canvas.width / 2, canvas.height / 2, 100, 0, Math.PI, false);
-    ctx.stroke();
+  // تعداد آیکون‌های نمایش داده شده
+  const visibleCount = 5;
 
-    // رسم آیکون‌ها
-    const numIcons = 5;
-    for (let i = 0; i < numIcons; i++) {
-      const iconAngle = angle + (i * (Math.PI / numIcons));
-      const x = canvas.width / 2 + 100 * Math.cos(iconAngle);
-      const y = canvas.height / 2 + 100 * Math.sin(iconAngle);
-      ctx.fillRect(x - 10, y - 10, 20, 20); // به جای آیکون، یک مربع کوچک رسم می‌کنیم
-    }
+  // شعاع قوس
+  const radius = 120;
 
-    angle += 0.01; // تغییر زاویه برای چرخش
-    requestAnimationFrame(draw); // تکرار نقاشی
+  // موقعیت مرکزی افقی در container
+  const centerX = 160;
+
+  // زاویه شروع (می‌تون تغییر بدی)
+  let baseAngle = 0;
+
+  // آرایه عناصر DOM آیکون‌ها
+  const icons = [];
+
+  // ساخت آیکون‌ها
+  for(let i = 0; i < visibleCount; i++) {
+    const el = document.createElement('div');
+    el.classList.add('icon');
+    carousel.appendChild(el);
+    icons.push(el);
   }
 
-  canvas.addEventListener('click', () => {
-      angle += Math.PI/4; // چرخش 45 درجه با هر کلیک
+  // ایندکس مرکزی (کدام آیکون از کل در وسط است)
+  let centerIndex = 0;
+
+  // محاسبه و آپدیت موقعیت آیکون‌ها
+  function updatePositions() {
+    // فاصله زاویه بین آیکون‌ها (برای قوس 120 درجه)
+    const arcDegrees = 120;
+    const arcRadians = arcDegrees * Math.PI / 180;
+    const angleStep = arcRadians / (visibleCount -1);
+
+    for(let i = 0; i < visibleCount; i++) {
+      // آیتمی که نمایش میدیم در کل مجموعه کدومه
+      let itemIndex = (centerIndex - Math.floor(visibleCount/2) + i + totalIcons) % totalIcons;
+
+      // زاویه هر آیکون در قوس
+      let angle = baseAngle + i * angleStep;
+
+      // موقعیت روی قوس (x,y) - حرکت سینوسی با sin و cos
+      const x = centerX + radius * Math.cos(angle - arcRadians/2);
+      const y = radius * 0.6 * Math.sin(angle - arcRadians/2);
+
+      // مقیاس (وسطی بزرگ‌تر)
+      const distFromCenter = Math.abs(i - (visibleCount-1)/2);
+      const scale = 1 - distFromCenter * 0.25;
+
+      // شفافیت بیشتر وسطی
+      const opacity = 1 - distFromCenter * 0.3;
+
+      const el = icons[i];
+      el.style.transform = `translate(${x - 30}px, ${y + 40}px) scale(${scale})`;
+      el.style.opacity = opacity;
+      el.textContent = itemIndex + 1;
+      el.dataset.index = itemIndex;
+      el.style.zIndex = 100 - distFromCenter;
+    }
+  }
+
+  updatePositions();
+
+  // مدیریت درگ (لمس و موس)
+  let isDragging = false;
+  let startX = 0;
+  let lastBaseAngle = baseAngle;
+
+  function clampAngle(a) {
+    // برای حرکت بی‌نهایت، زاویه رو میشه آزاد گذاشت
+    return a;
+  }
+
+  carousel.addEventListener('pointerdown', e => {
+    isDragging = true;
+    startX = e.clientX;
+    lastBaseAngle = baseAngle;
+    carousel.setPointerCapture(e.pointerId);
   });
 
-  draw();
+  carousel.addEventListener('pointermove', e => {
+    if(!isDragging) return;
+
+    const dx = e.clientX - startX;
+
+    // تبدیل فاصله موس/لمس به تغییر زاویه (آزمایش شده برای حرکت مناسب)
+    const sensitivity = 0.005;
+    baseAngle = lastBaseAngle + dx * sensitivity;
+
+    updatePositions();
+  });
+
+  carousel.addEventListener('pointerup', e => {
+    isDragging = false;
+    carousel.releasePointerCapture(e.pointerId);
+
+    // بعد از رها کردن، ایندکس مرکزی رو به نزدیک‌ترین عدد گرد کن
+    const arcDegrees = 120;
+    const arcRadians = arcDegrees * Math.PI / 180;
+    const angleStep = arcRadians / (visibleCount -1);
+
+    // بر اساس baseAngle، محاسبه کدوم ایندکس وسط باید باشه
+    let roughCenter = centerIndex - baseAngle / angleStep;
+    centerIndex = Math.round(roughCenter) % totalIcons;
+    if(centerIndex < 0) centerIndex += totalIcons;
+
+    // تنظیم زاویه به حالت "snap" (چسبیدن به موقعیت دقیق)
+    baseAngle = - (centerIndex - Math.floor(visibleCount/2)) * angleStep;
+
+    updatePositions();
+  });
+
+  // Prevent text selection on drag
+  carousel.addEventListener('dragstart', e => e.preventDefault());
+
 </script>
+
 </body>
 </html>
