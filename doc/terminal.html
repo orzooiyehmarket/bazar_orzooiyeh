@@ -1,72 +1,75 @@
 <!DOCTYPE html>
-<html lang="fa">
+<html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>چرخش آیکون‌ها روی نیم‌دایره</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Curved Scroll Icons</title>
   <style>
     body {
-      background: #f5f5f5;
+      background: #111;
       margin: 0;
       padding: 0;
-      overflow-x: hidden;
-      font-family: sans-serif;
+      height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
     }
 
-    .scroll-container {
-      position: relative;
+    .scroll-wrapper {
       width: 100%;
-      height: 250px;
       overflow-x: scroll;
+      overflow-y: hidden;
       white-space: nowrap;
+      padding: 100px 0;
     }
 
-    .circle-track {
+    .curve-track {
       position: relative;
-      width: 1000px;
-      height: 250px;
-      margin: 0 auto;
+      height: 300px;
+      width: 1500px; /* Increase if more icons */
     }
 
     .icon {
       position: absolute;
-      width: 60px;
-      height: 60px;
+      width: 50px;
+      height: 50px;
       border-radius: 50%;
-      background: #ff6b6b;
+      background: linear-gradient(to bottom, #f0f0f0, #bbb);
+      box-shadow: 0 0 10px #999;
       display: flex;
       align-items: center;
       justify-content: center;
-      color: white;
       font-size: 24px;
-      box-shadow: 0 4px 10px rgba(0,0,0,0.2);
     }
+
   </style>
 </head>
 <body>
+  <div class="scroll-wrapper">
+    <div class="curve-track" id="curveTrack"></div>
+  </div>
 
-<div class="scroll-container">
-  <div class="circle-track" id="arc"></div>
-</div>
+  <script>
+    const curveTrack = document.getElementById('curveTrack');
+    const radius = 200;
+    const centerX = 750; // Half of .curve-track width
+    const centerY = 250; // Adjust for your layout
+    const totalIcons = 50; // Change to 1000 if needed
+    const angleStep = 180 / (totalIcons - 1); // Spread over semi-circle
 
-<script>
-  const iconsCount = 10; // تعداد آیکون‌ها
-  const radius = 200; // شعاع دایره
+    for (let i = 0; i < totalIcons; i++) {
+      const angleDeg = 180 - i * angleStep;
+      const angleRad = angleDeg * (Math.PI / 180);
+      const x = centerX + radius * Math.cos(angleRad);
+      const y = centerY - radius * Math.sin(angleRad);
 
-  const arc = document.getElementById('arc');
-
-  for (let i = 0; i < iconsCount; i++) {
-    const angle = Math.PI * (i / (iconsCount - 1)); // زاویه بین 0 تا π (نیم‌دایره)
-    const x = 400 + radius * Math.cos(angle); // X وسط + شعاع * cos
-    const y = 200 - radius * Math.sin(angle); // Y بالا - شعاع * sin
-
-    const icon = document.createElement('div');
-    icon.className = 'icon';
-    icon.style.left = `${x}px`;
-    icon.style.top = `${y}px`;
-    icon.innerHTML = i + 1;
-    arc.appendChild(icon);
-  }
-</script>
-
+      const icon = document.createElement("div");
+      icon.className = "icon";
+      icon.style.left = `${x - 25}px`;
+      icon.style.top = `${y - 25}px`;
+      icon.innerHTML = "🌟";
+      curveTrack.appendChild(icon);
+    }
+  </script>
 </body>
 </html>
