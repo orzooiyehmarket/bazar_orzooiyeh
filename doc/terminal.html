@@ -1,107 +1,50 @@
-<!DOCTYPE html>
-<html lang="fa">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>کارت‌های بازار ارزوئیه</title>
-  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet" />
-</head>
-<body class="bg-green-50 font-sans p-4">
+<script>
+const data = [
+  {
+    id: "20250728_1234",
+    title: "خرمای کبکاب",
+    price: "250,000",
+    image: "https://i.imgur.com/abc123.jpg",
+    contact: "09121234567"
+  },
+  {
+    id: "20250728_5678",
+    title: "ماست محلی",
+    price: "50,000",
+    image: "https://i.imgur.com/xyz456.jpg",
+    contact: "09387654321"
+  }
+];
 
-  <h1 class="text-2xl font-bold mb-6 text-center text-green-700">کارت‌های محصولات بازار ارزوئیه</h1>
+// حداقل 10 کارت با تکرار داده‌ها
+const repeatToTen = (arr) => {
+  const result = [];
+  while (result.length < 10) {
+    result.push(...arr);
+  }
+  return result.slice(0, 10);
+};
 
-  <div id="cardContainer" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-    <!-- کارت‌ها اینجا ساخته می‌شن -->
-  </div>
+const renderCards = () => {
+  const container = document.getElementById("cards-container");
+  const products = repeatToTen(data);
 
-  <script>
-    const products = [
-      {
-        name: "خرما مضافتی",
-        price: "150,000 تومان",
-        seller: "حسن از ارزوئیه",
-        image: "https://via.placeholder.com/300x200?text=خرما",
-        whatsapp: "https://wa.me/989123456789?text=سلام، درباره خرما می‌خوام صحبت کنم"
-      },
-      {
-        name: "عسل طبیعی",
-        price: "320,000 تومان",
-        seller: "زهرا از قنات سفید",
-        image: "https://via.placeholder.com/300x200?text=عسل",
-        whatsapp: "https://wa.me/989198765432?text=سلام، درباره عسل شما پرسشی دارم"
-      },
-      {
-        name: "ماست محلی",
-        price: "70,000 تومان",
-        seller: "حسین از چیل‌آوایی",
-        image: "https://via.placeholder.com/300x200?text=ماست",
-        whatsapp: "https://wa.me/989124567890?text=سلام، درباره ماست شما صحبت کنیم؟"
-      },
-      // تکرار برای رسیدن به حداقل ۱۰ کارت:
-      {
-        name: "ماست محلی",
-        price: "70,000 تومان",
-        seller: "حسین از چیل‌آوایی",
-        image: "https://via.placeholder.com/300x200?text=ماست",
-        whatsapp: "https://wa.me/989124567890"
-      },
-      {
-        name: "ماست محلی",
-        price: "70,000 تومان",
-        seller: "حسین از چیل‌آوایی",
-        image: "https://via.placeholder.com/300x200?text=ماست",
-        whatsapp: "https://wa.me/989124567890"
-      },
-      {
-        name: "خرما مضافتی",
-        price: "150,000 تومان",
-        seller: "حسن از ارزوئیه",
-        image: "https://via.placeholder.com/300x200?text=خرما",
-        whatsapp: "https://wa.me/989123456789"
-      },
-      {
-        name: "خرما مضافتی",
-        price: "150,000 تومان",
-        seller: "حسن از ارزوئیه",
-        image: "https://via.placeholder.com/300x200?text=خرما",
-        whatsapp: "https://wa.me/989123456789"
-      },
-      {
-        name: "عسل طبیعی",
-        price: "320,000 تومان",
-        seller: "زهرا از قنات سفید",
-        image: "https://via.placeholder.com/300x200?text=عسل",
-        whatsapp: "https://wa.me/989198765432"
-      },
-      {
-        name: "عسل طبیعی",
-        price: "320,000 تومان",
-        seller: "زهرا از قنات سفید",
-        image: "https://via.placeholder.com/300x200?text=عسل",
-        whatsapp: "https://wa.me/989198765432"
-      }
-    ];
+  products.forEach(product => {
+    const card = document.createElement("div");
+    card.className = "card";
+    card.innerHTML = `
+      <img src="${product.image}" alt="${product.title}">
+      <div class="card-body">
+        <div class="card-title">${product.title}</div>
+        <div class="card-price">${product.price} تومان</div>
+      </div>
+    `;
+    card.onclick = () => {
+      window.open(`https://wa.me/98${product.contact.slice(1)}?text=سلام، درباره ${product.title} سوال دارم`, '_blank');
+    };
+    container.appendChild(card);
+  });
+};
 
-    const container = document.getElementById("cardContainer");
-
-    products.forEach(product => {
-      const card = document.createElement("a");
-      card.href = product.whatsapp;
-      card.target = "_blank";
-      card.className = "bg-white rounded-2xl shadow-lg overflow-hidden hover:scale-105 transform transition duration-300";
-
-      card.innerHTML = `
-        <img src="${product.image}" alt="${product.name}" class="w-full h-48 object-cover" />
-        <div class="p-4 space-y-2">
-          <h2 class="text-xl font-bold text-green-700">${product.name}</h2>
-          <p class="text-gray-600">${product.price}</p>
-          <p class="text-sm text-gray-500">فروشنده: ${product.seller}</p>
-        </div>
-      `;
-
-      container.appendChild(card);
-    });
-  </script>
-
-</body>
-</html>
+renderCards();
+</script>
