@@ -2,91 +2,71 @@
 <html lang="fa">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>نیم‌دایره اسکرولی</title>
+  <title>چرخش آیکون‌ها روی نیم‌دایره</title>
   <style>
     body {
+      background: #f5f5f5;
       margin: 0;
-      background: #f0f0f0;
-      font-family: sans-serif;
+      padding: 0;
       overflow-x: hidden;
+      font-family: sans-serif;
     }
 
-    .arc-container {
-      position: fixed;
-      bottom: 0;
-      left: 0;
-      width: 100vw;
-      height: 200px;
-      display: flex;
-      justify-content: center;
-      align-items: flex-end;
-      pointer-events: none;
-    }
-
-    .arc-scroll {
+    .scroll-container {
+      position: relative;
       width: 100%;
+      height: 250px;
       overflow-x: scroll;
-      overflow-y: hidden;
       white-space: nowrap;
-      pointer-events: auto;
-      padding-bottom: 30px;
-      scrollbar-width: none;
-      -ms-overflow-style: none;
     }
 
-    .arc-scroll::-webkit-scrollbar {
-      display: none;
+    .circle-track {
+      position: relative;
+      width: 1000px;
+      height: 250px;
+      margin: 0 auto;
     }
 
-    .arc-item {
-      display: inline-block;
+    .icon {
+      position: absolute;
       width: 60px;
       height: 60px;
-      margin: 0 15px;
-      background-color: #ffffff;
       border-radius: 50%;
-      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
-      text-align: center;
-      line-height: 60px;
-      font-size: 30px;
-      color: #333;
-      transform-origin: center bottom;
+      background: #ff6b6b;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-size: 24px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.2);
     }
-
-    /* افکت نیم‌دایره با چرخش */
-    .arc-scroll .arc-item {
-      transform: rotate(var(--angle)) translateY(-50px) rotate(calc(var(--angle) * -1));
-    }
-
-    /* زاویه‌های نمونه */
-    .arc-scroll .arc-item:nth-child(1) { --angle: -40deg; }
-    .arc-scroll .arc-item:nth-child(2) { --angle: -30deg; }
-    .arc-scroll .arc-item:nth-child(3) { --angle: -20deg; }
-    .arc-scroll .arc-item:nth-child(4) { --angle: -10deg; }
-    .arc-scroll .arc-item:nth-child(5) { --angle: 0deg; }
-    .arc-scroll .arc-item:nth-child(6) { --angle: 10deg; }
-    .arc-scroll .arc-item:nth-child(7) { --angle: 20deg; }
-    .arc-scroll .arc-item:nth-child(8) { --angle: 30deg; }
-    .arc-scroll .arc-item:nth-child(9) { --angle: 40deg; }
-
   </style>
 </head>
 <body>
 
-<div class="arc-container">
-  <div class="arc-scroll">
-    <div class="arc-item">🍎</div>
-    <div class="arc-item">🍊</div>
-    <div class="arc-item">🍇</div>
-    <div class="arc-item">🍉</div>
-    <div class="arc-item">🍓</div>
-    <div class="arc-item">🍍</div>
-    <div class="arc-item">🥝</div>
-    <div class="arc-item">🍌</div>
-    <div class="arc-item">🍑</div>
-  </div>
+<div class="scroll-container">
+  <div class="circle-track" id="arc"></div>
 </div>
+
+<script>
+  const iconsCount = 10; // تعداد آیکون‌ها
+  const radius = 200; // شعاع دایره
+
+  const arc = document.getElementById('arc');
+
+  for (let i = 0; i < iconsCount; i++) {
+    const angle = Math.PI * (i / (iconsCount - 1)); // زاویه بین 0 تا π (نیم‌دایره)
+    const x = 400 + radius * Math.cos(angle); // X وسط + شعاع * cos
+    const y = 200 - radius * Math.sin(angle); // Y بالا - شعاع * sin
+
+    const icon = document.createElement('div');
+    icon.className = 'icon';
+    icon.style.left = `${x}px`;
+    icon.style.top = `${y}px`;
+    icon.innerHTML = i + 1;
+    arc.appendChild(icon);
+  }
+</script>
 
 </body>
 </html>
