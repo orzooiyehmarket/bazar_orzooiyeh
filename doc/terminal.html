@@ -1,75 +1,98 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="fa">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Curved Scroll Icons</title>
+  <title>اسکرول روی قوس</title>
   <style>
     body {
       background: #111;
+      overflow-x: hidden;
       margin: 0;
       padding: 0;
-      height: 100vh;
-      display: flex;
-      justify-content: center;
-      align-items: center;
     }
 
-    .scroll-wrapper {
+    #arc-container {
+      position: relative;
       width: 100%;
+      height: 400px;
       overflow-x: scroll;
       overflow-y: hidden;
       white-space: nowrap;
-      padding: 100px 0;
+      scroll-behavior: smooth;
     }
 
-    .curve-track {
-      position: relative;
-      height: 300px;
-      width: 1500px; /* Increase if more icons */
+    canvas {
+      position: absolute;
+      top: 0;
+      left: 0;
+      pointer-events: none;
     }
 
     .icon {
       position: absolute;
       width: 50px;
       height: 50px;
+      background: #ff0;
       border-radius: 50%;
-      background: linear-gradient(to bottom, #f0f0f0, #bbb);
-      box-shadow: 0 0 10px #999;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 24px;
+      text-align: center;
+      line-height: 50px;
+      font-weight: bold;
     }
-
   </style>
 </head>
 <body>
-  <div class="scroll-wrapper">
-    <div class="curve-track" id="curveTrack"></div>
-  </div>
 
-  <script>
-    const curveTrack = document.getElementById('curveTrack');
-    const radius = 200;
-    const centerX = 750; // Half of .curve-track width
-    const centerY = 250; // Adjust for your layout
-    const totalIcons = 50; // Change to 1000 if needed
-    const angleStep = 180 / (totalIcons - 1); // Spread over semi-circle
+<div id="arc-container">
+  <canvas id="arc-canvas"></canvas>
+</div>
 
-    for (let i = 0; i < totalIcons; i++) {
-      const angleDeg = 180 - i * angleStep;
-      const angleRad = angleDeg * (Math.PI / 180);
-      const x = centerX + radius * Math.cos(angleRad);
-      const y = centerY - radius * Math.sin(angleRad);
+<script>
+  const container = document.getElementById('arc-container');
+  const canvas = document.getElementById('arc-canvas');
+  const ctx = canvas.getContext('2d');
 
-      const icon = document.createElement("div");
-      icon.className = "icon";
-      icon.style.left = `${x - 25}px`;
-      icon.style.top = `${y - 25}px`;
-      icon.innerHTML = "🌟";
-      curveTrack.appendChild(icon);
-    }
-  </script>
+  const iconCount = 100;
+  const radius = 300;
+  const centerX = 500;
+  const centerY = 350;
+  const spacing = 80; // فاصله آیکون‌ها روی مسیر
+
+  // تنظیم اندازه canvas
+  canvas.width = iconCount * spacing;
+  canvas.height = 400;
+
+  const icons = [];
+
+  for (let i = 0; i < iconCount; i++) {
+    const angle = Math.PI - (i * 0.05); // از چپ به راست
+    const x = centerX + radius * Math.cos(angle) + i * spacing * 0.2;
+    const y = centerY - radius * Math.sin(angle);
+
+    const icon = document.createElement('div');
+    icon.className = 'icon';
+    icon.innerText = i + 1;
+    icon.style.left = `${x}px`;
+    icon.style.top = `${y}px`;
+    container.appendChild(icon);
+
+    icons.push({ icon, angleOffset: i * 0.05 });
+  }
+
+  // با اسکرول، مکان آیکون‌ها به‌روزرسانی شود
+  container.addEventListener('scroll', () => {
+    const scrollX = container.scrollLeft;
+
+    icons.forEach((item, i) => {
+      const angle = Math.PI - item.angleOffset + scrollX * 0.002;
+      const x = centerX + radius * Math.cos(angle) + i * spacing * 0.2;
+      const y = centerY - radius * Math.sin(angle);
+
+      item.icon.style.left = `${x}px`;
+      item.icon.style.top = `${y}px`;
+    });
+  });
+</script>
+
 </body>
 </html>
