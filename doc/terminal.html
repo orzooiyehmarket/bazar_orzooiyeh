@@ -3,138 +3,175 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>حرکت نرم آیکون‌ها روی قوس صفر تا π</title>
+<title>نیم‌دایره ثابت با آیکون‌های متحرک</title>
 <style>
   body {
-    margin: 0;
-    background: #121212;
-    color: #fff;
-    font-family: sans-serif;
-    display: flex;
-    justify-content: center;
-    align-items: center;
+    margin: 0; 
+    background: #222;
+    display: flex; 
+    justify-content: center; 
+    align-items: center; 
     height: 100vh;
-    overflow: hidden;
     user-select: none;
+    overflow: hidden;
   }
-  #carousel {
+  #container {
     position: relative;
-    width: 320px;
-    height: 160px;
-    overflow: visible;
-    touch-action: pan-y;
+    width: 360px;
+    height: 200px;
+  }
+  canvas {
+    position: absolute;
+    top: 0; left: 0;
   }
   .icon {
     position: absolute;
-    width: 60px;
-    height: 60px;
+    width: 60px; height: 60px;
     border-radius: 50%;
     background: linear-gradient(135deg, #2196F3 0%, #21CBF3 100%);
     box-shadow: 0 4px 12px rgba(33,203,243,0.7);
+    color: white;
+    font-weight: bold;
+    font-size: 22px;
     display: flex;
     justify-content: center;
     align-items: center;
-    font-size: 24px;
-    color: white;
     cursor: pointer;
-    transition: transform 0.3s ease, opacity 0.3s ease;
+    user-select: none;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+  }
+  .icon.selected {
+    box-shadow: 0 0 20px 5px #21CBF3;
+    transform: scale(1.4);
+    z-index: 10 !important;
   }
 </style>
 </head>
 <body>
 
-<div id="carousel"></div>
+<div id="container">
+  <canvas id="arcCanvas" width="360" height="200"></canvas>
+</div>
 
 <script>
-  const carousel = document.getElementById('carousel');
+  const container = document.getElementById('container');
+  const canvas = document.getElementById('arcCanvas');
+  const ctx = canvas.getContext('2d');
 
-  const totalIcons = 100;
-  const visibleCount = 5;
-  const radius = 120;
-  const centerX = 160;
+  const totalIcons = 100;   // تعداد کل آیکون‌ها
+  const visibleCount = 5;   // تعداد آیکون‌های روی قوس قابل نمایش
 
-  let baseAngle = 0;
-  const arcRadians = Math.PI;
+  const radius = 140;
+  const centerX = canvas.width / 2;
+  const centerY = 50; // بالا گذاشتیم چون نیم دایره رو به پایین داریم
+
+  let baseAngle = Math.PI;  // شروع از 180 درجه (پایین سمت چپ قوس)
+  const arcLength = Math.PI; // نیم دایره (180 درجه)
 
   const icons = [];
 
-  for(let i = 0; i < visibleCount; i++) {
-    const el = document.createElement('div');
-    el.classList.add('icon');
-    carousel.appendChild(el);
-    icons.push(el);
+  // ساخت عناصر آیکون DOM
+  for(let i=0; i<visibleCount; i++){
+    const div = document.createElement('div');
+    div.className = 'icon';
+    container.appendChild(div);
+    icons.push(div);
   }
 
-  // دیگه اسنپ کردن به نزدیک‌ترین ایندکس حذف شد
-  // فقط موقعیت‌ها به صورت نرم و پیوسته آپدیت میشن
+  // رسم نیم دایره ثابت
+  function drawArc(){
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    ctx.beginPath();
+    ctx.lineWidth = 3;
+    ctx.strokeStyle = '#2196F3';
+    ctx.arc(centerX, centerY, radius, Math.PI, 2 * Math.PI);
+    ctx.stroke();
+  }
 
-  function updatePositions() {
-    const angleStep = arcRadians / (visibleCount - 1);
+  function updatePositions(){
+    const angleStep = arcLength / (visibleCount - 1);
 
-    for(let i = 0; i < visibleCount; i++) {
-      // عدد حقیقی آیکون روی کل مجموعه، ممکنه اعشاری باشه
-      let preciseIndex = baseAngle / angleStep + i;
+    // تعیین ایندکس مرکزی (آیکون وسطی)
+    let centerIndex = Math.round( (baseAngle - Math.PI) / angleStep );
+    // محدود کردن مرکز به بازه آیکون‌ها
+    if(centerIndex < 0) centerIndex = 0;
+    if(centerIndex > totalIcons - visibleCount) centerIndex = totalIcons - visibleCount;
 
-      // برای ایندکس دایره‌ای کل آیکون‌ها
-      let itemIndex = Math.floor(preciseIndex) % totalIcons;
-      if(itemIndex < 0) itemIndex += totalIcons;
+    for(let i=0; i<visibleCount; i++){
+      let itemIndex = (centerIndex + i) % totalIcons;
 
-      // زاویه واقعی آیکون
-      let angle = baseAngle + i * angleStep;
+      // زاویه هر آیکون روی قوس
+      let angle = baseAngle + (i - Math.floor(visibleCount/2)) * angleStep;
 
-      // موقعیت روی قوس صفر تا π
+      // مختصات روی نیم دایره
       const x = centerX + radius * Math.cos(angle);
-      const y = radius * Math.sin(angle);
+      const y = centerY + radius * Math.sin(angle);
 
-      // مقیاس بزرگ‌تر نزدیک وسط قوس (وسط بین i=2 برای visibleCount=5)
-      const centerPos = (visibleCount - 1) / 2;
-      const distFromCenter = Math.abs(i - centerPos);
-      const scale = 1 - distFromCenter * 0.25;
-      const opacity = 1 - distFromCenter * 0.3;
-
+      // انتقال آیکون
       const el = icons[i];
-      el.style.transform = `translate(${x - 30}px, ${y}px) scale(${scale})`;
-      el.style.opacity = opacity;
+      el.style.left = (x - 30) + 'px';  // 30 نصف عرض آیکون
+      el.style.top = (y - 30) + 'px';
+
+      // بزرگ‌نمایی وسطی
+      if(i === Math.floor(visibleCount/2)){
+        el.classList.add('selected');
+      } else {
+        el.classList.remove('selected');
+      }
+
       el.textContent = itemIndex + 1;
       el.dataset.index = itemIndex;
-      el.style.zIndex = 100 - distFromCenter;
+      el.style.zIndex = i === Math.floor(visibleCount/2) ? 100 : 50;
     }
   }
 
-  updatePositions();
-
+  // متغیرهای لمس و درگ
   let isDragging = false;
   let startX = 0;
   let lastBaseAngle = baseAngle;
 
-  carousel.addEventListener('pointerdown', e => {
+  container.addEventListener('pointerdown', e => {
+    // اگر روی آیکون کلیک شد، نچرخون (برای انتخاب)
+    if(e.target.classList.contains('icon')) return;
+
     isDragging = true;
     startX = e.clientX;
     lastBaseAngle = baseAngle;
-    carousel.setPointerCapture(e.pointerId);
+    container.setPointerCapture(e.pointerId);
   });
 
-  carousel.addEventListener('pointermove', e => {
+  container.addEventListener('pointermove', e => {
     if(!isDragging) return;
 
     const dx = e.clientX - startX;
-    const sensitivity = 0.005;
+    const sensitivity = 0.007;
     baseAngle = lastBaseAngle + dx * sensitivity;
 
-    // محدود کردن زاویه بین 0 و π برای جلوگیری از بیرون رفتن
-    if(baseAngle < 0) baseAngle = 0;
-    if(baseAngle > arcRadians) baseAngle = arcRadians;
+    // محدود کردن حرکت بین π و 2π (نیم دایره)
+    if(baseAngle < Math.PI) baseAngle = Math.PI;
+    if(baseAngle > 2 * Math.PI) baseAngle = 2 * Math.PI;
 
     updatePositions();
   });
 
-  carousel.addEventListener('pointerup', e => {
+  container.addEventListener('pointerup', e => {
     isDragging = false;
-    carousel.releasePointerCapture(e.pointerId);
-    // اینجا اسنپ کردن حذف شده، فقط همون موقعیت باقی میمونه
+    container.releasePointerCapture(e.pointerId);
   });
 
-  carousel.addEventListener('dragstart', e => e.preventDefault());
+  container.addEventListener('dragstart', e => e.preventDefault());
+
+  // کلیک روی آیکون وسطی انتخابی
+  icons.forEach(icon => {
+    icon.addEventListener('click', () => {
+      if(icon.classList.contains('selected')){
+        alert(`آیکون شماره ${icon.dataset.index} انتخاب شد!`);
+      }
+    });
+  });
+
+  drawArc();
+  updatePositions();
 </script>
 
 </body>
