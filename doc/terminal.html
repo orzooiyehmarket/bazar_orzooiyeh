@@ -3,199 +3,123 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>نیم‌دایره ثابت با آیکون‌های قابل اسکرول</title>
+<title>چینش برگ‌های پاستور</title>
 <style>
   body {
-    margin: 0;
-    background: #121212;
-    display: flex;
-    justify-content: center;
-    align-items: center;
+    margin: 0; 
+    background: #222; 
+    display: flex; 
+    justify-content: center; 
+    align-items: center; 
     height: 100vh;
     user-select: none;
-    overflow: hidden;
   }
-  #container {
+  #deck {
     position: relative;
-    width: 100vw;
-    max-width: 600px;
-    height: 220px;
+    width: 320px;
+    height: 420px;
+    perspective: 800px;
   }
-  canvas {
+  .leaf {
     position: absolute;
-    top: 0; left: 0;
-    width: 100%;
-    height: 220px;
-  }
-  .icon {
-    position: absolute;
-    width: 60px;
-    height: 60px;
-    border-radius: 50%;
-    background: linear-gradient(135deg, #2196F3 0%, #21CBF3 100%);
-    box-shadow: 0 4px 12px rgba(33,203,243,0.7);
+    width: 260px;
+    height: 160px;
+    background: linear-gradient(135deg, #4CAF50 0%, #81C784 100%);
+    border-radius: 20px;
+    box-shadow: 0 6px 12px rgba(0,0,0,0.5);
     color: white;
     font-weight: bold;
-    font-size: 22px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
+    font-size: 20px;
+    padding: 15px;
     cursor: pointer;
     user-select: none;
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
-    will-change: transform, opacity;
+    transition: transform 0.5s ease, box-shadow 0.5s ease;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
   }
-  .icon.selected {
-    box-shadow: 0 0 20px 5px #21CBF3;
-    transform: scale(1.4);
-    z-index: 10 !important;
+  .leaf img {
+    width: 80px;
+    height: 80px;
+    border-radius: 12px;
+    margin-bottom: 10px;
+    object-fit: cover;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+  }
+  .leaf.selected {
+    box-shadow: 0 0 25px 8px #A5D6A7;
+    transform: scale(1.15) rotate(0deg);
+    z-index: 100 !important;
   }
 </style>
 </head>
 <body>
 
-<div id="container">
-  <canvas id="arcCanvas"></canvas>
-</div>
+<div id="deck"></div>
 
 <script>
-  const container = document.getElementById('container');
-  const canvas = document.getElementById('arcCanvas');
-  const ctx = canvas.getContext('2d');
+  const deck = document.getElementById('deck');
 
-  // تنظیم اندازه کانواس بر اساس عرض container
-  function resizeCanvas() {
-    canvas.width = container.clientWidth;
-    canvas.height = 220;
-  }
-  resizeCanvas();
-  window.addEventListener('resize', () => {
-    resizeCanvas();
-    drawArc();
-    updatePositions();
-  });
+  // اطلاعات نمونه محصول‌ها (می‌تونی جایگزین کنی با داده واقعی)
+  const products = Array.from({length: 20}, (_, i) => ({
+    id: i + 1,
+    name: `محصول شماره ${i+1}`,
+    img: `https://picsum.photos/seed/${i+1}/80/80`,
+    desc: `توضیح کوتاه برای محصول شماره ${i+1}`
+  }));
 
-  const totalIcons = 100;   // تعداد کل آیکون‌ها
-  const visibleCount = 5;   // تعداد آیکون‌های روی قوس قابل نمایش
+  let leaves = [];
+  let selectedIndex = -1;
 
-  const radius = canvas.width / 2 - 40;  // شعاع نیم دایره با کمی فاصله از حاشیه
-  const centerX = canvas.width / 2;
-  const centerY = 60; // بالاتر برای فضای کافی پایین قوس
+  function createLeaf(product, index) {
+    const leaf = document.createElement('div');
+    leaf.className = 'leaf';
+    leaf.style.zIndex = index;
 
-  let baseAngle = Math.PI;  // شروع از 180 درجه (سمت چپ قوس)
-  const arcLength = Math.PI; // نیم دایره (180 درجه)
+    // چینش مورب با چرخش و انتقال برای اثر لایه‌ای
+    const angle = (index % 5) * 6 - 12;  // زاویه بین -12 تا +12 درجه
+    const offsetY = index * 8;
+    const offsetX = (index % 2 === 0 ? -1 : 1) * (index * 5);
 
-  const icons = [];
+    leaf.style.transform = `translate(${offsetX}px, ${-offsetY}px) rotate(${angle}deg)`;
 
-  // ساخت عناصر آیکون DOM
-  for(let i=0; i<visibleCount; i++){
-    const div = document.createElement('div');
-    div.className = 'icon';
-    container.appendChild(div);
-    icons.push(div);
-  }
+    // محتوای برگ شامل تصویر و متن
+    leaf.innerHTML = `
+      <img src="${product.img}" alt="${product.name}">
+      <div>${product.name}</div>
+      <small>${product.desc}</small>
+    `;
 
-  function drawArc(){
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    ctx.beginPath();
-    ctx.lineWidth = 4;
-    ctx.strokeStyle = '#21CBF3';
-    ctx.shadowColor = '#21CBF3';
-    ctx.shadowBlur = 15;
-    ctx.arc(centerX, centerY, radius, Math.PI, 2 * Math.PI);
-    ctx.stroke();
+    // رویداد کلیک برای انتخاب برگ
+    leaf.addEventListener('click', (e) => {
+      e.stopPropagation();
+      selectLeaf(index);
+    });
+
+    return leaf;
   }
 
-  function updatePositions(){
-    const angleStep = arcLength / (visibleCount - 1);
-
-    // مرکز آیتم وسطی روی کل مجموعه، محاسبه به صورت پیوسته
-    // baseAngle از π تا 2π میچرخه، ما باید ایندکس وسطی را تعیین کنیم:
-    let centerIndexFloat = (baseAngle - Math.PI) / angleStep; // 0 تا (visibleCount-1)
-    // با این عدد تعیین میکنیم آیکون وسط دقیقاً کدام است روی کل 100 آیکون:
-    let centerIndex = Math.round(centerIndexFloat);
-
-    // محدود کردن برای حلقه‌ای شدن ایندکس وسطی
-    centerIndex = ((centerIndex % totalIcons) + totalIcons) % totalIcons;
-
-    // ایندکس شروع آیکون‌ها (نمایش ۵ آیکون: وسطی + ۲ چپ و ۲ راست)
-    let startIndex = centerIndex - Math.floor(visibleCount / 2);
-
-    for(let i=0; i<visibleCount; i++){
-      let itemIndex = ((startIndex + i) % totalIcons + totalIcons) % totalIcons;
-
-      // زاویه هر آیکون روی قوس (از π تا 2π)
-      let angle = Math.PI + i * angleStep;
-
-      // مختصات روی نیم دایره
-      const x = centerX + radius * Math.cos(angle);
-      const y = centerY + radius * Math.sin(angle);
-
-      const el = icons[i];
-      el.style.left = (x - 30) + 'px';
-      el.style.top = (y - 30) + 'px';
-
-      // بزرگ‌نمایی وسطی
-      if(i === Math.floor(visibleCount/2)){
-        el.classList.add('selected');
-      } else {
-        el.classList.remove('selected');
-      }
-
-      el.textContent = itemIndex + 1;
-      el.dataset.index = itemIndex;
-      el.style.zIndex = i === Math.floor(visibleCount/2) ? 100 : 50;
+  function selectLeaf(index) {
+    if(selectedIndex >= 0 && leaves[selectedIndex]) {
+      leaves[selectedIndex].classList.remove('selected');
+    }
+    selectedIndex = index;
+    if(leaves[selectedIndex]) {
+      leaves[selectedIndex].classList.add('selected');
     }
   }
 
-  // حرکت پایه برای کنترل اسکرول افقی آیکون‌ها
-  let isDragging = false;
-  let startX = 0;
-  let lastBaseAngle = baseAngle;
+  // با هر کلیک روی صفحه یک برگ جدید اضافه کن
+  document.body.addEventListener('click', () => {
+    if(leaves.length >= products.length) return;
 
-  container.addEventListener('pointerdown', e => {
-    // اگر روی آیکون کلیک شد، درگ قوس فعال نشه
-    if(e.target.classList.contains('icon')) return;
-
-    isDragging = true;
-    startX = e.clientX;
-    lastBaseAngle = baseAngle;
-    container.setPointerCapture(e.pointerId);
+    const product = products[leaves.length];
+    const leaf = createLeaf(product, leaves.length);
+    deck.appendChild(leaf);
+    leaves.push(leaf);
+    selectLeaf(leaves.length - 1);
   });
-
-  container.addEventListener('pointermove', e => {
-    if(!isDragging) return;
-
-    const dx = e.clientX - startX;
-    const sensitivity = 0.006;
-    baseAngle = lastBaseAngle + dx * sensitivity;
-
-    // محدود کردن زاویه بین π و 2π برای نیم دایره
-    if(baseAngle < Math.PI) baseAngle = Math.PI;
-    if(baseAngle > 2 * Math.PI) baseAngle = 2 * Math.PI;
-
-    updatePositions();
-  });
-
-  container.addEventListener('pointerup', e => {
-    isDragging = false;
-    container.releasePointerCapture(e.pointerId);
-  });
-
-  container.addEventListener('dragstart', e => e.preventDefault());
-
-  // کلیک روی آیکون وسطی انتخابی
-  icons.forEach(icon => {
-    icon.addEventListener('click', () => {
-      if(icon.classList.contains('selected')){
-        alert(`آیکون شماره ${icon.dataset.index} انتخاب شد!`);
-      }
-    });
-  });
-
-  // رسم اولیه و موقعیت آیکون‌ها
-  drawArc();
-  updatePositions();
 
 </script>
 
