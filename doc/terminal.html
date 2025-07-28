@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>حرکت سینوسی آیکون‌ها روی نیم‌دایره</title>
+<title>حرکت سینوسی صفر تا π با ۱۰۰ آیکون</title>
 <style>
   body {
     margin: 0;
@@ -48,25 +48,17 @@
 <script>
   const carousel = document.getElementById('carousel');
 
-  // تعداد کل آیکون‌ها (برای نمونه 15)
-  const totalIcons = 15;
+  const totalIcons = 100;    // تعداد کل آیکون‌ها
+  const visibleCount = 5;    // تعداد آیکون‌های نمایان
+  const radius = 120;        // شعاع قوس
+  const centerX = 160;       // مرکز افقی
 
-  // تعداد آیکون‌های نمایش داده شده
-  const visibleCount = 5;
+  let baseAngle = 0;         // زاویه پایه
+  const arcRadians = Math.PI;  // قوس از 0 تا π
 
-  // شعاع قوس
-  const radius = 120;
-
-  // موقعیت مرکزی افقی در container
-  const centerX = 160;
-
-  // زاویه شروع (می‌تون تغییر بدی)
-  let baseAngle = 0;
-
-  // آرایه عناصر DOM آیکون‌ها
   const icons = [];
 
-  // ساخت آیکون‌ها
+  // ایجاد ۵ عنصر DOM (چون فقط ۵ نمایش داده میشه)
   for(let i = 0; i < visibleCount; i++) {
     const el = document.createElement('div');
     el.classList.add('icon');
@@ -74,36 +66,28 @@
     icons.push(el);
   }
 
-  // ایندکس مرکزی (کدام آیکون از کل در وسط است)
   let centerIndex = 0;
 
-  // محاسبه و آپدیت موقعیت آیکون‌ها
   function updatePositions() {
-    // فاصله زاویه بین آیکون‌ها (برای قوس 120 درجه)
-    const arcDegrees = 120;
-    const arcRadians = arcDegrees * Math.PI / 180;
-    const angleStep = arcRadians / (visibleCount -1);
+    const angleStep = arcRadians / (visibleCount - 1);
 
     for(let i = 0; i < visibleCount; i++) {
-      // آیتمی که نمایش میدیم در کل مجموعه کدومه
-      let itemIndex = (centerIndex - Math.floor(visibleCount/2) + i + totalIcons) % totalIcons;
+      let itemIndex = (centerIndex + i) % totalIcons;
+      if(itemIndex < 0) itemIndex += totalIcons;
 
-      // زاویه هر آیکون در قوس
       let angle = baseAngle + i * angleStep;
 
-      // موقعیت روی قوس (x,y) - حرکت سینوسی با sin و cos
-      const x = centerX + radius * Math.cos(angle - arcRadians/2);
-      const y = radius * 0.6 * Math.sin(angle - arcRadians/2);
+      // x و y با سینوس و کسینوس در بازه 0 تا π
+      const x = centerX + radius * Math.cos(angle);
+      const y = radius * Math.sin(angle);
 
-      // مقیاس (وسطی بزرگ‌تر)
-      const distFromCenter = Math.abs(i - (visibleCount-1)/2);
+      // مقیاس بزرگ‌تر در وسط قوس (آیکون وسط)
+      const distFromCenter = Math.abs(i - (visibleCount -1)/2);
       const scale = 1 - distFromCenter * 0.25;
-
-      // شفافیت بیشتر وسطی
       const opacity = 1 - distFromCenter * 0.3;
 
       const el = icons[i];
-      el.style.transform = `translate(${x - 30}px, ${y + 40}px) scale(${scale})`;
+      el.style.transform = `translate(${x - 30}px, ${y}px) scale(${scale})`;
       el.style.opacity = opacity;
       el.textContent = itemIndex + 1;
       el.dataset.index = itemIndex;
@@ -113,15 +97,10 @@
 
   updatePositions();
 
-  // مدیریت درگ (لمس و موس)
+  // مدیریت درگ
   let isDragging = false;
   let startX = 0;
   let lastBaseAngle = baseAngle;
-
-  function clampAngle(a) {
-    // برای حرکت بی‌نهایت، زاویه رو میشه آزاد گذاشت
-    return a;
-  }
 
   carousel.addEventListener('pointerdown', e => {
     isDragging = true;
@@ -134,10 +113,12 @@
     if(!isDragging) return;
 
     const dx = e.clientX - startX;
-
-    // تبدیل فاصله موس/لمس به تغییر زاویه (آزمایش شده برای حرکت مناسب)
     const sensitivity = 0.005;
     baseAngle = lastBaseAngle + dx * sensitivity;
+
+    // پایه زاویه محدود به 0 تا π نشه، حرکت بی‌نهایت
+    if(baseAngle > arcRadians) baseAngle -= arcRadians;
+    if(baseAngle < 0) baseAngle += arcRadians;
 
     updatePositions();
   });
@@ -146,25 +127,19 @@
     isDragging = false;
     carousel.releasePointerCapture(e.pointerId);
 
-    // بعد از رها کردن، ایندکس مرکزی رو به نزدیک‌ترین عدد گرد کن
-    const arcDegrees = 120;
-    const arcRadians = arcDegrees * Math.PI / 180;
-    const angleStep = arcRadians / (visibleCount -1);
-
-    // بر اساس baseAngle، محاسبه کدوم ایندکس وسط باید باشه
+    // ایندکس مرکزی را به نزدیک‌ترین مقدار گرد کن
+    const angleStep = arcRadians / (visibleCount - 1);
     let roughCenter = centerIndex - baseAngle / angleStep;
     centerIndex = Math.round(roughCenter) % totalIcons;
     if(centerIndex < 0) centerIndex += totalIcons;
 
-    // تنظیم زاویه به حالت "snap" (چسبیدن به موقعیت دقیق)
-    baseAngle = - (centerIndex - Math.floor(visibleCount/2)) * angleStep;
+    // زاویه به حالت snap تنظیم شود
+    baseAngle = - (centerIndex) * angleStep;
 
     updatePositions();
   });
 
-  // Prevent text selection on drag
   carousel.addEventListener('dragstart', e => e.preventDefault());
-
 </script>
 
 </body>
